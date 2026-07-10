@@ -1,0 +1,13 @@
+[2026-01-16T13:57:12.147000+00:00] test: bro lowk larp and say swe
+
+[2026-01-16T13:57:17.500000+00:00] test: QA is not valuable due to AI
+
+[2026-01-16T20:36:52.627000+00:00] litic: like change QA to SWE
+
+[2026-01-16T23:03:52.690000+00:00] thoup: Yes
+
+[2026-01-16T23:03:58.162000+00:00] thoup: Just call it software engineer intern
+
+[2026-01-30T17:14:46.424000+00:00] rayhaan: - Why is your training coordinator role first? even if it's first chronologically, it's the least relevant and should go at the bottom
+- I don't understand how you chose which words to bold. Why would you bold competitions but not capture the flag? Also **authored** and **enabling**? you should bold keywords that you think somebody might care about. That basically translates to technologies and stats. Maybe concepts like terminal basics is ok
+- Is there anything more interesting or specific you can say about your experiences? what i get from your resume is that you worked a few QA jobs where you fulfilled what a QA person should theoretically do (automate testing) while using XYZ technologies. not much that would make you stand out in a crowd

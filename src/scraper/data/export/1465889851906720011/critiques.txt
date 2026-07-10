@@ -1,0 +1,13 @@
+[2026-01-28T02:03:19.030000+00:00] billybin: oops it didn't really anonymize whatever
+
+[2026-01-30T20:13:37.288000+00:00] rayhaan: I don't understand why people insist on anonymizing. the name of the company is relevant to how your resume gets read. you can't slip the phrase "for aviation software" in without explanation when you work for some no-name startup but that's fine if you were at airbus. and then they have identifying shit linked to their discord anyway
+
+[2026-01-30T20:13:59.800000+00:00] rayhaan: Why are startup A and B grouped together? I don't see the logical relationship there
+
+[2026-01-30T20:16:35.008000+00:00] rayhaan: I feel like the issue is probably that you've worked with a bunch of proprietary/games-specific technologies and therefore aren't hitting the tech reqs of a lot of jobs. Are there any standard technologies you can talk about from your work? I'm thinking there might be something there in your game startup A one cause there's some web stuff
+
+[2026-01-30T20:20:23.827000+00:00] rayhaan: I personally really like this resume. Sounds like you've done a pretty wide variety of interesting stuff. And written clearly. But you're kind of raw material as a candidate. I would hire you because I think you have strong fundamentals, not because you know anything about my particular tech stack. I feel like that's a hard sell to a lot of big tech, especially vs people whos resumes are loaded with full-stack experience who would be more plug and play. I think this would fly well in quant but now is really late in their summer recruiting cycle
+
+[2026-01-30T21:28:35.452000+00:00] billybin: lol I just did it (poorly) to fit in tbh
+
+[2026-01-30T21:30:17.199000+00:00] billybin: I suppose my problem isn't keyword farming enough, thanks for the advice

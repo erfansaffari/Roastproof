@@ -1,0 +1,81 @@
+[2026-02-09T02:31:01.516000+00:00] .exe: I would have max 4 bullet points per exp
+
+[2026-02-09T23:05:20.761000+00:00] Mr.Raza: anything else?
+
+[2026-02-10T00:43:28.354000+00:00] TI: Are you applying through Waterloo works? Don’t need education at the top If so
+
+[2026-02-10T02:40:16.184000+00:00] .exe: maybe add more about your impact and the results of what you did. right now, its a lot of "i did this" and it would be better if you say the results of your efforts
+
+[2026-02-10T03:11:43.487000+00:00] Mr.Raza: nope externally
+
+[2026-02-10T03:11:54.008000+00:00] Mr.Raza: ooo yeah i keept forgetting about that
+
+[2026-02-10T22:04:40.013000+00:00] yarksist: ru tryna transfer into math/cs?
+
+[2026-02-10T22:24:42.208000+00:00] yarksist: You need more formal bullet points showcasing specific important technologies. Also your current degree might be a major disadvantage rn
+
+[2026-02-11T17:00:17.814000+00:00] Mr.Raza: maybe math, but honestly i dont know
+
+[2026-02-11T17:12:26.294000+00:00] yarksist: How is that going?
+
+[2026-02-11T17:28:20.261000+00:00] Mr.Raza: 137 is killing me rn
+
+[2026-02-11T17:59:45.508000+00:00] yarksist: Drop to 127 and take cs 115/16
+
+[2026-02-11T17:59:53.432000+00:00] yarksist: Also take math 106 over 136
+
+[2026-02-11T18:00:12.885000+00:00] yarksist: If u can't transfer into math id recommend transfer to cs at another uni
+
+[2026-02-11T19:21:06.873000+00:00] Mr.Raza: nah im happy here, geomatics is honestly not bad
+
+[2026-02-11T19:21:25.416000+00:00] Mr.Raza: 106 is so so so easy
+
+[2026-02-12T00:13:01.296000+00:00] Mr.Raza: also isnt cs harder?
+
+[2026-02-12T00:13:48.082000+00:00] Mr.Raza: either way, ive grown to not like cs
+geomatics still at least will give me some hands on hardware touch
+
+[2026-02-12T00:14:58.197000+00:00] yarksist: wdym?
+
+[2026-02-12T00:15:56.723000+00:00] yarksist: well it doesnt make to purse cs related jobs then right? also how would geomatics give you some hands on hardware touch?
+
+[2026-02-12T00:47:58.275000+00:00] Mr.Raza: i dont like cs as a subject, i like hardware, or embedded side of things, (more eng sided stuff)
+
+geomatics has sort of a thing of making u work with hardware, 
+
+like im in a boat where i dont like pure software, algorithms and stuff like that, but i do like eng, working woth hardware, boards, embedded chips, stuff liek that
+
+but either way i dont wanna transfer out of uw, too much has gone in
+
+[2026-02-12T00:59:12.252000+00:00] yarksist: I get that it seems like a lot has gone in but in the grand scheme of things a year isn't a lot. However the disadvantage of not being a program that adequately prepares you for eng/hardware jobs is quite severe. Also what kinds of hardware do you learn in geomatics?
+
+[2026-02-12T01:01:15.767000+00:00] yarksist: I've been hearing lots of rhetoric of students pursuing hardware/embedded often out of fear that AI won't replace them but do understand that ai will be everywhere and most demand for software is still in the general swe cases. Nothing wrong with pursuing hardware just understand it's not a safety net because in life nothing is.
+
+[2026-02-12T01:38:02.152000+00:00] Mr.Raza: oh no yeah not doing due to fear of AI, i just dont like SWE in general, like the day to day job of SWE isnt something i would be interested in
+dont get me wrong, hardware also has SWE, but its a bit different, that bit difference is all for me
+
+either way for Embedded u gotta be good in both hardware and software so getting a taste for both
+
+[2026-02-12T01:42:21.052000+00:00] Mr.Raza: i get that distadvantage, that was my main concern for a very very very long time before i finally decided on geomatics 
+
+we dont learn hwardware per say, more so work with it, but it depends on year to year so hopegully by the time i get upperyear courses the prof still does the surveys tools and stuff like tat
+
+[2026-02-12T01:51:31.082000+00:00] yarksist: ur not exactly getting a taste for both tho?
+
+[2026-02-12T01:51:54.583000+00:00] yarksist: ece would be a taste for both
+
+[2026-02-12T01:52:25.303000+00:00] yarksist: best of luck man i do see your passion and hope it all works out
+
+[2026-02-12T01:52:34.221000+00:00] yarksist: feel free to dm if u have any questions related to swe
+
+[2026-02-12T01:55:54.009000+00:00] Mr.Raza: sort of being the keyword... like its not exactly that, but sort of
+
+[2026-02-12T01:55:58.161000+00:00] Mr.Raza: ece?
+
+[2026-02-12T01:56:49.048000+00:00] yarksist: electric and comp eng
+
+[2026-02-12T01:59:00.913000+00:00] Mr.Raza: oh ee and ce... i wanted to, but chemistry ruined it for me, if not for that i wouldve been in an eng program at some uni even if not uw
+
+[2026-02-12T04:25:10.839000+00:00] yarksist: unfortunately sometimes you do have to bite the bullet theres only so much chem in ee/ce i think like 2 courses or 1. just take a look at most other geomatics students in the upper year, do they have the jobs you are aiming for?
+
+[2026-02-12T21:07:13.103000+00:00] Mr.Raza: Trust me I tried my best, but in the end I had to drop chem in high school to save my average

@@ -1,0 +1,4 @@
+[2026-02-08T01:58:36.959000+00:00] thepixelist (resume post):
+Hello everyone, I'm in 1B CS and looking for any SWE/programming-focused roles that are more backend/systems-oriented. I have not yet gotten any interviews, so any feedback would be greatly appreciated!
+
+Thanks!!

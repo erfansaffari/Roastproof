@@ -1,0 +1,19 @@
+[2026-02-03T02:17:55.444000+00:00] kawww: *the reason i didn't put my GPA there is because its really bad i will lock in this sem
+
+[2026-02-04T00:48:36.888000+00:00] yarksist: ru writing cover letters while applying to swe roles?
+
+[2026-02-04T00:53:55.489000+00:00] yarksist: ngl this is a pretty good resume for 1b
+
+[2026-02-05T02:21:57.527000+00:00] kawww: yes but i used chatgpt for most of them tho
+
+[2026-02-05T02:24:29.761000+00:00] kawww: tysm!!!!!!! i really needed to hear that esp with 0 interviews in waterlooworks so far...& with my tech stack, should i remove some concpets like "data warehousing" and stuff?>
+
+[2026-02-05T03:17:00.545000+00:00] yarksist: im not too sure tbh
+
+[2026-02-05T03:17:17.579000+00:00] yarksist: i feel like the markets just really bad altho thats been the case for a while now
+
+[2026-02-05T03:18:12.808000+00:00] yarksist: have u been applying external?
+
+[2026-02-06T00:05:39.650000+00:00] del: I’d change first job title to software engineer or software engineering intern (maybe add data engineer as well if you want)
+
+[2026-02-06T01:42:12.102000+00:00] del: For first exp id quantify bullet points 3-5 and maybe explain what you did there since it seems generic / filler

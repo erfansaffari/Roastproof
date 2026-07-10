@@ -1,0 +1,27 @@
+[2026-01-17T18:30:09.428000+00:00] Deleted User: <@478404233033416714> does having Apple on your resume not help with getting interviews from faang/quant? Is the recruiting pipeline that broken
+
+[2026-01-17T19:40:23.140000+00:00] Haku: Nope i didnt get a lot. for NG i only got google doordash palantir. and for intern there was 1 apple and 1 tiktok. All interviews no offer. and a few more oas.
+
+[2026-01-17T19:40:46.984000+00:00] Haku: Idk but it feels like thats not a lot of interviews
+
+[2026-01-17T20:03:10.318000+00:00] yarksist: wait u got google ng?
+
+[2026-01-17T20:08:29.451000+00:00] Haku: nah i didnt pass the interview
+
+[2026-01-17T20:40:56.480000+00:00] yarksist: Cant u just go back to apple?
+
+[2026-01-17T22:12:58.462000+00:00] Haku: no hc
+
+[2026-01-17T22:34:40.018000+00:00] Deleted User: does apple have a canadian office with hc? maybe u could try for that instead of cupertino
+
+[2026-01-21T19:19:10.659000+00:00] test: have you tried looking into YC startups? one of them would definitely take you i think
+
+[2026-01-30T17:42:15.160000+00:00] rayhaan: - What is "technical deep dives"? Why is this not just in your skills? Half of those technologies were already mentioned in depth in the resume body too
+- Your line spacing is kinda fucked. Some lines are closer together than others.
+- Can you make it less cramped? I would completely cut Teranet to give me more breathing room in your spacing and margins
+- Some of your bullets get too into the weeds. Try to avoid using language that's too technical or domain specific. I think "Reduced Raft's latency by up to 50%" and "Eliminated up to 3 seconds of db unavailability during fail-overs" communicates all the same stuff in simpler language. Only DB engineers would notice the difference. Also in your version you use present tense for one and past tense for the other. There are a lot of dead words that add a tiny bit of detail at a much larger cost to readability. Another strategy is inverting your bullets so you lead with impact. Your Auvik Kubernetes point should lead with "streamlined..." and then say "by leveraging...". Somebody who's not that familiar with Kubernetes can understand the impact you had and then ignore the details at the end instead of skipping that bullet after hitting the dense technical jargon
+Overall this is one of the top resumes i've seen on here. Get a good sense of what you can do, why your work was important, why it was cool. Just needs some clarity
+
+[2026-01-30T17:48:50.908000+00:00] rayhaan: also this sounds like an ok haul for NG in this market. gotta keep grinding at it \:/
+
+[2026-01-31T03:30:26.862000+00:00] Haku: nah im international

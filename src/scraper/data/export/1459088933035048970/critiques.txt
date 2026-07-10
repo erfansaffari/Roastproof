@@ -1,0 +1,45 @@
+[2026-01-09T07:38:47.042000+00:00] d2i-23: Purposely removed the whole name, email, and stuff header for privacy
+
+[2026-01-10T03:37:07.691000+00:00] rayhaan: - internal engineer? do you not have a more standard title here?
+- your bullet points are too long. longer sentences tend to be harder to parse. my heuristic is you should only have a small handful of 2-liners in your whole resume. easy first step is replace semicolons with line breaks
+- From Xms to Yms is weak framing unless the numbers are really bold. prefer multiples/proportions. 150ms to 1ms sounds sick but don't make me do 1300/240 in my head to figure out how significant that was 
+- do you have a better name for the accelerator you used for FRC than a TPU? i read that as google TPU but ik it's not that if you had this thing deployed on a FRC bot
+
+[2026-01-10T03:43:35.376000+00:00] rayhaan: generally, i think there's a lot of fat here. i normally complain that people are too vague ("collaborated with 15 people in an AGILE team"). you include a lot of implementation details, which is an improvement, but is still sometimes irrelevant and obscures more interesting details about what you did. as an exercise, here's my inline comments on your 2 experiences (strikethrough -> redundant imo):
+> Implemented a dual-agent architecture: one agent streams fast replies, while a second agent performs memory/RAG
+> update and search ~~asynchronously and communicates via RPC~~, reducing response latency from 500ms to 80ms.
+> • Partnered with the Letta (MemGPT) engineering team ~~to test a real-time memory SDK~~ **(maybe ok if the SDK is well-known)** for voice agents; identified
+> and parallelized a RAG performance bottleneck, cutting latency from 1300ms to 240ms **(what latency is this? how is this different from the last one?)**.
+> • Implemented real-time avatar lip-sync and expression rendering by building an audio-to-phoneme mapping pipeline
+> ~~and driving mouth/expression parameters from live audio, enabling synchronized real-time virtual chatbot avatars.~~
+> • Enabled fully autonomous navigation~~ + scoring~~ for ~~2025 ~~FRC through an AprilTag pose pipeline to transform
+> robot-relative pose to global field coordinates~~ via rotational and translational matrices,~~ achieving ±5 inch pose error.
+> • Built a vision-guided ~~auto-~~intake system ~~for the 2024 FRC game~~ by deploying a detection model on a TPU processor
+> and converting bounding-box detections into robot-relative pose targets for autonomous pickup, winning Innovation in
+> Control ~~(Humber College event)~~.
+> • Optimized ~~2024 game-piece~~ vision with an OpenCV pipeline (~~color thresholding + ellipse detection~~) while preserving
+> detection quality **(measured how? vague)**, cutting latency from 300ms to 120ms and eliminating the need for the TPU processor **(why was this better than TPU?)**.
+
+[2026-01-10T03:48:04.591000+00:00] rayhaan: other stuff could still be said more concisely if i rearranged the words instead of just striking through. since this is co-op 1, it's fair to keep some fat in there to pad out your resume, but keep in mind for future
+
+[2026-01-10T03:48:53.783000+00:00] d2i-23: I did have it deployed on the frc robot via the limelight
+
+[2026-01-10T03:49:34.879000+00:00] rayhaan: limelight embeds a google TPU?
+
+[2026-01-10T03:49:35.193000+00:00] d2i-23: but thanks will work on the clarification!
+
+[2026-01-10T03:49:41.454000+00:00] d2i-23: no you add the google coral to it
+
+[2026-01-10T03:49:55.535000+00:00] rayhaan: oh like you have an internet connection on the thing?
+
+[2026-01-10T03:50:01.345000+00:00] d2i-23: no like physically attach it
+
+[2026-01-10T03:50:03.564000+00:00] d2i-23: ont oit
+
+[2026-01-10T03:50:24.417000+00:00] d2i-23: https://docs.limelightvision.io/docs/docs-limelight/pipeline-neural/getting-started-with-neural-networks
+
+[2026-01-10T03:50:36.781000+00:00] d2i-23: its via the usb port
+
+[2026-01-10T03:52:24.939000+00:00] rayhaan: oh i didn't know this existed. my understanding was google doesn't sell their TPUs to third partys but i guess edge TPU is different? maybe just throw the edge qualifier in there
+
+[2026-01-10T03:52:34.791000+00:00] d2i-23: got it!

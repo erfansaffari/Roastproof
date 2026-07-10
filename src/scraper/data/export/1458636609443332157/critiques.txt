@@ -1,0 +1,22 @@
+[2026-01-10T04:24:39.978000+00:00] rayhaan: you worked on "prediction markets" trading lol? or were you working for a sportsbook (i.e. bet pricing algorithms). just curious.
+- "bachelors of math, major in cs" may be technically correct if you're in bmath cs but buries the lead. lead with the cs part for most jobs. "[bachelor of/major in] cs, minor in stats"
+- "Designed and deployed MLB trading algorithm". this phrase carries a lot of weight to me. you designed the strategy? how good is it? or did you just deploy it? also MLB like you're literally trading prop bets on MLB games right? I hope that would be clear if i knew the company name. otherwise the idea that you wrote an system to do sports betting would be pretty foreign to a lot of people (maybe offputting). i would try my best to divorce the tech stuff that you did from the product you were trading so i don't have to mention it was sports betting.
+- Your second "in-game algo" bullet is vague. what latency are you measuring? tick to trade? 400ms tick to trade seems pretty bad but depends on the model/time-horizon/product. also, don't just tell me you used concurrency, caching, and a tuned http client (not sure what that one means). try to say a few words about what was concurrent or cached. something like "engineered pipeline that concurrently ingests and evaluates market data" might be one bullet and "cached xyz, acheiving 400ms latency" might be another
+- "Integrated XGBoost pricing model by compiling lightweight Treelite object and linking via cgo into Go algorithm" ngl but this sounds like 2 hours of work. you compiled a model and linked into it.
+- what does bigquery have to do with the algorithm? how did we get to 80% faster predictions?
+
+[2026-01-10T04:26:08.706000+00:00] rayhaan: rest of the resume i mostly like
+
+[2026-01-14T22:59:33.970000+00:00] awaterloostudent: Thank you. This is super helpful. I updated my resume to (1) lead with CS, (2) clarify the "designed" wording to reflect my scope, (3) make the latency bullet explicit about what's being measured and frame it as optimizing for external constraints, and (4) add specific details on what was concurrent. I've also reworded the Treelite/cgo bullet to focus on the engineering/ML work.
+
+[2026-01-14T23:00:12.687000+00:00] awaterloostudent: If you have a minute, I would greatly appreciate your take on the revised bullets.
+
+[2026-01-14T23:02:45.349000+00:00] awaterloostudent: [attachments: https://cdn.discordapp.com/attachments/1458636609443332157/1461133467940032777/SWE_Resume_Updated.pdf?ex=6a4cdcd5&is=6a4b8b55&hm=527becf3e3502262589e42eb7d533905273784a6e485aae0c70c8d37e81e6d7b&]
+
+[2026-01-30T16:22:26.550000+00:00] rayhaan: sorry this is too late for ww cycle 1. just got around to this
+I think the structure got better. i just have some minor gripes about wording:
+- ML evaluation to me means evaluating the performance/accuracy of models. I would stick to saying inference
+- poll-to-intent throughput should be poll-to-intent latency. you're still measuring the time it takes to perform 1 action, not how many actions you can do in a fixed time
+- "standalone pre-event forecasts" is an awkward phrase. I would just drop standalone and say "pre-event forecasts". then you have room to say "by 80% by unifying..." instead of just a comma
+- "Powered ML evaluation by designing" seems pointless. "Designed/built/trained XGBoost pricing model and optimized inference using Treelite and cgo" is better to me
+- i think first bullet reads better as "Developed an automated trading system for event-driven markets and validated its integrity in live deployment."

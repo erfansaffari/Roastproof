@@ -1,0 +1,44 @@
+[2026-02-12T03:08:30.117000+00:00] __ar1s: unrelated but how'd you minor in cs? i thought they replaced that with minor in computing
+
+[2026-02-12T04:17:34.038000+00:00] yarksist: i seem to have enough credits to qualify for a cs minor
+
+[2026-02-12T04:17:39.381000+00:00] yarksist: well i will eventually
+
+[2026-02-12T04:17:51.774000+00:00] yarksist: CS MINOR
+MATH 239
+CS 135
+CS 136
+5 courses:
+CS 245
+CS 246
+CS 370/371
+CS 475
+CS 479
+1 Course:
+CS 467 (also co course)
+
+[2026-02-16T03:18:12.524000+00:00] yarksist: anyone?
+
+[2026-02-18T15:24:10.630000+00:00] Espresso: Most people want you to give them advice twin
+
+[2026-02-18T15:24:57.290000+00:00] Espresso: I could use your wisdom at some point, I seen u grinding since you started uni
+
+[2026-02-18T18:05:57.970000+00:00] yarksist: thank you man. i rmr u did some insane CO URA right?
+
+[2026-02-18T18:12:37.221000+00:00] Espresso: No lol. My ura was in science faculty throwing xgboost at some bio-chem data. My major used to be in CO at the time
+
+[2026-02-18T18:13:14.892000+00:00] Espresso: I dropped that too cause even though I was getting by I understood nothing from class and was just getting my grades from everyone else failing and riding a curve 💀
+
+[2026-02-18T18:23:15.001000+00:00] yarksist: this is fair lol. im switching to CM atp
+
+[2026-03-02T16:33:48.237000+00:00] azoo: Small formatting inconsistencies under the mongo bullet point, like where spaces are put after commas
+
+[2026-03-02T16:34:05.326000+00:00] azoo: You havent put languages with any other job, doesnt make sense to put it under mongo
+
+[2026-03-03T01:28:32.523000+00:00] yarksist: its cuz im incoming
+
+[2026-03-03T01:28:38.068000+00:00] yarksist: so its a bunch of languages i could work with
+
+[2026-05-01T16:40:41.546000+00:00] Bobcat: Is the canadiandorm a dumb entrepreneurial idea (no diss). Maybe iterate on it, or have u had any new ideas u wish existed
+
+[2026-05-05T01:13:43.329000+00:00] yarksist: It is a now dead entrepreneurial idea. Pulled the plug once I got a coop lol. Mainly there for work exp

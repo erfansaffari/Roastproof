@@ -1,0 +1,7 @@
+[2026-01-08T00:32:17.937000+00:00] Shepherd: dime defender was fire 🔥  still remember it from htn lol
+
+[2026-01-08T06:15:07.683000+00:00] piat: why arent u including your hack the north 2025 project
+
+[2026-01-10T04:40:58.130000+00:00] rayhaan: - 100% of cart data is a weird thing to bold. maybe it was a hard technical problem figuring out how to ingest/use 100% of the data but it means nothing to me. cool project tho. might want to invert it a little and say "built a chrome extension that launches an ace attorney style debate... by interecepting amazon/shopify". my eyes kinda glazed over by the time i got the AI lawyer debate midway thru the 2nd line but that's the fun part.
+- i honestly think your projects should go ahead of experience. they help you stand out way better. your experience is pretty normal first/second year cs student stuff and there's not much interesting technicals there. i think you're likely to get written off before people get to the cool part
+- try to avoid adjectives like "fast, reliable, streamlined, optimized, secure". they don't tell me anything unless they're substantiated with some kind of data or at least an explanation of how you made it fast/secure/whatever. the phrases "reducing redundancy and optimizing performance", "ensuring secure and reliable operations for server users", etc don't tell me anything. i have to take your word that these are true. these should be self-evident from the rest of the bullet point. give me some reason to believe these features are as good as you say, don't just tell me that they are

@@ -1,0 +1,14 @@
+[2026-01-07T18:35:49.492000+00:00] azoo: put projects above technical skills
+
+[2026-01-07T18:36:37.078000+00:00] azoo: ur locations are inconsistent, it has country under education but it's just cities elsewhere
+
+[2026-01-07T18:37:34.103000+00:00] azoo: relevant coursework can be slimmed down, technical recruiters dont really care if you took psych (unless thats something u really want to show off)
+
+[2026-01-07T20:25:17.211000+00:00] Shepherd: Good point. Thanks!👍
+
+[2026-01-10T04:54:23.061000+00:00] rayhaan: - what does your nature scraper actually do? like you get some data and you clean it but for what purpose? what are "redundant words" in this context?
+- your discord bot thing is duplicated in extracurricular?
+- what does snap plan do? like it is a client-server app with gemini integration but for what purpose?
+- grammar: "shopping items" -> shopping for items
+
+[2026-01-12T17:46:15.618000+00:00] Shepherd: True. I should've made them clear on my resume. Thanks for the advice!
