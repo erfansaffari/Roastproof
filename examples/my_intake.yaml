@@ -1,0 +1,132 @@
+name: Erfan Saffari
+email: erfansaffari0@gmail.com
+phone: +1 (647) 860-3693
+linkedin: linkedin.com/in/erfansaffari
+github: github.com/erfansaffari
+target_role: Software Engineer / ML Engineer
+year: year_2
+has_internships: true
+profile_summary: >
+  Computer Science co-op student building distributed systems and full-stack
+  AI products, with production experience in Go, Python, and TypeScript.
+  Implemented the Raft consensus protocol from scratch (raft-kv-store) and
+  founded a multi-tenant SaaS platform (SchoolTalk) now used by 100+ students.
+education:
+  - school: University of Waterloo
+    degree: Bachelor of Computer Science, Co-op
+    dates: Expected 2030
+    location: Waterloo, ON
+    details: >
+      Awards: President's Scholarship ($2,000), Mathematics International
+      Students Entrance Scholarship ($5,000).
+experience:
+  - company: ErgoClean
+    title: Software Engineer
+    dates: Jun 2024 -- Apr 2026
+    location: Waterloo, ON
+    technologies: Next.js, React, n8n, OpenAI API, Vercel
+    description: >
+      Built an AI lead-generation agent (LinkedIn scraping, GPT outreach),
+      generating 50+ qualified leads/week.
+      Shipped an analytics dashboard (React, Next.js) giving 3,500+
+      commercial clients real-time visibility.
+      Built an automation pipeline (n8n + OpenAI API + Resend), cutting
+      response time 80% for 500+ monthly inquiries.
+      Debugged and resolved recurring production issues across the pipeline,
+      reducing repeat failure reports over the term.
+  - company: SchoolTalk
+    title: Founder & Software Engineer
+    dates: Jan 2024 -- Present
+    location: Waterloo, ON
+    technologies: Next.js 15, TypeScript, Convex, Clerk, Tailwind/Shadcn
+    description: >
+      Founded and built a multi-tenant SaaS platform for Canadian high
+      schools, growing to 100+ users across 3 schools.
+      Architected a multi-tenant schema (17+ Convex tables) with a
+      tenant-safe auth pattern that blocks cross-tenant data leaks.
+      Built RBAC (student/teacher/staff/admin), invite-code verification,
+      and per-school moderation (OpenAI + Gemini fallback).
+      Shipped real-time community features: posts, clubs, chatrooms,
+      events, notifications, and a points/leaderboard system.
+projects:
+  - name: raft-kv-store -- Distributed Fault-Tolerant Key-Value Store
+    technologies: Go, Raft Consensus, TCP/RPC, Concurrency
+    url: https://github.com/erfansaffari/raft-kv-store
+    dates: "2026"
+    description: >
+      Built a distributed, fault-tolerant key-value store from scratch in
+      Go, implementing Raft consensus across a 3-node cluster.
+      Implemented randomized election timeouts and majority-commit log
+      replication with crash-safe persistence.
+      Wrote network-partition chaos tests verifying the cluster still
+      elects a leader and preserves data once partitions heal.
+  - name: Bina -- AI Semantic File Manager
+    technologies: Python, FastAPI, React, TypeScript, Electron, NetworkX
+    url: https://github.com/erfansaffari/bina
+    dates: "2025"
+    description: >
+      Built a macOS app (Electron + React + FastAPI) indexing a file vault
+      into an interactive D3 knowledge graph.
+      Designed a dual vector-store router (Moorcheh + ChromaDB) and a
+      NetworkX graph-scoring algorithm for resilient search.
+      Shipped 3 swappable AI inference paths, a Railtracks agent for vault
+      Q&A, and PyInstaller packaging for macOS distribution.
+  - name: MemOS -- Hierarchical AI Memory Architecture
+    technologies: Python, LangGraph, Claude API, ChromaDB, SQLite
+    url: https://github.com/erfansaffari/memos
+    dates: "2025"
+    description: >
+      Designed a persistent memory layer for AI agents using a 5-node
+      LangGraph pipeline and a 3-level memory hierarchy.
+      Built an adaptive retrieval router classifying query intent into 4
+      types, dynamically setting retrieval depth and token budget.
+      Ran ablations (hierarchical vs. flat retrieval) across 10 query
+      classes, logging results to Weights & Biases for reproducibility.
+skills:
+  - Python
+  - Go
+  - C
+  - C++
+  - TypeScript
+  - JavaScript
+  - SQL
+  - HTML/CSS
+  - PyTorch
+  - scikit-learn
+  - LangGraph
+  - ChromaDB
+  - NetworkX
+  - sentence-transformers
+  - Pydantic
+  - NumPy
+  - pandas
+  - OpenAI API
+  - Anthropic API
+  - Weights & Biases
+  - FastAPI
+  - Node.js
+  - PostgreSQL
+  - SQLite
+  - SQLAlchemy
+  - Redis
+  - Supabase
+  - REST/GraphQL API design
+  - React
+  - Next.js
+  - Electron
+  - Tailwind CSS
+  - D3.js
+  - Zustand
+  - Vite
+  - Docker
+  - Git/GitHub Actions CI
+  - AWS
+  - Vercel
+  - PyInstaller
+  - Linux
+  - Kubernetes
+  - pytest
+  - Agile/Scrum
+  - System design fundamentals
+  - Technical mentorship
+  - Cross-functional communication

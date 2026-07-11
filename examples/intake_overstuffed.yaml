@@ -1,0 +1,88 @@
+name: Overstuffed Applicant
+email: overstuffed@example.com
+phone: 555-999-0000
+linkedin: linkedin.com/in/overstuffed
+github: github.com/overstuffed
+target_role: Software Engineer
+year: year_3
+has_internships: true
+profile_summary: Third-year CS student with many roles — used to stress page-fit.
+education:
+  - school: Big State University
+    degree: B.S. Computer Science
+    dates: Aug. 2022 -- Present
+    location: Seattle, WA
+    details: GPA 3.8. Dean's list. Coursework across systems, ML, databases, networks.
+experience:
+  - company: MegaCorp
+    title: Software Engineering Intern
+    dates: May 2025 -- Aug. 2025
+    location: Seattle, WA
+    description: >
+      Owned a customer-facing dashboard feature end-to-end in React and TypeScript.
+      Reduced p95 API latency by caching hot paths in Redis and rewriting a slow SQL join.
+      Added integration tests, feature flags, and rollout monitoring with Datadog.
+      Collaborated with design and PM on weekly demos; mentored a new intern on the codebase.
+  - company: Startup Labs
+    title: Backend Intern
+    dates: Jan. 2025 -- Apr. 2025
+    location: Remote
+    description: >
+      Built FastAPI services for billing webhooks with idempotency keys and retries.
+      Migrated legacy SQLite reports to PostgreSQL and cut report generation from minutes to seconds.
+      Wrote runbooks and on-call notes; fixed production incidents involving queue backpressure.
+  - company: University Research Group
+    title: Undergraduate Researcher
+    dates: May 2024 -- Dec. 2024
+    location: Seattle, WA
+    description: >
+      Implemented experiment pipelines in Python for evaluating ranking models on click logs.
+      Parallelized data prep with multiprocessing and documented reproducibility steps.
+      Co-authored an internal tech report and presented results at a department poster session.
+  - company: Campus Makerspace
+    title: Student Developer
+    dates: Sep. 2023 -- May 2024
+    location: Seattle, WA
+    description: >
+      Maintained booking software for laser cutters and 3D printers used by 200+ students.
+      Added Slack notifications, role-based access, and a repair ticket workflow.
+projects:
+  - name: Distributed Cache Toy
+    technologies: Go, Redis, Docker, Kubernetes
+    dates: "2025"
+    description: >
+      Toy distributed cache with consistent hashing, TTL eviction, and a simple HTTP API.
+      Load-tested with vegeta; wrote a design doc comparing LRU vs LFU under skewed keys.
+  - name: Resume Diff Tool
+    technologies: TypeScript, React, Python
+    dates: "2024"
+    description: >
+      Side-by-side resume diff viewer highlighting bullet changes and metric additions.
+      Exported annotated PDFs for peer review sessions in a career club.
+  - name: Sensor Dashboard
+    technologies: Python, Flask, MQTT, SQLite
+    dates: "2024"
+    description: >
+      IoT dashboard ingesting MQTT temperature readings and charting anomalies.
+      Packaged with Docker Compose for classroom demos.
+  - name: Chat Moderators Bot
+    technologies: Node.js, Discord.js, PostgreSQL
+    dates: "2023"
+    description: >
+      Moderation bot with rate limits, audit logs, and configurable keyword filters.
+      Used by a 500-member student Discord for a semester.
+skills:
+  - Python
+  - TypeScript
+  - JavaScript
+  - Go
+  - React
+  - FastAPI
+  - Flask
+  - Node.js
+  - PostgreSQL
+  - Redis
+  - Docker
+  - Kubernetes
+  - SQL
+  - Git

@@ -167,3 +167,73 @@ class ResumeContent(BaseModel):
         if total > MAX_TOTAL_BULLETS:
             raise ValueError(f"total bullet count {total} exceeds budget of {MAX_TOTAL_BULLETS}")
         return self
+
+
+class Suggestion(BaseModel):
+    """Gap surfaced to the user — never silently added to the resume (G1)."""
+    type: str = Field(..., description="missing_skill | missing_metric | content_gap")
+    detail: str
+
+
+class GenerationResult(BaseModel):
+    """Generator output: structured resume + suggestions report seed."""
+    resume: ResumeContent
+    suggestions: List[Suggestion] = Field(default_factory=list)
+
+
+class IntakeEducation(BaseModel):
+    school: str
+    degree: str
+    dates: str
+    location: str = ""
+    details: str = Field("", description="Free-text GPA, coursework, honors.")
+
+
+class IntakeExperience(BaseModel):
+    company: str
+    title: str
+    dates: str
+    location: str = ""
+    description: str = Field(..., description="Raw free-text description of the role.")
+
+
+class IntakeProject(BaseModel):
+    name: str
+    technologies: str = ""
+    dates: str = ""
+    description: str = Field(..., description="Raw free-text project description.")
+
+    @field_validator("dates", mode="before")
+    @classmethod
+    def coerce_dates(cls, v):
+        return "" if v is None else str(v)
+
+
+class Intake(BaseModel):
+    """
+    v1 user intake — YAML/JSON the applicant fills before generation.
+    """
+    name: str
+    email: str = ""
+    phone: str = ""
+    linkedin: str = ""
+    github: str = ""
+    website: str = ""
+    target_role: str = "Software Engineer"
+    year: Optional[str] = None
+    has_internships: bool = False
+    profile_summary: str = ""
+    education: List[IntakeEducation] = Field(default_factory=list)
+    experience: List[IntakeExperience] = Field(default_factory=list)
+    projects: List[IntakeProject] = Field(default_factory=list)
+    skills: List[str] = Field(default_factory=list)
+
+    def to_applicant_profile(self) -> ApplicantProfile:
+        return ApplicantProfile(
+            target_role=self.target_role,
+            year=self.year,
+            has_internships=self.has_internships,
+            profile_summary=self.profile_summary
+            or f"{self.year or 'unknown'} targeting {self.target_role}",
+            skills=list(self.skills),
+        )

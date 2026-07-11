@@ -127,6 +127,8 @@ def complete_json(
     model: str,
     phase: str,
     schema: Type[T],
+    system: str | None = None,
+    max_tokens: int = 4096,
 ) -> T:
     """
     Calls OpenAI and parses the JSON response into a Pydantic schema.
@@ -135,14 +137,12 @@ def complete_json(
     the error appended to the prompt.
     """
     client = _client()
+    system_msg = system or (
+        "You are a careful JSON generator. Respond with a single valid "
+        "JSON object and nothing else — no markdown fences, no commentary."
+    )
     messages: list[dict] = [
-        {
-            "role": "system",
-            "content": (
-                "You are a careful JSON generator. Respond with a single valid "
-                "JSON object and nothing else — no markdown fences, no commentary."
-            ),
-        },
+        {"role": "system", "content": system_msg},
         {"role": "user", "content": prompt},
     ]
 
@@ -150,7 +150,7 @@ def complete_json(
         response = client.chat.completions.create(
             model=model,
             messages=messages,
-            max_tokens=4096,
+            max_tokens=max_tokens,
             response_format={"type": "json_object"},
         )
         content = response.choices[0].message.content or ""

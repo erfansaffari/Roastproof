@@ -1,0 +1,57 @@
+name: Alex Chen
+email: alex.chen@example.com
+phone: 555-010-2048
+linkedin: linkedin.com/in/alexchen
+github: github.com/alexchen
+target_role: Software Engineer
+year: year_2
+has_internships: true
+profile_summary: Second-year CS student seeking SWE internships.
+education:
+  - school: State University
+    degree: B.S. Computer Science
+    dates: Aug. 2023 -- Present
+    location: Austin, TX
+    details: GPA 3.7/4.0. Coursework - Data Structures, Algorithms, Systems Programming.
+experience:
+  - company: Campus Tech Lab
+    title: Software Engineering Intern
+    dates: May 2025 -- Aug. 2025
+    location: Austin, TX
+    description: >
+      Built internal tooling in Python and React for lab equipment checkout.
+      Reduced average checkout time by tracking inventory in PostgreSQL.
+      Wrote unit tests and reviewed PRs with two other interns.
+  - company: University Help Desk
+    title: Student IT Support
+    dates: Sep. 2024 -- May 2025
+    location: Austin, TX
+    description: >
+      Troubleshot Windows and macOS issues for students and faculty.
+      Documented common fixes in a shared wiki used by the support team.
+projects:
+  - name: Course Planner
+    technologies: TypeScript, React, Node.js, PostgreSQL
+    dates: Jan. 2025 -- Apr. 2025
+    description: >
+      Web app that helps students plan degree requirements across semesters.
+      Implemented auth, degree-requirement graph, and conflict detection for
+      overlapping courses. Deployed a demo used by ~40 classmates during advising week.
+  - name: Log Watcher
+    technologies: Python, FastAPI, Docker
+    dates: Sep. 2024 -- Dec. 2024
+    description: >
+      Small service that tails application logs and surfaces error spikes via a
+      simple dashboard. Added Docker Compose for local runs and basic rate limiting.
+skills:
+  - Python
+  - TypeScript
+  - JavaScript
+  - React
+  - Node.js
+  - PostgreSQL
+  - FastAPI
+  - Docker
+  - HTML
+  - CSS
+  # Intentionally omit Git — norms show Git >50% for swe_intern; must land in suggestions (G1).

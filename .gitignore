@@ -31,6 +31,9 @@ src/scraper/data/
 # Logs (LLM call transcripts grow fast)
 logs/
 
+# Generation pipeline outputs
+out/
+
 # Environment / secrets
 .env
 .env.*

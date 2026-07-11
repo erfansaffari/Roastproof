@@ -1,0 +1,156 @@
+%-------------------------
+% Jake's Resume (Jinja2) — Roastproof Phase 4
+% Based on: https://github.com/jakegut/resume (MIT)
+%------------------------
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+{% raw %}
+\newcommand{\resumeItem}[1]{
+  \item\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & #2 \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+{% endraw %}
+
+\begin{document}
+
+\begin{center}
+    \textbf{\Huge \scshape {{ name }}} \\ \vspace{1pt}
+    \small
+    {%- for link in links -%}
+      {%- if link.href -%}
+        \href{ {{- link.href -}} }{\underline{ {{- link.text -}} }}
+      {%- else -%}
+        {{- link.text -}}
+      {%- endif -%}
+      {%- if not loop.last %} $|$ {% endif -%}
+    {%- endfor %}
+\end{center}
+
+{% macro education_section() -%}
+\section{Education}
+  \resumeSubHeadingListStart
+  {%- for e in education %}
+    \resumeSubheading
+      { {{- e.school | latex -}} }{ {{- e.location | default('', true) | latex -}} }
+      { {{- e.degree | latex -}} }{ {{- e.dates | latex -}} }
+    {%- if e.details %}
+      \resumeItemListStart
+        \resumeItem{ {{- e.details | latex -}} }
+      \resumeItemListEnd
+    {%- endif %}
+  {%- endfor %}
+  \resumeSubHeadingListEnd
+{%- endmacro %}
+
+{% macro experience_section() -%}
+\section{Experience}
+  \resumeSubHeadingListStart
+  {%- for x in experience %}
+    \resumeSubheading
+      { {{- x.title | latex -}} }{ {{- x.dates | latex -}} }
+      { {{- x.company | latex -}} }{ {{- x.location | default('', true) | latex -}} }
+      \resumeItemListStart
+      {%- for b in x.bullets %}
+        \resumeItem{ {{- b | latex -}} }
+      {%- endfor %}
+      \resumeItemListEnd
+  {%- endfor %}
+  \resumeSubHeadingListEnd
+{%- endmacro %}
+
+{% macro projects_section() -%}
+\section{Projects}
+    \resumeSubHeadingListStart
+    {%- for p in projects %}
+      \resumeProjectHeading
+          {\textbf{ {{- p.name | latex -}} }{% if p.technologies %} $|$ \emph{ {{- p.technologies | latex -}} }{% endif %}}{ {{- p.dates | default('', true) | latex -}} }
+          \resumeItemListStart
+          {%- for b in p.bullets %}
+            \resumeItem{ {{- b | latex -}} }
+          {%- endfor %}
+          \resumeItemListEnd
+    {%- endfor %}
+    \resumeSubHeadingListEnd
+{%- endmacro %}
+
+{% macro skills_section() -%}
+\section{Technical Skills}
+ \begin{itemize}[leftmargin=0.15in, label={}]
+    \small{\item{
+    {%- for cat, items in skills.items() %}
+     \textbf{ {{- cat | latex -}} }{: {{ items | map('latex') | join(', ') }} }{% if not loop.last %} \\{% endif %}
+    {%- endfor %}
+    }}
+ \end{itemize}
+{%- endmacro %}
+
+{% for sec in section_order %}
+  {%- if sec == 'education' %}
+{{ education_section() }}
+  {%- elif sec == 'experience' %}
+{{ experience_section() }}
+  {%- elif sec == 'projects' %}
+{{ projects_section() }}
+  {%- elif sec == 'skills' %}
+{{ skills_section() }}
+  {%- endif %}
+{% endfor %}
+
+\end{document}

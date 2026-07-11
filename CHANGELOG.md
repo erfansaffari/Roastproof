@@ -5,6 +5,41 @@ Newest entries at the top. Suggested commit messages included per entry.
 
 ---
 
+## 2026-07-11 (e) — Phase 4 generation pipeline
+
+End-to-end: YAML intake → gpt-4o `ResumeContent` → Jake's LaTeX → one-page PDF.
+
+### Schemas / deps
+- `src/schemas.py`: `ResumeContent` bullet validators restored; added `Intake*`,
+  `Suggestion`, `GenerationResult`.
+- `pyproject.toml`: added `PyYAML`.
+- `.gitignore`: `out/`.
+
+### Generation package (`src/generation/`)
+- `intake.py` — YAML/JSON → `Intake`.
+- `generator.py` — rules (≤20) + `retrieve()` per section + norms prevalence;
+  G1 system prompt; deterministic `enforce_g1()` strips fabricated skills and
+  pushes high-prevalence absences into suggestions.
+- `renderer.py` — `latex_escape` + Jinja Jake template → Tectonic PDF (no LLM).
+- `pagefit.py` — ≤3 LLM trim attempts, then deterministic hard-trim.
+- `pipeline.py` — `python -m src.generation.pipeline --intake … --out …`.
+
+### Assets / examples
+- `templates/jakes_resume.tex.j2` (Jake's layout; `{% raw %}` for `#` macros).
+- `examples/intake_example.yaml` (omits Git for G1 demo).
+- `examples/intake_overstuffed.yaml` (page-fit stress).
+
+### Tests / live runs
+- `tests/test_generation.py` — 9 passed (escape, G1 fabrication, hard-trim→1 page).
+- Live: `out/example/resume.pdf` (1 page); Git in suggestions only, not skills.
+- Live: `out/overstuffed/resume.pdf` (1 page).
+
+### Suggested commits
+- `feat(phase4): intake → generator → Jake LaTeX → one-page PDF pipeline`
+- `test(phase4): latex_escape, G1 fabrication, page-fit hard-trim`
+
+---
+
 ## 2026-07-11 (d) — Retrieval QA fixes (pre–Phase-4)
 
 Three concrete issues from the retrieval QA review, plus role fallback.
