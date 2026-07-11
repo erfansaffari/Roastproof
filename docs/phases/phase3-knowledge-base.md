@@ -21,6 +21,8 @@ Produce `rulebook.json` (30–60 consensus rules) and a queryable ChromaDB criti
 3. **`retrieve.py`**
    - `retrieve(profile: ApplicantProfile, section: str, query_text: str, k=8) -> list[CritiquePoint]`
    - Chroma query with metadata filter on role (exact) and section; over-fetch k×3, then re-rank: `score = 0.7·similarity + 0.2·profile_match(year, internships) + 0.1·normalized(agreement_signal)`.
+   - **General-blend (pilot decision):** ~45% of real critiques target `general` (whole-resume comments like "too cluttered", "tailor to the posting") — these often carry the highest-value advice. When retrieving for a specific section, do NOT filter them out: blend results, e.g. 5 section-specific + 3 top `general` critiques per query.
+   - **Unknown-year soft match (pilot decision):** ~45% of threads have no inferable school year (posters say "summer 2025 co-op" without a year — verified data limitation, not a parsing miss). In `profile_match`, treat `year=unknown` as a neutral/soft match (partial credit), never a mismatch penalty.
    - Returns typed objects + a `format_for_prompt()` helper producing a compact numbered block.
 4. **Retrieval QA** — `scripts/test_retrieval.py` with 10 canned queries; prints top-5 for each. Erfan manually grades relevance; iterate on composite string/weights until ≥8/10 queries look right. Record the grading in `NOTES.md`.
 

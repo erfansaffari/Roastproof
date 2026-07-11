@@ -144,6 +144,12 @@ def test_infer_year_maps_term_codes():
     assert infer_year_label(_rec(context_message="1B CS student", applicant_profile="")) == "year_1"
     assert infer_year_label(_rec(context_message="I'm a 2A looking for co-op", applicant_profile="")) == "year_2"
     assert infer_year_label(_rec(context_message="second year CS", applicant_profile="")) == "year_2"
+    # Hyphenated + grad phrasings
+    assert infer_year_label(_rec(context_message="Third-year Math student", applicant_profile="")) == "year_3"
+    assert infer_year_label(_rec(context_message="Recent graduate in CS", applicant_profile="")) == "new_grad"
+    assert infer_year_label(
+        _rec(context_message="expected to graduate in June 2025", applicant_profile="")
+    ) == "new_grad"
     # "intern" alone is NOT a year
     assert (
         infer_year_label(

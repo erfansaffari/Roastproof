@@ -336,18 +336,24 @@ def infer_year_label(record: ThreadRecord) -> str | None:
     if m:
         return f"year_{m.group(1)}"
 
-    if re.search(r"\b(1st|first)\s*year\b", blob, re.I):
+    # Hyphenated forms are common: "Third-year student"
+    if re.search(r"\b(1st|first)[\s-]*year\b", blob, re.I):
         return "year_1"
-    if re.search(r"\b(2nd|second)\s*year\b", blob, re.I):
+    if re.search(r"\b(2nd|second)[\s-]*year\b", blob, re.I):
         return "year_2"
-    if re.search(r"\b(3rd|third)\s*year\b", blob, re.I):
+    if re.search(r"\b(3rd|third)[\s-]*year\b", blob, re.I):
         return "year_3"
-    if re.search(r"\b(4th|fourth)\s*year\b", blob, re.I):
+    if re.search(r"\b(4th|fourth)[\s-]*year\b", blob, re.I):
         return "year_4"
 
     if re.search(r"\b(master'?s|grad(?:uate)?\s+student|msc|meng)\b", blob, re.I):
         return "grad"
-    if re.search(r"\bnew\s*grad|graduating|convocation|entry[- ]level\b", blob, re.I):
+    if re.search(
+        r"\bnew\s*grad|graduating|recent\s+grad(?:uate)?|"
+        r"graduate\s+in\s+\w*\.?\s*\d{4}|convocation|entry[- ]level\b",
+        blob,
+        re.I,
+    ):
         return "new_grad"
     if re.search(r"\b(senior|staff|principal)\b", blob, re.I):
         return "senior"

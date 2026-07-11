@@ -383,17 +383,34 @@ def generate_figures(
     summary["figures"].append(str(path))
     summary["year_distribution"] = year_counts.to_dict()
 
-    # 3. Critiques per thread
+    # 3. Critiques per thread — real (post not_a_critique filter) is the headline
+    # number; raw message counts are kept for reference.
+    real_per_thread: Counter[str] = Counter()
+    for x in labeled:
+        if x.get("category") not in NON_CRITIQUE_CATEGORIES:
+            real_per_thread[x["thread_id"]] += 1
+    real_counts = [real_per_thread.get(tid, 0) for tid in df["thread_id"]]
+
     fig, ax = plt.subplots(figsize=(8, 4))
-    ax.hist(df["n_critiques"], bins=range(0, int(df["n_critiques"].max()) + 2), color="#c47a2c", edgecolor="white")
-    ax.set_title("Critiques per thread")
+    ax.hist(
+        real_counts,
+        bins=range(0, (max(real_counts) if real_counts else 0) + 2),
+        color="#c47a2c",
+        edgecolor="white",
+    )
+    ax.set_title("Real critiques per thread (excl. not_a_critique)")
     ax.set_xlabel("# critiques")
     ax.set_ylabel("Threads")
     path = figs_dir / "03_critiques_per_thread.png"
     _save(fig, path)
     summary["figures"].append(str(path))
     summary["critiques_per_thread"] = {
-        "mean": float(df["n_critiques"].mean()) if len(df) else 0,
+        "mean": round(sum(real_counts) / len(real_counts), 2) if real_counts else 0,
+        "median": float(pd.Series(real_counts).median()) if real_counts else 0,
+        "max": max(real_counts) if real_counts else 0,
+    }
+    summary["raw_messages_per_thread"] = {
+        "mean": round(float(df["n_critiques"].mean()), 2) if len(df) else 0,
         "median": float(df["n_critiques"].median()) if len(df) else 0,
         "max": int(df["n_critiques"].max()) if len(df) else 0,
     }
@@ -528,8 +545,9 @@ def write_findings(summary: dict[str, Any], norms: dict[str, Any], path: Path) -
         f"3. **Year/seniority labels:** "
         + (", ".join(f"{k}={v}" for k, v in list(years.items())[:6]) or "n/a")
         + ".",
-        f"4. **Critique volume:** mean **{crit.get('mean', 0):.1f}**, median **{crit.get('median', 0):.0f}**, "
-        f"max **{crit.get('max', 0)}** critiques per thread.",
+        f"4. **Critique volume (real, excl. not_a_critique):** mean **{crit.get('mean', 0):.1f}**, "
+        f"median **{crit.get('median', 0):.0f}**, max **{crit.get('max', 0)}** per thread "
+        f"(raw messages: mean {(summary.get('raw_messages_per_thread') or {}).get('mean', 'n/a')}).",
         f"5. **Top critique categories (real critiques):** "
         + (", ".join(f"{k} ({v})" for k, v in cats) or "n/a")
         + f". **other rate={summary.get('other_rate', 0):.0%}** "

@@ -95,6 +95,7 @@ Full field-level JSON shapes live in the PRD; do not restate/duplicate them else
 - Never call the OpenAI API outside `src/llm.py` (G5). Never touch `data/holdout/` outside `src/eval/` (G4).
 - If the raw data format in `data/raw/` differs from assumptions, update `NOTES.md` and the ingestion design first — do not force-fit.
 - Commit after each completed task with conventional-commit messages (e.g. `feat(phase1): pdf extraction with dual-engine comparison`).
+- **Changelog for commits:** after each working session/run, append an entry to `CHANGELOG.md` (repo root) describing what changed in the codebase — files touched, why, and results/metrics. Erfan uses this to write git commits. Newest entries at the top.
 
 ## Phases
 | Phase | File | Status |
