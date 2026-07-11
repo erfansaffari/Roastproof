@@ -1,0 +1,971 @@
+{
+  "tesseract_available": true,
+  "tessdata_prefix": "/opt/homebrew/share/tessdata",
+  "n_threads": 120,
+  "buckets": {
+    "ok": 120
+  },
+  "ok_rate": 1.0,
+  "details": [
+    {
+      "thread_id": "1286543472324644915",
+      "bucket": "ok",
+      "path": "data/raw/1286543472324644915/Resume__gen_-1.png",
+      "chars": 3118,
+      "lib": "PyMuPDF",
+      "score": 0.6833333333333333
+    },
+    {
+      "thread_id": "1287428245385642015",
+      "bucket": "ok",
+      "path": "data/raw/1287428245385642015/Summer_2025_Tanay_Kashyap_Resume_1.pdf",
+      "chars": 4158,
+      "lib": "PyMuPDF",
+      "score": 0.6142857142857143
+    },
+    {
+      "thread_id": "1287910925835309117",
+      "bucket": "ok",
+      "path": "data/raw/1287910925835309117/Ryan_Maxin_Resume.pdf",
+      "chars": 3118,
+      "lib": "pdfplumber",
+      "score": 0.8478260869565217
+    },
+    {
+      "thread_id": "1288160345395036173",
+      "bucket": "ok",
+      "path": "data/raw/1288160345395036173/Screenshot_20240924_112153_Chrome.jpg",
+      "chars": 3291,
+      "lib": "PyMuPDF",
+      "score": 0.75
+    },
+    {
+      "thread_id": "1288323863217836062",
+      "bucket": "ok",
+      "path": "data/raw/1288323863217836062/csc.pdf",
+      "chars": 3045,
+      "lib": "pdfplumber",
+      "score": 0.8888888888888888
+    },
+    {
+      "thread_id": "1288574848251072563",
+      "bucket": "ok",
+      "path": "data/raw/1288574848251072563/csc_Resume.pdf",
+      "chars": 4093,
+      "lib": "PyMuPDF",
+      "score": 0.7536231884057971
+    },
+    {
+      "thread_id": "1288711659472425071",
+      "bucket": "ok",
+      "path": "data/raw/1288711659472425071/marcus_chan_resume_2.pdf",
+      "chars": 3389,
+      "lib": "PyMuPDF",
+      "score": 0.8333333333333334
+    },
+    {
+      "thread_id": "1289021328090861658",
+      "bucket": "ok",
+      "path": "data/raw/1289021328090861658/Screenshot_2024-09-26_at_8.24.14_PM.png",
+      "chars": 3246,
+      "lib": "PyMuPDF",
+      "score": 0.7014925373134329
+    },
+    {
+      "thread_id": "1289058604095111232",
+      "bucket": "ok",
+      "path": "data/raw/1289058604095111232/Resume_-_James_Treap.jpg",
+      "chars": 3573,
+      "lib": "PyMuPDF",
+      "score": 0.5384615384615384
+    },
+    {
+      "thread_id": "1289087515059425341",
+      "bucket": "ok",
+      "path": "data/raw/1289087515059425341/Richard_Zhu_Resume_May2024_E.pdf",
+      "chars": 3217,
+      "lib": "pdfplumber",
+      "score": 0.8888888888888888
+    },
+    {
+      "thread_id": "1289241418430283786",
+      "bucket": "ok",
+      "path": "data/raw/1289241418430283786/Arpit_Resume_Draft_1.pdf",
+      "chars": 3723,
+      "lib": "pdfplumber",
+      "score": 0.9230769230769231
+    },
+    {
+      "thread_id": "1289288977068593183",
+      "bucket": "ok",
+      "path": "data/raw/1289288977068593183/UW_CHECKING.pdf",
+      "chars": 2798,
+      "lib": "pdfplumber",
+      "score": 0.8837209302325582
+    },
+    {
+      "thread_id": "1290104804894445683",
+      "bucket": "ok",
+      "path": "data/raw/1290104804894445683/image.png",
+      "chars": 3223,
+      "lib": "PyMuPDF",
+      "score": 0.5
+    },
+    {
+      "thread_id": "1290678757912219748",
+      "bucket": "ok",
+      "path": "data/raw/1290678757912219748/resume-anon-1.png",
+      "chars": 3573,
+      "lib": "PyMuPDF",
+      "score": 0.6575342465753424
+    },
+    {
+      "thread_id": "1290739698444009665",
+      "bucket": "ok",
+      "path": "data/raw/1290739698444009665/image.png",
+      "chars": 3195,
+      "lib": "PyMuPDF",
+      "score": 0.6190476190476191
+    },
+    {
+      "thread_id": "1291597715867701329",
+      "bucket": "ok",
+      "path": "data/raw/1291597715867701329/Screenshot_2024-10-03_at_11.06.05_PM.png",
+      "chars": 2970,
+      "lib": "PyMuPDF",
+      "score": 0.6825396825396826
+    },
+    {
+      "thread_id": "1292160519779651659",
+      "bucket": "ok",
+      "path": "data/raw/1292160519779651659/Anonymous_Resume.pdf",
+      "chars": 3363,
+      "lib": "PyMuPDF",
+      "score": 0.6060606060606061
+    },
+    {
+      "thread_id": "1292213857342849164",
+      "bucket": "ok",
+      "path": "data/raw/1292213857342849164/image.png",
+      "chars": 3520,
+      "lib": "PyMuPDF",
+      "score": 0.7580645161290323
+    },
+    {
+      "thread_id": "1292557459969413152",
+      "bucket": "ok",
+      "path": "data/raw/1292557459969413152/Review_Resume.pdf",
+      "chars": 3562,
+      "lib": "pdfplumber",
+      "score": 0.8235294117647058
+    },
+    {
+      "thread_id": "1292569980340015184",
+      "bucket": "ok",
+      "path": "data/raw/1292569980340015184/image.png",
+      "chars": 3726,
+      "lib": "PyMuPDF",
+      "score": 0.7384615384615385
+    },
+    {
+      "thread_id": "1293023827605065802",
+      "bucket": "ok",
+      "path": "data/raw/1293023827605065802/image.png",
+      "chars": 4568,
+      "lib": "PyMuPDF",
+      "score": 0.6911764705882353
+    },
+    {
+      "thread_id": "1293437527772102698",
+      "bucket": "ok",
+      "path": "data/raw/1293437527772102698/resume-cropped.pdf",
+      "chars": 3806,
+      "lib": "PyMuPDF",
+      "score": 0.84375
+    },
+    {
+      "thread_id": "1295423797905588256",
+      "bucket": "ok",
+      "path": "data/raw/1295423797905588256/Larry_Pan_-_Resume.pdf",
+      "chars": 2128,
+      "lib": "PyMuPDF",
+      "score": 0.6296296296296297
+    },
+    {
+      "thread_id": "1295845712256307342",
+      "bucket": "ok",
+      "path": "data/raw/1295845712256307342/Resume.pdf",
+      "chars": 2089,
+      "lib": "pdfplumber",
+      "score": 0.9696969696969697
+    },
+    {
+      "thread_id": "1296270228459753486",
+      "bucket": "ok",
+      "path": "data/raw/1296270228459753486/Untitled.png",
+      "chars": 2583,
+      "lib": "PyMuPDF",
+      "score": 0.7297297297297297
+    },
+    {
+      "thread_id": "1296580861248143422",
+      "bucket": "ok",
+      "path": "data/raw/1296580861248143422/image.png",
+      "chars": 1863,
+      "lib": "PyMuPDF",
+      "score": 0.6111111111111112
+    },
+    {
+      "thread_id": "1298650156782190723",
+      "bucket": "ok",
+      "path": "data/raw/1298650156782190723/Summer_2025_External_Tanay_Kashyap_Resume_V1.pdf",
+      "chars": 4148,
+      "lib": "PyMuPDF",
+      "score": 0.6438356164383562
+    },
+    {
+      "thread_id": "1299083126710075474",
+      "bucket": "ok",
+      "path": "data/raw/1299083126710075474/Resume.pdf",
+      "chars": 4133,
+      "lib": "PyMuPDF",
+      "score": 0.7352941176470589
+    },
+    {
+      "thread_id": "1299614255649390618",
+      "bucket": "ok",
+      "path": "data/raw/1299614255649390618/Screenshot_20241026_015818_Samsung_Notes.jpg",
+      "chars": 3381,
+      "lib": "PyMuPDF",
+      "score": 0.7580645161290323
+    },
+    {
+      "thread_id": "1301065080703811666",
+      "bucket": "ok",
+      "path": "data/raw/1301065080703811666/image.png",
+      "chars": 3518,
+      "lib": "PyMuPDF",
+      "score": 0.7166666666666667
+    },
+    {
+      "thread_id": "1305058909773500416",
+      "bucket": "ok",
+      "path": "data/raw/1305058909773500416/image.png",
+      "chars": 4211,
+      "lib": "PyMuPDF",
+      "score": 0.5647058823529412
+    },
+    {
+      "thread_id": "1310672547481653340",
+      "bucket": "ok",
+      "path": "data/raw/1310672547481653340/aidenfoxivey_resume-5.pdf",
+      "chars": 3272,
+      "lib": "pdfplumber",
+      "score": 0.8863636363636364
+    },
+    {
+      "thread_id": "1312280056655249450",
+      "bucket": "ok",
+      "path": "data/raw/1312280056655249450/REDACTED.pdf",
+      "chars": 3712,
+      "lib": "pdfplumber",
+      "score": 0.8636363636363636
+    },
+    {
+      "thread_id": "1312597684410126396",
+      "bucket": "ok",
+      "path": "data/raw/1312597684410126396/image.png",
+      "chars": 3319,
+      "lib": "PyMuPDF",
+      "score": 0.6756756756756757
+    },
+    {
+      "thread_id": "1313971146667982899",
+      "bucket": "ok",
+      "path": "data/raw/1313971146667982899/Resume_3.pdf",
+      "chars": 3801,
+      "lib": "pdfplumber",
+      "score": 0.6296296296296297
+    },
+    {
+      "thread_id": "1319439927808626719",
+      "bucket": "ok",
+      "path": "data/raw/1319439927808626719/image.png",
+      "chars": 4353,
+      "lib": "PyMuPDF",
+      "score": 0.7638888888888888
+    },
+    {
+      "thread_id": "1321346550445768735",
+      "bucket": "ok",
+      "path": "data/raw/1321346550445768735/Yassa_Taiseer_Resume_2026.pdf",
+      "chars": 3326,
+      "lib": "pdfplumber",
+      "score": 0.8936170212765957
+    },
+    {
+      "thread_id": "1323712897230307460",
+      "bucket": "ok",
+      "path": "data/raw/1323712897230307460/anonymized_resume_dec_31st.pdf",
+      "chars": 3423,
+      "lib": "pdfplumber",
+      "score": 0.8936170212765957
+    },
+    {
+      "thread_id": "1325504085960556574",
+      "bucket": "ok",
+      "path": "data/raw/1325504085960556574/resume.pdf",
+      "chars": 3027,
+      "lib": "PyMuPDF",
+      "score": 0.7169811320754716
+    },
+    {
+      "thread_id": "1325869624696242228",
+      "bucket": "ok",
+      "path": "data/raw/1325869624696242228/External_Resume_Data_Review.pdf",
+      "chars": 3512,
+      "lib": "pdfplumber",
+      "score": 0.82
+    },
+    {
+      "thread_id": "1325906784581451956",
+      "bucket": "ok",
+      "path": "data/raw/1325906784581451956/resume_06-01-2025.pdf",
+      "chars": 3428,
+      "lib": "pdfplumber",
+      "score": 0.8928571428571429
+    },
+    {
+      "thread_id": "1325977031552401408",
+      "bucket": "ok",
+      "path": "data/raw/1325977031552401408/Anonymized_Resume_1.pdf",
+      "chars": 3369,
+      "lib": "pdfplumber",
+      "score": 0.8
+    },
+    {
+      "thread_id": "1326007139105378356",
+      "bucket": "ok",
+      "path": "data/raw/1326007139105378356/resume_anonymized.pdf",
+      "chars": 3143,
+      "lib": "pdfplumber",
+      "score": 0.8780487804878049
+    },
+    {
+      "thread_id": "1326242422778236941",
+      "bucket": "ok",
+      "path": "data/raw/1326242422778236941/resume-anom.pdf",
+      "chars": 4435,
+      "lib": "pdfplumber",
+      "score": 0.8285714285714286
+    },
+    {
+      "thread_id": "1326598572543840357",
+      "bucket": "ok",
+      "path": "data/raw/1326598572543840357/Samir_Sharma_Resume_copy.pdf",
+      "chars": 3097,
+      "lib": "PyMuPDF",
+      "score": 0.8363636363636363
+    },
+    {
+      "thread_id": "1326614270510764134",
+      "bucket": "ok",
+      "path": "data/raw/1326614270510764134/image.png",
+      "chars": 3114,
+      "lib": "PyMuPDF",
+      "score": 0.7272727272727273
+    },
+    {
+      "thread_id": "1327020438928494623",
+      "bucket": "ok",
+      "path": "data/raw/1327020438928494623/ResumeV4_-_JACK_WANG.docx-2.pdf",
+      "chars": 5630,
+      "lib": "PyMuPDF",
+      "score": 0.7171717171717171
+    },
+    {
+      "thread_id": "1327030691828863007",
+      "bucket": "ok",
+      "path": "data/raw/1327030691828863007/resume.pdf",
+      "chars": 4785,
+      "lib": "pdfplumber",
+      "score": 0.9180327868852459
+    },
+    {
+      "thread_id": "1327394093126516746",
+      "bucket": "ok",
+      "path": "data/raw/1327394093126516746/Draft_2025_01_10.pdf",
+      "chars": 2617,
+      "lib": "pdfplumber",
+      "score": 0.8108108108108109
+    },
+    {
+      "thread_id": "1327672374874738842",
+      "bucket": "ok",
+      "path": "data/raw/1327672374874738842/Anonymized_Resume.pdf",
+      "chars": 2354,
+      "lib": "pdfplumber",
+      "score": 0.7380952380952381
+    },
+    {
+      "thread_id": "1328111791867428925",
+      "bucket": "ok",
+      "path": "data/raw/1328111791867428925/AnonResume.pdf",
+      "chars": 3902,
+      "lib": "PyMuPDF",
+      "score": 0.7164179104477612
+    },
+    {
+      "thread_id": "1328121843147870339",
+      "bucket": "ok",
+      "path": "data/raw/1328121843147870339/Resume-S25.pdf",
+      "chars": 3988,
+      "lib": "pdfplumber",
+      "score": 0.8688524590163934
+    },
+    {
+      "thread_id": "1328786872117497919",
+      "bucket": "ok",
+      "path": "data/raw/1328786872117497919/Kai_Huang_Resume.pdf",
+      "chars": 3079,
+      "lib": "PyMuPDF",
+      "score": 0.7959183673469388
+    },
+    {
+      "thread_id": "1329288078044696627",
+      "bucket": "ok",
+      "path": "data/raw/1329288078044696627/Resume_W25.pdf",
+      "chars": 3015,
+      "lib": "pdfplumber",
+      "score": 0.8863636363636364
+    },
+    {
+      "thread_id": "1330750850142048341",
+      "bucket": "ok",
+      "path": "data/raw/1330750850142048341/Resume_1_1.pdf",
+      "chars": 3382,
+      "lib": "PyMuPDF",
+      "score": 0.8431372549019608
+    },
+    {
+      "thread_id": "1331933025826770965",
+      "bucket": "ok",
+      "path": "data/raw/1331933025826770965/Manas_Resume_Spring_2025_3.pdf",
+      "chars": 3697,
+      "lib": "pdfplumber",
+      "score": 0.8703703703703703
+    },
+    {
+      "thread_id": "1332036394423681086",
+      "bucket": "ok",
+      "path": "data/raw/1332036394423681086/Saarujan_Sathees_Resume.pdf",
+      "chars": 2573,
+      "lib": "pdfplumber",
+      "score": 0.8421052631578947
+    },
+    {
+      "thread_id": "1333350591107305514",
+      "bucket": "ok",
+      "path": "data/raw/1333350591107305514/Resume_Redacted.pdf",
+      "chars": 3833,
+      "lib": "PyMuPDF",
+      "score": 0.6956521739130435
+    },
+    {
+      "thread_id": "1333636858508214324",
+      "bucket": "ok",
+      "path": "data/raw/1333636858508214324/Tom_SE_Resume_1.pdf",
+      "chars": 3716,
+      "lib": "pdfplumber",
+      "score": 0.8627450980392157
+    },
+    {
+      "thread_id": "1336524154777767947",
+      "bucket": "ok",
+      "path": "data/raw/1336524154777767947/Rishi_Ahuja_Resume.pdf",
+      "chars": 2999,
+      "lib": "pdfplumber",
+      "score": 0.9090909090909091
+    },
+    {
+      "thread_id": "1336697569656701021",
+      "bucket": "ok",
+      "path": "data/raw/1336697569656701021/Ethan_Chen_-_Coop_-_Resume.pdf",
+      "chars": 4225,
+      "lib": "PyMuPDF",
+      "score": 0.703125
+    },
+    {
+      "thread_id": "1337453592235348099",
+      "bucket": "ok",
+      "path": "data/raw/1337453592235348099/Ryan_Gunawan_-_Resume.pdf",
+      "chars": 2514,
+      "lib": "pdfplumber",
+      "score": 0.868421052631579
+    },
+    {
+      "thread_id": "1338603001073500243",
+      "bucket": "ok",
+      "path": "data/raw/1338603001073500243/Resume_Anon.pdf",
+      "chars": 2786,
+      "lib": "PyMuPDF",
+      "score": 0.5757575757575758
+    },
+    {
+      "thread_id": "1344113142468186112",
+      "bucket": "ok",
+      "path": "data/raw/1344113142468186112/Samir_Sharma_Resume.pdf",
+      "chars": 3097,
+      "lib": "PyMuPDF",
+      "score": 0.8363636363636363
+    },
+    {
+      "thread_id": "1344760870827462666",
+      "bucket": "ok",
+      "path": "data/raw/1344760870827462666/AnonResume.pdf",
+      "chars": 3508,
+      "lib": "PyMuPDF",
+      "score": 0.8113207547169812
+    },
+    {
+      "thread_id": "1347304640370442241",
+      "bucket": "ok",
+      "path": "data/raw/1347304640370442241/Sean_Resume_Roast.pdf",
+      "chars": 3566,
+      "lib": "PyMuPDF",
+      "score": 0.7205882352941176
+    },
+    {
+      "thread_id": "1347621886435004437",
+      "bucket": "ok",
+      "path": "data/raw/1347621886435004437/Darun_Kanesalingam_Resume.pdf",
+      "chars": 3051,
+      "lib": "PyMuPDF",
+      "score": 0.7708333333333334
+    },
+    {
+      "thread_id": "1348719891330502697",
+      "bucket": "ok",
+      "path": "data/raw/1348719891330502697/Resume-2.pdf",
+      "chars": 3332,
+      "lib": "pdfplumber",
+      "score": 0.9122807017543859
+    },
+    {
+      "thread_id": "1350849047488889096",
+      "bucket": "ok",
+      "path": "data/raw/1350849047488889096/w26.pdf",
+      "chars": 2932,
+      "lib": "PyMuPDF",
+      "score": 0.8913043478260869
+    },
+    {
+      "thread_id": "1353903463498645575",
+      "bucket": "ok",
+      "path": "data/raw/1353903463498645575/resume.pdf",
+      "chars": 4332,
+      "lib": "pdfplumber",
+      "score": 0.9074074074074074
+    },
+    {
+      "thread_id": "1354206427077410906",
+      "bucket": "ok",
+      "path": "data/raw/1354206427077410906/Yassa_Taiseer_Resume_2026.pdf",
+      "chars": 3056,
+      "lib": "pdfplumber",
+      "score": 0.8604651162790697
+    },
+    {
+      "thread_id": "1354642147881783347",
+      "bucket": "ok",
+      "path": "data/raw/1354642147881783347/Screenshot_2025-03-26_at_10.20.02_PM.png",
+      "chars": 2753,
+      "lib": "PyMuPDF",
+      "score": 0.7450980392156863
+    },
+    {
+      "thread_id": "1354952685996216452",
+      "bucket": "ok",
+      "path": "data/raw/1354952685996216452/Resume_for_csclub.pdf",
+      "chars": 3336,
+      "lib": "pdfplumber",
+      "score": 0.8695652173913043
+    },
+    {
+      "thread_id": "1356374813089992956",
+      "bucket": "ok",
+      "path": "data/raw/1356374813089992956/ell_resume_cscVersion.pdf",
+      "chars": 2126,
+      "lib": "pdfplumber",
+      "score": 0.8780487804878049
+    },
+    {
+      "thread_id": "1358020529449341069",
+      "bucket": "ok",
+      "path": "data/raw/1358020529449341069/my_dope_ass_resume.pdf",
+      "chars": 2564,
+      "lib": "pdfplumber",
+      "score": 0.813953488372093
+    },
+    {
+      "thread_id": "1358119330394538084",
+      "bucket": "ok",
+      "path": "data/raw/1358119330394538084/Screenshot_2025-04-05_at_12.png",
+      "chars": 3298,
+      "lib": "PyMuPDF",
+      "score": 0.7142857142857143
+    },
+    {
+      "thread_id": "1358229048085450842",
+      "bucket": "ok",
+      "path": "data/raw/1358229048085450842/image.png",
+      "chars": 2922,
+      "lib": "PyMuPDF",
+      "score": 0.6438356164383562
+    },
+    {
+      "thread_id": "1364669294855852123",
+      "bucket": "ok",
+      "path": "data/raw/1364669294855852123/resume_for_csc.pdf",
+      "chars": 3461,
+      "lib": "pdfplumber",
+      "score": 0.8958333333333334
+    },
+    {
+      "thread_id": "1365724239445102592",
+      "bucket": "ok",
+      "path": "data/raw/1365724239445102592/20250426_121953.jpg",
+      "chars": 2975,
+      "lib": "PyMuPDF",
+      "score": 0.8
+    },
+    {
+      "thread_id": "1369129656355258510",
+      "bucket": "ok",
+      "path": "data/raw/1369129656355258510/IMG_2491.png",
+      "chars": 3853,
+      "lib": "PyMuPDF",
+      "score": 0.7272727272727273
+    },
+    {
+      "thread_id": "1369421625497485392",
+      "bucket": "ok",
+      "path": "data/raw/1369421625497485392/Victor_Huang_Resume.pdf",
+      "chars": 3765,
+      "lib": "PyMuPDF",
+      "score": 0.7619047619047619
+    },
+    {
+      "thread_id": "1370459860948488253",
+      "bucket": "ok",
+      "path": "data/raw/1370459860948488253/Yuhao_Chen_0507.pdf",
+      "chars": 2651,
+      "lib": "pdfplumber",
+      "score": 0.7837837837837838
+    },
+    {
+      "thread_id": "1374216231078330480",
+      "bucket": "ok",
+      "path": "data/raw/1374216231078330480/Resume_Draft.pdf",
+      "chars": 3118,
+      "lib": "pdfplumber",
+      "score": 0.9090909090909091
+    },
+    {
+      "thread_id": "1378799439015182449",
+      "bucket": "ok",
+      "path": "data/raw/1378799439015182449/BryanDengResume2025.pdf",
+      "chars": 3638,
+      "lib": "pdfplumber",
+      "score": 0.8775510204081632
+    },
+    {
+      "thread_id": "1382123905065549864",
+      "bucket": "ok",
+      "path": "data/raw/1382123905065549864/RESUMEFINAL.pdf",
+      "chars": 2858,
+      "lib": "PyMuPDF",
+      "score": 0.7192982456140351
+    },
+    {
+      "thread_id": "1387856289576652821",
+      "bucket": "ok",
+      "path": "data/raw/1387856289576652821/Resume_12.pdf",
+      "chars": 3295,
+      "lib": "pdfplumber",
+      "score": 0.8913043478260869
+    },
+    {
+      "thread_id": "1390706593762508882",
+      "bucket": "ok",
+      "path": "data/raw/1390706593762508882/resumes26.png",
+      "chars": 3420,
+      "lib": "PyMuPDF",
+      "score": 0.7407407407407407
+    },
+    {
+      "thread_id": "1390763054530039899",
+      "bucket": "ok",
+      "path": "data/raw/1390763054530039899/4A_sankeeth.pdf",
+      "chars": 4036,
+      "lib": "pdfplumber",
+      "score": 0.9090909090909091
+    },
+    {
+      "thread_id": "1392876731202932766",
+      "bucket": "ok",
+      "path": "data/raw/1392876731202932766/Tanay_Kashyap_Resume_DS.docx.pdf",
+      "chars": 4988,
+      "lib": "pdfplumber",
+      "score": 0.9
+    },
+    {
+      "thread_id": "1392878125838241926",
+      "bucket": "ok",
+      "path": "data/raw/1392878125838241926/Tanay_Kashyap_Resume_DE.docx.pdf",
+      "chars": 4943,
+      "lib": "pdfplumber",
+      "score": 0.9
+    },
+    {
+      "thread_id": "1413261856948224184",
+      "bucket": "ok",
+      "path": "data/raw/1413261856948224184/Review_Resume_3.pdf",
+      "chars": 3428,
+      "lib": "pdfplumber",
+      "score": 0.8627450980392157
+    },
+    {
+      "thread_id": "1414696562415636634",
+      "bucket": "ok",
+      "path": "data/raw/1414696562415636634/SWE_Resume.pdf",
+      "chars": 3654,
+      "lib": "PyMuPDF",
+      "score": 0.7966101694915254
+    },
+    {
+      "thread_id": "1417388220467122206",
+      "bucket": "ok",
+      "path": "data/raw/1417388220467122206/resume.pdf",
+      "chars": 3738,
+      "lib": "pdfplumber",
+      "score": 0.9038461538461539
+    },
+    {
+      "thread_id": "1420880704912228462",
+      "bucket": "ok",
+      "path": "data/raw/1420880704912228462/Resume.pdf",
+      "chars": 3999,
+      "lib": "pdfplumber",
+      "score": 0.9259259259259259
+    },
+    {
+      "thread_id": "1425667026168320101",
+      "bucket": "ok",
+      "path": "data/raw/1425667026168320101/anonymyzied.pdf",
+      "chars": 4844,
+      "lib": "pdfplumber",
+      "score": 0.8461538461538461
+    },
+    {
+      "thread_id": "1443069403578237080",
+      "bucket": "ok",
+      "path": "data/raw/1443069403578237080/image.png",
+      "chars": 3174,
+      "lib": "PyMuPDF",
+      "score": 0.5333333333333333
+    },
+    {
+      "thread_id": "1454792829003104369",
+      "bucket": "ok",
+      "path": "data/raw/1454792829003104369/image.png",
+      "chars": 3337,
+      "lib": "PyMuPDF",
+      "score": 0.6984126984126984
+    },
+    {
+      "thread_id": "1456324557483933717",
+      "bucket": "ok",
+      "path": "data/raw/1456324557483933717/Edited.pdf",
+      "chars": 2276,
+      "lib": "pdfplumber",
+      "score": 0.8285714285714286
+    },
+    {
+      "thread_id": "1456586200058957994",
+      "bucket": "ok",
+      "path": "data/raw/1456586200058957994/Anonymized_Resume-2.pdf",
+      "chars": 2835,
+      "lib": "pdfplumber",
+      "score": 0.8780487804878049
+    },
+    {
+      "thread_id": "1458138483779571895",
+      "bucket": "ok",
+      "path": "data/raw/1458138483779571895/Resume.pdf",
+      "chars": 3452,
+      "lib": "pdfplumber",
+      "score": 0.8913043478260869
+    },
+    {
+      "thread_id": "1458499328997069107",
+      "bucket": "ok",
+      "path": "data/raw/1458499328997069107/some_goose_resume.pdf",
+      "chars": 2945,
+      "lib": "PyMuPDF",
+      "score": 0.6774193548387096
+    },
+    {
+      "thread_id": "1458606593632501914",
+      "bucket": "ok",
+      "path": "data/raw/1458606593632501914/resume-1.png",
+      "chars": 4051,
+      "lib": "PyMuPDF",
+      "score": 0.7619047619047619
+    },
+    {
+      "thread_id": "1458636609443332157",
+      "bucket": "ok",
+      "path": "data/raw/1458636609443332157/SWE_Resume.pdf",
+      "chars": 3567,
+      "lib": "pdfplumber",
+      "score": 0.8333333333333334
+    },
+    {
+      "thread_id": "1459088933035048970",
+      "bucket": "ok",
+      "path": "data/raw/1459088933035048970/Resume__Copy_.pdf",
+      "chars": 3955,
+      "lib": "pdfplumber",
+      "score": 0.9148936170212766
+    },
+    {
+      "thread_id": "1461551909939712122",
+      "bucket": "ok",
+      "path": "data/raw/1461551909939712122/Resume_Copy.pdf",
+      "chars": 3381,
+      "lib": "PyMuPDF",
+      "score": 0.8214285714285714
+    },
+    {
+      "thread_id": "1461958388211519682",
+      "bucket": "ok",
+      "path": "data/raw/1461958388211519682/Screenshot_2026-01-16_at_1.57.58_AM.png",
+      "chars": 4135,
+      "lib": "PyMuPDF",
+      "score": 0.7123287671232876
+    },
+    {
+      "thread_id": "1465889851906720011",
+      "bucket": "ok",
+      "path": "data/raw/1465889851906720011/ANONYMIZED_Winter_2026.pdf",
+      "chars": 3641,
+      "lib": "pdfplumber",
+      "score": 0.8979591836734694
+    },
+    {
+      "thread_id": "1467898150730727742",
+      "bucket": "ok",
+      "path": "data/raw/1467898150730727742/image0.jpg",
+      "chars": 2939,
+      "lib": "PyMuPDF",
+      "score": 0.6935483870967742
+    },
+    {
+      "thread_id": "1468067378926457002",
+      "bucket": "ok",
+      "path": "data/raw/1468067378926457002/Resume_11-1.png",
+      "chars": 3447,
+      "lib": "PyMuPDF",
+      "score": 0.7068965517241379
+    },
+    {
+      "thread_id": "1469875033563332839",
+      "bucket": "ok",
+      "path": "data/raw/1469875033563332839/20260207_20h52m28s_grim.png",
+      "chars": 2211,
+      "lib": "PyMuPDF",
+      "score": 0.7446808510638298
+    },
+    {
+      "thread_id": "1470218254214631658",
+      "bucket": "ok",
+      "path": "data/raw/1470218254214631658/l.pdf",
+      "chars": 3404,
+      "lib": "pdfplumber",
+      "score": 0.8269230769230769
+    },
+    {
+      "thread_id": "1471311796878053426",
+      "bucket": "ok",
+      "path": "data/raw/1471311796878053426/Redacted_Jake_s_Resume.pdf",
+      "chars": 3358,
+      "lib": "pdfplumber",
+      "score": 0.875
+    },
+    {
+      "thread_id": "1472351084034130053",
+      "bucket": "ok",
+      "path": "data/raw/1472351084034130053/Redacted_External.pdf",
+      "chars": 3316,
+      "lib": "pdfplumber",
+      "score": 0.8222222222222222
+    },
+    {
+      "thread_id": "1473751525183717602",
+      "bucket": "ok",
+      "path": "data/raw/1473751525183717602/resume.png",
+      "chars": 3046,
+      "lib": "PyMuPDF",
+      "score": 0.7454545454545455
+    },
+    {
+      "thread_id": "1478875436866863277",
+      "bucket": "ok",
+      "path": "data/raw/1478875436866863277/image.png",
+      "chars": 3629,
+      "lib": "PyMuPDF",
+      "score": 0.7464788732394366
+    },
+    {
+      "thread_id": "1499919186426593430",
+      "bucket": "ok",
+      "path": "data/raw/1499919186426593430/Resume_Template_page-0001.jpg",
+      "chars": 4245,
+      "lib": "PyMuPDF",
+      "score": 0.71875
+    },
+    {
+      "thread_id": "1502131572344623124",
+      "bucket": "ok",
+      "path": "data/raw/1502131572344623124/SWE_Resume.pdf",
+      "chars": 3467,
+      "lib": "pdfplumber",
+      "score": 0.8888888888888888
+    },
+    {
+      "thread_id": "1503978638893121608",
+      "bucket": "ok",
+      "path": "data/raw/1503978638893121608/resume_redacted_1_1.pdf",
+      "chars": 3075,
+      "lib": "pdfplumber",
+      "score": 0.7708333333333334
+    },
+    {
+      "thread_id": "1508963130867450046",
+      "bucket": "ok",
+      "path": "data/raw/1508963130867450046/Anon_Resume.png",
+      "chars": 4138,
+      "lib": "PyMuPDF",
+      "score": 0.7611940298507462
+    },
+    {
+      "thread_id": "1516745964839374850",
+      "bucket": "ok",
+      "path": "data/raw/1516745964839374850/Resume_Redacted.pdf",
+      "chars": 3389,
+      "lib": "pdfplumber",
+      "score": 0.8723404255319149
+    }
+  ]
+}

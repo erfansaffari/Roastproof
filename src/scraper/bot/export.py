@@ -10,15 +10,34 @@ logger = logging.getLogger(__name__)
 
 
 def _copy_resume_files(attachment_paths: list[str], export_folder: Path) -> list[str]:
+    """
+    Copies each attachment into export_folder, then removes the source (the export
+    folder becomes the canonical copy).
+
+    Re-running export must not destroy already-exported files. A prior run may have
+    already moved these files into export_folder and deleted the original `source`
+    path — in that case `source` is gone but the file already sits at its destination,
+    so we treat that as success instead of a miss. Only warn if the file is missing
+    from BOTH the original source location and the export destination.
+    """
     copied_paths: list[str] = []
 
     for source_path in attachment_paths:
         source = Path(source_path)
-        if not source.exists():
-            logger.warning("Missing resume file during export: %s", source)
+        destination = export_folder / source.name
+
+        if destination.exists():
+            copied_paths.append(str(destination.relative_to(DATA_DIR.parent)))
             continue
 
-        destination = export_folder / source.name
+        if not source.exists():
+            logger.warning(
+                "Missing resume file during export (checked source %s and destination %s)",
+                source,
+                destination,
+            )
+            continue
+
         shutil.copy2(source, destination)
         copied_paths.append(str(destination.relative_to(DATA_DIR.parent)))
 
@@ -59,8 +78,11 @@ def run_export() -> tuple[int, int, Path]:
     dataset: list[dict] = []
     total_critiques = 0
 
-    if EXPORT_DIR.exists():
-        shutil.rmtree(EXPORT_DIR)
+    # Do NOT rmtree(EXPORT_DIR) here: it is the canonical copy of resume files once a
+    # source has been moved into it, and wiping it before rebuilding would permanently
+    # destroy those files (this previously happened — see NOTES.md). Only the manifest
+    # is regenerated; per-thread folders are rebuilt in place via _copy_resume_files's
+    # already-exported check.
     EXPORT_DIR.mkdir(parents=True, exist_ok=True)
 
     for resume in resumes:

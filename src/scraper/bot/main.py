@@ -4,9 +4,9 @@ import logging
 import sys
 
 from bot.client import DiscordClient
-from bot.config import DISCORD_USER_TOKEN, RESUME_CHANNEL_ID
+from bot.config import DISCORD_USER_TOKEN, EXPORT_DIR, RESUME_CHANNEL_ID
 from bot.export import run_export
-from bot.scraper import run_scrape
+from bot.scraper import repair_missing_attachments, run_scrape
 
 logging.basicConfig(
     level=logging.INFO,
@@ -39,6 +39,19 @@ async def scrape_command(
     return 0
 
 
+async def repair_command() -> int:
+    if not DISCORD_USER_TOKEN or not RESUME_CHANNEL_ID:
+        logger.error("DISCORD_USER_TOKEN / RESUME_CHANNEL_ID not set.")
+        return 1
+
+    async with DiscordClient(DISCORD_USER_TOKEN) as client:
+        repaired = await repair_missing_attachments(client, RESUME_CHANNEL_ID, EXPORT_DIR)
+
+    print(f"Repair complete: {repaired} resumes had attachments re-downloaded.")
+    print("Run `export` again to refresh dataset.json and the export folders.")
+    return 0
+
+
 def export_command() -> int:
     resume_count, critique_count, dataset_path = run_export()
     print(
@@ -68,6 +81,10 @@ def main() -> None:
     )
 
     subparsers.add_parser("export", help="Export scraped data to data/export/dataset.json")
+    subparsers.add_parser(
+        "repair",
+        help="Re-download resume attachments recorded in the DB but missing on disk",
+    )
 
     args = parser.parse_args()
 
@@ -78,6 +95,9 @@ def main() -> None:
 
     if args.command == "export":
         raise SystemExit(export_command())
+
+    if args.command == "repair":
+        raise SystemExit(asyncio.run(repair_command()))
 
     raise SystemExit(f"Unknown command: {args.command}")
 

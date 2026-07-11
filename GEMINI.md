@@ -42,6 +42,7 @@ roastproof/
 ├── src/
 │   ├── llm.py
 │   ├── schemas.py
+│   ├── scraper/          # standalone Discord data-collection utility, not a pipeline phase
 │   ├── ingestion/
 │   ├── knowledge/
 │   ├── generation/
@@ -50,6 +51,9 @@ roastproof/
 ├── templates/jakes_resume.tex.j2
 └── tests/
 ```
+
+### Data Collection (Scraper)
+`src/scraper/` scrapes the Discord resume-critique channel and exports to its own `data/` tree (`src/scraper/data/export/dataset.json` plus one folder per thread with `resume.pdf` (if present), `post.txt`, `critiques.txt`). `dataset.json` is the preferred structured ingestion source; the `.txt` files are human-readable renderings only, formatted `[ISO timestamp] author: content` (not `author::content`). `scripts/sync_scraper_data.py` copies this export into `data/raw/`, the location the ingestion pipeline expects — run it after every `python -m bot.main export`.
 
 ## Development Conventions
 
@@ -64,13 +68,13 @@ roastproof/
 
 The project is divided into the following phases:
 
-| Phase | File |
-|---|---|
-| 0 — Setup & Data Audit | [docs/phases/phase0-setup.md](docs/phases/phase0-setup.md) |
-| 1 — Ingestion Pipeline | [docs/phases/phase1-ingestion.md](docs/phases/phase1-ingestion.md) |
-| 2 — Data Exploration & Norms | [docs/phases/phase2-exploration-norms.md](docs/phases/phase2-exploration-norms.md) |
-| 3 — Knowledge Base (Rulebook + Vector Store) | [docs/phases/phase3-knowledge-base.md](docs/phases/phase3-knowledge-base.md) |
-| 4 — Generation Pipeline | [docs/phases/phase4-generation.md](docs/phases/phase4-generation.md) |
-| 5 — Critic Loop & Suggestions Report | [docs/phases/phase5-critic-loop.md](docs/phases/phase5-critic-loop.md) |
-| 6 — Evaluation | [docs/phases/phase6-evaluation.md](docs/phases/phase6-evaluation.md) |
-| 7 — Interface & Ship | [docs/phases/phase7-interface-ship.md](docs/phases/phase7-interface-ship.md) |
+| Phase | File | Status |
+|---|---|---|
+| 0 — Setup & Data Audit | [docs/phases/phase0-setup.md](docs/phases/phase0-setup.md) | In progress |
+| 1 — Ingestion Pipeline | [docs/phases/phase1-ingestion.md](docs/phases/phase1-ingestion.md) | In progress |
+| 2 — Data Exploration & Norms | [docs/phases/phase2-exploration-norms.md](docs/phases/phase2-exploration-norms.md) | Not started |
+| 3 — Knowledge Base (Rulebook + Vector Store) | [docs/phases/phase3-knowledge-base.md](docs/phases/phase3-knowledge-base.md) | Not started |
+| 4 — Generation Pipeline | [docs/phases/phase4-generation.md](docs/phases/phase4-generation.md) | Not started |
+| 5 — Critic Loop & Suggestions Report | [docs/phases/phase5-critic-loop.md](docs/phases/phase5-critic-loop.md) | Not started |
+| 6 — Evaluation | [docs/phases/phase6-evaluation.md](docs/phases/phase6-evaluation.md) | Not started |
+| 7 — Interface & Ship | [docs/phases/phase7-interface-ship.md](docs/phases/phase7-interface-ship.md) | Not started |

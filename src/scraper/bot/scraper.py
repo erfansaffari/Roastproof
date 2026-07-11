@@ -170,6 +170,57 @@ async def download_new_resumes(
     return resumes_added
 
 
+async def repair_missing_attachments(
+    client: DiscordClient,
+    channel_id: str,
+    export_dir: Path,
+) -> int:
+    """
+    Re-downloads resume attachments that are recorded in the DB but no longer
+    present on disk (neither at their original download path nor in the export
+    folder) — recovers from the export.py double-run bug that used to wipe
+    EXPORT_DIR on every rerun. Re-fetches each affected message from Discord to
+    get a fresh attachment URL, since the original URL isn't persisted locally.
+    """
+    repaired = 0
+
+    for resume in db.get_all_resumes():
+        message_id = resume["message_id"]
+        attachment_paths = json.loads(resume.get("attachment_paths") or "[]")
+        if not attachment_paths:
+            continue
+
+        missing = [
+            path for path in attachment_paths
+            if not Path(path).exists()
+            and not (export_dir / message_id / Path(path).name).exists()
+        ]
+        if not missing:
+            continue
+
+        message = await client.get_message(channel_id, message_id)
+        if message is None:
+            logger.warning(
+                "Could not refetch message %s (deleted or inaccessible); "
+                "cannot recover its attachments.",
+                message_id,
+            )
+            continue
+
+        supported = filter_supported_attachments(message.get("attachments", []))
+        if not supported:
+            logger.warning("Message %s no longer has supported attachments.", message_id)
+            continue
+
+        dest_dir = RESUMES_DIR / message_id
+        new_paths = await download_attachments(client, supported, dest_dir)
+        db.update_resume_attachment_paths(message_id, new_paths)
+        repaired += 1
+        logger.info("Repaired attachments for resume %s", message_id)
+
+    return repaired
+
+
 async def scan_channel_replies(
     client: DiscordClient,
     channel_id: str,

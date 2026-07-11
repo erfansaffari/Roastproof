@@ -91,6 +91,20 @@ def insert_resume(
         return cursor.rowcount > 0
 
 
+def update_resume_attachment_paths(message_id: str, attachment_paths: list[str]) -> bool:
+    with _connect() as conn:
+        cursor = conn.execute(
+            """
+            UPDATE resumes
+            SET attachment_paths = ?
+            WHERE message_id = ?
+            """,
+            (json.dumps(attachment_paths), message_id),
+        )
+        conn.commit()
+        return cursor.rowcount > 0
+
+
 def update_resume_message_content(message_id: str, message_content: str) -> bool:
     with _connect() as conn:
         cursor = conn.execute(

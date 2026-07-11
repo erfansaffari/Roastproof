@@ -11,7 +11,7 @@
 
 [2026-01-14T23:00:12.687000+00:00] awaterloostudent: If you have a minute, I would greatly appreciate your take on the revised bullets.
 
-[2026-01-14T23:02:45.349000+00:00] awaterloostudent: [attachments: https://cdn.discordapp.com/attachments/1458636609443332157/1461133467940032777/SWE_Resume_Updated.pdf?ex=6a4cdcd5&is=6a4b8b55&hm=527becf3e3502262589e42eb7d533905273784a6e485aae0c70c8d37e81e6d7b&]
+[2026-01-14T23:02:45.349000+00:00] awaterloostudent: [attachments: https://cdn.discordapp.com/attachments/1458636609443332157/1461133467940032777/SWE_Resume_Updated.pdf?ex=6a52cb95&is=6a517a15&hm=7beb5987d5346b0b24db50f71bbe11fbd978ac5c9e651b4e4dfdddb623bf4923&]
 
 [2026-01-30T16:22:26.550000+00:00] rayhaan: sorry this is too late for ww cycle 1. just got around to this
 I think the structure got better. i just have some minor gripes about wording:
