@@ -26,10 +26,26 @@ Produce `rulebook.json` (30–60 consensus rules) and a queryable ChromaDB criti
    - Returns typed objects + a `format_for_prompt()` helper producing a compact numbered block.
 4. **Retrieval QA** — `scripts/test_retrieval.py` with 10 canned queries; prints top-5 for each. Erfan manually grades relevance; iterate on composite string/weights until ≥8/10 queries look right. Record the grading in `NOTES.md`.
 
+## Status (2026-07-11)
+Implemented on the 118-thread pilot corpus:
+
+- **`rulebook.py`**: map (batches of 25) → reduce on `gpt-4o`; deterministic
+  corpus-anchor + evidence check. Output: `data/knowledge/rulebook.json` with
+  **29 rules** (pilot `min_frequency=5`; PRD default 10 kicks in at n≥200).
+  One short of the 30–60 band — expected to grow with the full ~1,000-thread scrape.
+- **`vectorstore.py`**: 388 critique points in Chroma `critiques_v1`
+  (`data/chroma/`, MiniLM local embeddings). Skips `not_a_critique` labels.
+  `--rebuild` supported.
+- **`retrieve.py`**: re-rank formula + **general-blend** (5 section + 3 general)
+  + **unknown-year soft match**. `format_for_prompt()` helper.
+- **`scripts/test_retrieval.py`**: 10 canned queries. Grading sheet in `NOTES.md`
+  — **human sign-off gate still open**.
+
 ## Acceptance Criteria
-- [ ] 30–60 rules, all passing the deterministic evidence check.
+- [~] 30–60 rules, all passing the deterministic evidence check.
+  *(29 on 118-thread pilot; all pass evidence check. Revisit after corpus growth.)*
 - [ ] Vector store built; retrieval QA graded ≥8/10 by Erfan.
-- [ ] Unit tests: composite string builder, re-ranker math, evidence checker.
+- [x] Unit tests: composite string builder, re-ranker math, evidence checker.
 
 ## Human Sign-Off Gate
 Erfan must manually grade the 10 canned retrieval queries and confirm ≥8/10 look right before Phase 4 generation begins (generation depends on retrieval quality).

@@ -1,1 +1,1 @@
-"""Phase 2 — corpus norms and exploration helpers."""
+"""Phase 2–3 — corpus norms, exploration, rulebook, and retrieval."""

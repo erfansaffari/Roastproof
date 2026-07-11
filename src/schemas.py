@@ -69,6 +69,41 @@ class Rule(BaseModel):
     statement: str
     frequency: float
     evidence_examples: List[str]
+    supporting_thread_ids: List[str] = Field(
+        default_factory=list,
+        description="Thread IDs cited as evidence (used by the hallucination guard).",
+    )
+
+
+class ApplicantProfile(BaseModel):
+    """Intake profile used for retrieval and generation (Phases 3–4)."""
+    target_role: str
+    year: Optional[str] = Field(
+        None,
+        description="Normalized year label: year_1..year_4, new_grad, senior, grad, unknown.",
+    )
+    has_internships: bool = False
+    profile_summary: str = ""
+    skills: List[str] = Field(default_factory=list)
+
+
+class CritiquePoint(BaseModel):
+    """
+    One critique exploded from a ThreadRecord for the vector store / retriever.
+    """
+    id: str
+    thread_id: str
+    target_role: str
+    section: str
+    year: Optional[str] = None
+    has_internships: bool = False
+    agreement_signal: int = 0
+    issue: str
+    suggestion: str = ""
+    original_text: Optional[str] = None
+    category: str = "other"
+    composite: str = ""
+    score: Optional[float] = None
 
 
 BULLET_MIN_LEN = 60

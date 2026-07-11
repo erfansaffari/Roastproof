@@ -5,6 +5,79 @@ Newest entries at the top. Suggested commit messages included per entry.
 
 ---
 
+## 2026-07-11 (d) — Retrieval QA fixes (pre–Phase-4)
+
+Three concrete issues from the retrieval QA review, plus role fallback.
+
+### `src/knowledge/retrieve.py`
+- Exclude `positive_feedback` at query time (`EXCLUDED_RETRIEVAL_CATEGORIES`) —
+  kept in the store, filtered out of generation retrieval (fixes Q5/Q9 fluff).
+- Cap agreement at 3 before normalizing (`normalize_agreement`); viral
+  agree=9 no longer outranks agree=3.
+- Dedupe final top-k by `thread_id` so one thread cannot fill multiple slots.
+- `ROLE_FALLBACK` map: ML / data / frontend / … also query Software Engineer
+  when the primary bucket is thin.
+- `format_for_prompt(..., max_chars=)` optional display-only truncation;
+  generator path keeps full text.
+
+### `src/knowledge/vectorstore.py`
+- Store **full** `issue` in Chroma metadata (was `[:500]` — caused mid-word
+  cuts in the QA output). Embedding composite still capped at 2000 chars.
+
+### Docs / tests
+- Cleared rubber-stamp grades from `NOTES.md`; sheet blank for Erfan's own pass.
+- Unit tests updated for agreement cap + role fallback (9 phase3 tests).
+- Rebuilt `critiques_v1` (388 points).
+
+### Suggested commits
+- `fix(phase3): exclude positive_feedback; cap agreement; thread-id dedupe`
+- `fix(phase3): store full critique text; add role_fallback for thin buckets`
+
+---
+
+## 2026-07-11 (c) — Phase 3 knowledge base (rulebook + Chroma + retrieve)
+
+Implemented Phase 3 on the 118-thread pilot. Human gate still open: Erfan must
+grade `scripts/test_retrieval.py` ≥8/10 in `NOTES.md` before Phase 4.
+
+### `src/schemas.py`
+- Added `ApplicantProfile`, `CritiquePoint`; `Rule.supporting_thread_ids` for the
+  hallucination guard.
+
+### `src/knowledge/rulebook.py` (new)
+- Map/reduce on `gpt-4o`: batches of 25 → candidates → merge.
+- Robust JSON salvage for alternate model shapes; deterministic
+  `anchor_rules_to_corpus` keyword/evidence matching; `verify_rule_evidence`
+  drops fake thread_ids and enforces min frequency.
+- Pilot auto-uses `min_frequency=5` when n&lt;200 (PRD default 10 otherwise).
+- Output: `data/knowledge/rulebook.json` — **29 rules** (all evidence-checked).
+
+### `src/knowledge/vectorstore.py` (new)
+- Explodes threads (+ Phase-2 labels) → CritiquePoints; skips empty /
+  `not_a_critique`. Composite string per PRD. Chroma `critiques_v1` with local
+  `all-MiniLM-L6-v2`. `--rebuild` wipes. **388 points** indexed.
+
+### `src/knowledge/retrieve.py` (new)
+- `retrieve(profile, section, query_text, k)` with re-rank
+  `0.7·sim + 0.2·profile_match + 0.1·agreement`.
+- General-blend (5 section + 3 general) and unknown-year soft match (0.5 year
+  credit, never a hard mismatch).
+- `format_for_prompt()` numbered block for generators.
+
+### Tests / scripts / docs
+- `tests/test_phase3_knowledge.py` — composite, explode, profile_match, rerank,
+  evidence guard, format_for_prompt (36 tests total suite).
+- `scripts/test_retrieval.py` — 10 canned queries for Erfan grading.
+- `NOTES.md` grading sheet; phase3 + CLAUDE.md status updated.
+
+### Suggested commits
+- `feat(phase3): rulebook map/reduce + evidence check`
+- `feat(phase3): Chroma critiques_v1 vector store with MiniLM`
+- `feat(phase3): retrieve API with general-blend and unknown-year soft match`
+- `test(phase3): unit tests + canned retrieval QA script`
+
+---
+
 ## 2026-07-11 (b) — Pilot feedback follow-ups
 
 Addressed the four review items on the pilot results. Spot-checks came back clean → ready to scale toward 1,000 threads.

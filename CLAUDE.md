@@ -103,7 +103,7 @@ Full field-level JSON shapes live in the PRD; do not restate/duplicate them else
 | 0 — Setup & Data Audit | [docs/phases/phase0-setup.md](docs/phases/phase0-setup.md) | In progress — repo scaffolded, scraper built; NOTES.md and data/raw wiring still open |
 | 1 — Ingestion Pipeline | [docs/phases/phase1-ingestion.md](docs/phases/phase1-ingestion.md) | Done on current corpus — 118/120 clean (98.3% survival) with Tesseract OCR; `--only-missing` supported |
 | 2 — Data Exploration & Norms | [docs/phases/phase2-exploration-norms.md](docs/phases/phase2-exploration-norms.md) | Done — norms + FINDINGS regenerated; pre-Phase-3 gates (bullets, other&lt;15%, survival) met |
-| 3 — Knowledge Base (Rulebook + Vector Store) | [docs/phases/phase3-knowledge-base.md](docs/phases/phase3-knowledge-base.md) | Not started |
+| 3 — Knowledge Base (Rulebook + Vector Store) | [docs/phases/phase3-knowledge-base.md](docs/phases/phase3-knowledge-base.md) | Implemented — 29 rules + 388-point Chroma store; retrieval QA awaiting Erfan grade |
 | 4 — Generation Pipeline | [docs/phases/phase4-generation.md](docs/phases/phase4-generation.md) | Not started |
 | 5 — Critic Loop & Suggestions Report | [docs/phases/phase5-critic-loop.md](docs/phases/phase5-critic-loop.md) | Not started |
 | 6 — Evaluation | [docs/phases/phase6-evaluation.md](docs/phases/phase6-evaluation.md) | Not started |
