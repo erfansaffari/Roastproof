@@ -316,29 +316,39 @@ you would need answered to shortlist for {role.display_name}.
 
 Do NOT rewrite the resume. Do NOT invent answers.
 
-Emit 3–8 focused questions max. Prefer metrics gaps on experience/project bullets.
-Skip trivia. Each question needs a stable id (q1, q2, …), topic
-(missing_metric|vague_scope|missing_skill|other), the question text, and relates_to
-(company or project name + short snippet).
-
-If the intake already has strong metrics everywhere, return {{"questions": []}}.
+Rules:
+- Emit 0–5 focused questions max. Prefer high-impact metric gaps on experience/project bullets.
+- Skip trivia. Do NOT re-ask or rephrase anything in the prior Q&A history (answered, declined, or pending).
+- If an answer already provides a number/fact about a company, project, or bullet, that topic is COVERED —
+  do not ask for the same metric again (even when the old question text says "legacy" / unavailable).
+- Returning ZERO questions is valid and expected when the intake + answers already cover material gaps.
+- Set complete=true when further questions would not materially strengthen the resume for this role.
+- Each question needs: topic (missing_metric|vague_scope|missing_skill|other), impact (high|medium),
+  question text, and relates_to (company or project name + short snippet). Leave id empty
+  (the pipeline assigns a stable hash).
 
 ## Output JSON contract
-{{"questions": [{{"id": str, "topic": str, "question": str, "relates_to": str}}]}}
+{{
+  "questions": [{{"id": "", "topic": str, "impact": "high"|"medium", "question": str, "relates_to": str}}],
+  "complete": bool,
+  "completion_reason": str
+}}
 
 {REFUSAL_CLAUSE}
 """
 
 
-def elicit_user(intake: Intake) -> str:
+def elicit_user(intake: Intake, history_block: str = "(none)") -> str:
     import json
 
-    answered = set((intake.answers or {}).keys())
     return (
         "## Intake\n"
         f"{json.dumps(intake.model_dump(exclude={'answers'}), indent=2)}\n\n"
-        "## Already answered question ids (do not re-ask)\n"
-        f"{sorted(answered) if answered else '(none)'}\n\n"
+        "## Prior Q&A history (do not re-ask or rephrase any of these)\n"
+        f"{history_block}\n\n"
+        "Only ask genuinely NEW questions that would materially change the resume. "
+        "If none, return {\"questions\": [], \"complete\": true, "
+        "\"completion_reason\": \"...\"}.\n\n"
         "Return the JSON object now."
     )
 
@@ -356,6 +366,10 @@ Use ONLY the retrieved community critiques and rules provided. Every verdict MUS
 cite critique_ids and/or rule statements from that context. Drop any claim you
 cannot ground.
 
+FIRST emit portfolio_composition: classify each project domain as one of
+frontend | backend | systems | ml | ai | fullstack | other. Use this to decide
+field_gaps — do not claim a gap in a domain the portfolio already covers.
+
 For each project emit:
 - verdict: strong_keep | strengthen | replace
 - rationale: short, grounded
@@ -364,13 +378,20 @@ For each project emit:
 
 Also emit field_gaps: project TYPES the community expects for this role that the
 applicant's portfolio lacks (grounded in critiques). Empty list if none evidenced.
+For EVERY field gap you MUST include evidence_quote: a VERBATIM substring copied
+from the retrieved critiques block (not paraphrased). Gaps without a real quote
+are discarded.
 
 CRITICAL: Copy critique `id=` values verbatim into evidence_ids (e.g.
 "1289087515059425341:3"). You may also use "rule:<short phrase from rules block>".
 Every project verdict MUST include ≥1 evidence_id. Ungrounded rows are discarded.
 
+If a previous evaluation is provided, keep verdicts and field_gaps STABLE unless
+the intake facts changed — if you change one, state exactly which new fact justified it.
+
 ## Output JSON contract
 {{
+  "portfolio_composition": [{{"name": str, "domain": "frontend"|"backend"|"systems"|"ml"|"ai"|"fullstack"|"other"}}],
   "projects": [{{
     "name": str,
     "verdict": "strong_keep"|"strengthen"|"replace",
@@ -378,7 +399,7 @@ Every project verdict MUST include ≥1 evidence_id. Ungrounded rows are discard
     "improvements": [str],
     "evidence_ids": [str]
   }}],
-  "field_gaps": [{{"gap": str, "evidence_ids": [str]}}]
+  "field_gaps": [{{"gap": str, "evidence_ids": [str], "evidence_quote": str}}]
 }}
 
 {G1_CLAUSE}
@@ -392,18 +413,37 @@ def project_eval_user(
     critiques_block: str,
     rules_block: str,
     role: RoleProfile,
+    prior_eval_json: str | None = None,
 ) -> str:
-    return (
-        f"## Role: {role.display_name}\n"
-        f"Scan first for projects: {role.scan_first}\n\n"
-        "## Applicant projects (facts only)\n"
-        f"{intake_projects_json}\n\n"
-        "## Community rules for projects (MUST apply)\n"
-        f"{rules_block}\n\n"
-        "## Retrieved project critiques (MUST apply — cite ids)\n"
-        f"{critiques_block}\n\n"
-        "Return the JSON evaluation now. Ungrounded claims will be discarded."
+    parts = [
+        f"## Role: {role.display_name}",
+        f"Scan first for projects: {role.scan_first}",
+        "",
+        "## Applicant projects (facts only)",
+        intake_projects_json,
+        "",
+        "## Community rules for projects (MUST apply)",
+        rules_block,
+        "",
+        "## Retrieved project critiques (MUST apply — cite ids; copy quotes verbatim)",
+        critiques_block,
+    ]
+    if prior_eval_json:
+        parts.extend(
+            [
+                "",
+                "## Previous evaluation (keep stable unless intake facts changed)",
+                prior_eval_json,
+            ]
+        )
+    parts.extend(
+        [
+            "",
+            "Return the JSON evaluation now. Ungrounded claims and unquoted field gaps "
+            "will be discarded.",
+        ]
     )
+    return "\n".join(parts)
 
 
 # ---------------------------------------------------------------------------

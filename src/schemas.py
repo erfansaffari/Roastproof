@@ -191,9 +191,22 @@ class ProjectVerdict(BaseModel):
 class FieldGap(BaseModel):
     gap: str
     evidence_ids: List[str] = Field(default_factory=list)
+    evidence_quote: str = Field(
+        "",
+        description="Verbatim substring from a retrieved critique that supports this gap.",
+    )
+
+
+class PortfolioCompositionItem(BaseModel):
+    name: str
+    domain: str = Field(
+        ...,
+        description="frontend | backend | systems | ml | ai | fullstack | other",
+    )
 
 
 class ProjectEvalResult(BaseModel):
+    portfolio_composition: List[PortfolioCompositionItem] = Field(default_factory=list)
     projects: List[ProjectVerdict] = Field(default_factory=list)
     field_gaps: List[FieldGap] = Field(default_factory=list)
 
@@ -251,14 +264,51 @@ class GenerationResult(BaseModel):
 
 
 class ElicitationQuestion(BaseModel):
-    id: str
+    id: str = Field(
+        "",
+        description="Optional; pipeline assigns a stable content-hash id if empty.",
+    )
     topic: str = Field(..., description="missing_metric | vague_scope | missing_skill | other")
+    impact: str = Field(
+        "high",
+        description="high | medium — rounds 2+ only admit high-impact questions.",
+    )
     question: str
     relates_to: str = Field("", description="Company/project + short context snippet.")
 
 
 class ElicitationResult(BaseModel):
     questions: List[ElicitationQuestion] = Field(default_factory=list)
+    complete: bool = Field(
+        False,
+        description="True when no further questions would materially strengthen the resume.",
+    )
+    completion_reason: str = Field(
+        "",
+        description="Why elicitation is complete (or empty if more questions remain).",
+    )
+
+
+class QAEntry(BaseModel):
+    """One elicitation question tracked across pipeline runs (sidecar file)."""
+    id: str
+    round: int = 1
+    topic: str = "other"
+    impact: str = "high"
+    question: str
+    relates_to: str = ""
+    answer: Optional[str] = None
+    status: str = Field(
+        "pending",
+        description="pending | answered | declined",
+    )
+
+
+class QAStore(BaseModel):
+    """Persistent Q&A memory next to the intake YAML (*.qa.yaml)."""
+    round: int = 0
+    converged: bool = False
+    questions: List[QAEntry] = Field(default_factory=list)
 
 
 class IntakeEducation(BaseModel):

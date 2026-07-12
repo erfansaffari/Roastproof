@@ -5,6 +5,42 @@ Newest entries at the top. Suggested commit messages included per entry.
 
 ---
 
+## 2026-07-12 — Phase 4.7 elicitation memory, convergence, stable project eval
+
+Persistent Q&A sidecar + semantic dedup + stopping rule; project-eval stability.
+
+### QA sidecar
+- `src/generation/qa_store.py` — `*.qa.yaml` next to intake; stable content-hash
+  ids; statuses pending/answered/declined (`skip`); legacy `intake.answers` merge.
+- User edits `answer:` in place — no more copying q-ids into intake YAML.
+
+### Elicitation
+- Full prior Q&A history in `elicit_user` (not just ids); `impact` + `complete`
+  on `ElicitationResult`; MiniLM semantic dedup (~0.8); rounds 2+ high-only;
+  `--max-elicit-rounds` (default 3); temperature=0.
+- `status.json` + printed convergence verdict every run.
+
+### Generator / project eval
+- Answers block renders full Q→A pairs; declined topics suppress repeat
+  `missing_metric` suggestions.
+- Prior-eval memory, `portfolio_composition`, verbatim `evidence_quote`
+  validation for field gaps; temperature=0 for eval.
+
+### Schemas / LLM
+- `QAStore`, `QAEntry`; `ElicitationQuestion.impact`; `ElicitationResult.complete`;
+  `FieldGap.evidence_quote`; `PortfolioCompositionItem`.
+- `complete` / `complete_json` accept optional `temperature`.
+
+### Tests / docs
+- `tests/test_elicit_memory.py` (sidecar, dedup, stop, declined suppress, quotes).
+- Updated `docs/phases/phase4.6-corpus-writer.md` (4.7 follow-on section).
+
+### Suggested commits
+- `feat(phase4.7): elicitation QA sidecar with memory and convergence`
+- `feat(phase4.7): stable project eval with evidence quotes`
+
+---
+
 ## 2026-07-11 (g) — Phase 4.6 corpus-derived writer knowledge
 
 De-hardcode fluff/few-shots; professional hiring-reviewer prompts; project eval.

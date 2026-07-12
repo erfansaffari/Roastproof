@@ -1,0 +1,34 @@
+# Roastproof elicitation Q&A sidecar — edit `answer:` in place.
+# Leave null to skip for now; set to 'skip' to decline (never re-ask).
+# Re-run the pipeline after answering; do not copy ids into intake.yaml.
+round: 2
+converged: true
+questions:
+- id: what-was-the-e7c85eb1
+  round: 1
+  topic: missing_metric
+  impact: high
+  question: What was the scale of the backend systems you architected at Sarox Technology
+    Inc., such as the number of users or requests handled per second?
+  relates_to: Sarox Technology Inc. - Architected and deployed scalable Python backend
+    pipelines
+  answer: ~200 req/sec at peak, across 15 services on a 3-node k8s cluster.
+  status: answered
+- id: can-you-provide-2402f1cb
+  round: 1
+  topic: missing_metric
+  impact: high
+  question: Can you provide the percentage improvement in latency or throughput achieved
+    through your optimizations in the ML data pipelines?
+  relates_to: Sarox Technology Inc. - Optimized ML data pipelines and automation scripts
+  answer: 70% reduction, training time went from ~42 min to ~12.5 min.
+  status: answered
+- id: how-many-users-f9a17546
+  round: 1
+  topic: missing_metric
+  impact: high
+  question: How many users or transactions did your multi-chain blockchain CLI support,
+    and what was the average response time for the RPC quorum engine?
+  relates_to: glnc -- Multi-Chain Blockchain CLI - Engineered a multi-RPC quorum engine
+  answer: 500+ installs, ~350ms avg response time for the quorum engine.
+  status: answered

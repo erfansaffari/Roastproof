@@ -271,7 +271,15 @@ def format_intake_block(intake: Intake) -> str:
     return json.dumps(intake.model_dump(), indent=2)
 
 
-def format_answers_block(intake: Intake) -> str:
+def format_answers_block(intake: Intake, qa_store=None) -> str:
+    """Render elicitation answers for the generator prompt.
+
+    Prefer the QA sidecar (full Q→A pairs). Fall back to legacy intake.answers.
+    """
+    if qa_store is not None and getattr(qa_store, "questions", None):
+        from src.generation.qa_store import format_answers_block_from_store
+
+        return format_answers_block_from_store(qa_store)
     if not intake.answers:
         return "(no answers yet — do not invent the missing facts)"
     lines = ["User-provided answers to elicitation questions (treat as facts):"]
@@ -297,6 +305,7 @@ def build_generation_prompt(
     rulebook_path: Path = DEFAULT_RULEBOOK,
     norms_path: Path = DEFAULT_NORMS,
     rewrite_path: Path = DEFAULT_REWRITE_EXAMPLES,
+    qa_store=None,
 ) -> str:
     rulebook = rulebook if rulebook is not None else load_rulebook(rulebook_path)
     norms = norms if norms is not None else load_norms(norms_path)
@@ -312,7 +321,7 @@ def build_generation_prompt(
         norms_block=format_norms_block(
             prevalence, owned, bucket=bucket, thin=thin
         ),
-        answers_block=format_answers_block(intake),
+        answers_block=format_answers_block(intake, qa_store=qa_store),
         intake_block=format_intake_block(intake),
         role=role,
         trim_instruction=trim_instruction,
@@ -355,21 +364,29 @@ def annotated_to_resume(annotated: AnnotatedResume) -> ResumeContent:
     )
 
 
-def suggestions_from_bullet_gaps(annotated: AnnotatedResume) -> list[Suggestion]:
+def suggestions_from_bullet_gaps(
+    annotated: AnnotatedResume,
+    *,
+    declined_needles: list[str] | None = None,
+) -> list[Suggestion]:
+    """Build gap suggestions; suppress missing_metric when user declined that topic."""
+    needles = [n.lower() for n in (declined_needles or []) if n]
+
+    def _declined_for(detail: str) -> bool:
+        d = detail.lower()
+        return any(n and n in d for n in needles)
+
     out: list[Suggestion] = []
     for e in annotated.experience:
         for b in e.bullets:
             if "no_metric" in (b.gaps or []):
-                out.append(
-                    Suggestion(
-                        type="missing_metric",
-                        detail=(
-                            f"[{e.company}] Bullet has no quantified impact: "
-                            f"{b.text[:100]}{'…' if len(b.text) > 100 else ''}. "
-                            f"Add a real number in intake answers if you have one."
-                        ),
-                    )
+                detail = (
+                    f"[{e.company}] Bullet has no quantified impact: "
+                    f"{b.text[:100]}{'…' if len(b.text) > 100 else ''}. "
+                    f"Add a real number in intake answers if you have one."
                 )
+                if not _declined_for(f"{e.company} {b.text} {b.rewritten_from}"):
+                    out.append(Suggestion(type="missing_metric", detail=detail))
             if "vague_scope" in (b.gaps or []):
                 out.append(
                     Suggestion(
@@ -383,15 +400,12 @@ def suggestions_from_bullet_gaps(annotated: AnnotatedResume) -> list[Suggestion]
     for p in annotated.projects:
         for b in p.bullets:
             if "no_metric" in (b.gaps or []):
-                out.append(
-                    Suggestion(
-                        type="missing_metric",
-                        detail=(
-                            f"[{p.name}] Bullet has no quantified impact: "
-                            f"{b.text[:100]}{'…' if len(b.text) > 100 else ''}."
-                        ),
-                    )
+                detail = (
+                    f"[{p.name}] Bullet has no quantified impact: "
+                    f"{b.text[:100]}{'…' if len(b.text) > 100 else ''}."
                 )
+                if not _declined_for(f"{p.name} {b.text} {b.rewritten_from}"):
+                    out.append(Suggestion(type="missing_metric", detail=detail))
             if "vague_scope" in (b.gaps or []):
                 out.append(
                     Suggestion(
@@ -446,6 +460,7 @@ def enforce_g1(
     *,
     bucket: str = "",
     thin: bool = False,
+    declined_needles: list[str] | None = None,
 ) -> GenerationResult:
     allow = allowed_skills(intake)
     cleaned_skills: dict[str, list[str]] = {}
@@ -469,7 +484,9 @@ def enforce_g1(
     kept_suggestions = [
         s for s in annotated.suggestions if s.type not in {"missing_skill"}
     ]
-    suggestions = kept_suggestions + suggestions_from_bullet_gaps(annotated.resume)
+    suggestions = kept_suggestions + suggestions_from_bullet_gaps(
+        annotated.resume, declined_needles=declined_needles
+    )
     suggestions.extend(
         build_missing_skill_suggestions(
             prevalence, owned, bucket=bucket, thin=thin
@@ -508,6 +525,7 @@ def _call_generator(
     norms: dict[str, Any],
     model: str,
     phase: str,
+    qa_store=None,
 ) -> AnnotatedGenerationResult:
     prompt = build_generation_prompt(
         intake,
@@ -515,6 +533,7 @@ def _call_generator(
         norms=norms,
         trim_instruction=trim_instruction,
         fluff_instruction=fluff_instruction,
+        qa_store=qa_store,
     )
     banned = sorted(banned_phrase_set())[:40]
     return complete_json(
@@ -536,10 +555,14 @@ def generate_resume(
     model: str = MODEL_SYNTHESIS,
     phase: str = "phase4",
     fluff_retry: bool = True,
+    qa_store=None,
 ) -> GenerationResult:
+    from src.generation.qa_store import declined_relates_to
+
     rulebook = load_rulebook(rulebook_path)
     norms = load_norms(norms_path)
     prevalence, bucket, thin = skill_prevalence_for_intake(norms, intake)
+    declined = declined_relates_to(qa_store) if qa_store is not None else []
 
     annotated = _call_generator(
         intake,
@@ -549,9 +572,15 @@ def generate_resume(
         norms=norms,
         model=model,
         phase=phase,
+        qa_store=qa_store,
     )
     result = enforce_g1(
-        annotated, intake, prevalence, bucket=bucket, thin=thin
+        annotated,
+        intake,
+        prevalence,
+        bucket=bucket,
+        thin=thin,
+        declined_needles=declined,
     )
 
     if fluff_retry:
@@ -565,9 +594,15 @@ def generate_resume(
                 norms=norms,
                 model=model,
                 phase=f"{phase}-fluff-retry",
+                qa_store=qa_store,
             )
             result = enforce_g1(
-                annotated, intake, prevalence, bucket=bucket, thin=thin
+                annotated,
+                intake,
+                prevalence,
+                bucket=bucket,
+                thin=thin,
+                declined_needles=declined,
             )
 
     return result

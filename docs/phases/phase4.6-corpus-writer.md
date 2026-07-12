@@ -11,6 +11,22 @@ Stop hardcoding fluff lists and few-shots. Mine style + rewrite knowledge from t
 5. **`src/generation/project_eval.py`** — per-project verdicts + field gaps; ungrounded claims dropped; suggestions type `project_evaluation`.
 6. **Tiered skill gaps** — core (>50%) and common (25–50%) with bucket disclosure.
 
+## Phase 4.7 follow-on — Elicitation memory & convergence
+Fixes infinite/shifting questions and flipping project field gaps:
+
+1. **`src/generation/qa_store.py`** — sidecar `*.qa.yaml` next to intake; stable content-hash ids; statuses `pending|answered|declined`; legacy `intake.answers` merged once.
+2. **Elicitation** — full prior Q&A history in the prompt; `impact` + `complete` fields; MiniLM semantic dedup; round budget (`--max-elicit-rounds`, default 3); rounds 2+ only admit `high` impact.
+3. **Generator** — answers block is full Q→A pairs; declined topics suppress repeat `missing_metric` suggestions.
+4. **Project eval** — prior-eval memory, `portfolio_composition`, verbatim `evidence_quote` validation for field gaps; `temperature=0`.
+5. **`status.json`** — round / converged / pending / eval_changed printed every run.
+
+```bash
+# First run seeds examples/my_intake.qa.yaml
+python -m src.generation.pipeline --intake examples/my_intake.yaml --out out/mine47 --elicit-only
+# Edit answer: fields in the sidecar (or set to 'skip'), then:
+python -m src.generation.pipeline --intake examples/my_intake.yaml --out out/mine48
+```
+
 ## Commands
 ```bash
 # One-time mining (G3 --yes)
@@ -28,6 +44,8 @@ python -m src.generation.pipeline --intake examples/my_intake.yaml --out out/min
 - [x] Project eval suggestions cite evidence ids.
 - [x] Skill suggestions tiered core/common.
 - [x] Unit tests green; live run on `my_intake.yaml`.
+- [x] QA sidecar + semantic dedup + convergence stopping rule.
+- [x] Field-gap quote validation + prior-eval stability.
 
 ## Honesty
 Corpus is swe_intern-heavy. Thin roles fall back to SWE-family norms/retrieval with an explicit disclosure in the norms block and skill suggestions.

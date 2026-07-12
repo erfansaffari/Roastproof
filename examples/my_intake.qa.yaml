@@ -1,0 +1,84 @@
+# Roastproof elicitation Q&A sidecar — edit `answer:` in place.
+# Leave null to skip for now; set to 'skip' to decline (never re-ask).
+# Re-run the pipeline after answering; do not copy ids into intake.yaml.
+round: 3
+converged: true
+questions:
+- id: q1
+  round: 1
+  topic: other
+  impact: high
+  question: (legacy answer q1 — question text unavailable)
+  relates_to: ''
+  answer: 1,000 total users on the ErgoClean commercial-client analytics dashboard.
+  status: answered
+- id: q2
+  round: 1
+  topic: other
+  impact: high
+  question: (legacy answer q2 — question text unavailable)
+  relates_to: ''
+  answer: 63% reduction in repeat production failure reports after debugging.
+  status: answered
+- id: q3
+  round: 1
+  topic: other
+  impact: high
+  question: (legacy answer q3 — question text unavailable)
+  relates_to: ''
+  answer: 2,300 total inquiries handled so far by the automation pipeline.
+  status: answered
+- id: q4
+  round: 1
+  topic: other
+  impact: high
+  question: (legacy answer q4 — question text unavailable)
+  relates_to: ''
+  answer: '9+ feature modules: posts, clubs, chatrooms, events, notifications, RBAC,
+    invite-code verification, per-school moderation, and points/leaderboard system.'
+  status: answered
+- id: q5
+  round: 1
+  topic: other
+  impact: high
+  question: (legacy answer q5 — question text unavailable)
+  relates_to: ''
+  answer: 40% growth in student engagement on the SchoolTalk platform.
+  status: answered
+- id: what-was-the-204ff517
+  round: 1
+  topic: missing_metric
+  impact: high
+  question: What was the percentage increase in qualified leads generated per week
+    after implementing the AI lead-generation agent at ErgoClean?
+  relates_to: ErgoClean - AI lead-generation agent generating 50+ qualified leads/week.
+  answer: skip
+  status: declined
+- id: can-you-provide-1b9d8989
+  round: 1
+  topic: missing_metric
+  impact: high
+  question: Can you provide the total number of users on the SchoolTalk platform at
+    the time of its launch?
+  relates_to: SchoolTalk - Founded and built a multi-tenant SaaS platform for Canadian
+    high schools, growing to 100+ users.
+  answer: Launched with ~30 users across 1 school; grew to 100+ across 3.
+  status: answered
+- id: what-was-the-27e7aa76
+  round: 2
+  topic: missing_metric
+  impact: high
+  question: What was the total number of inquiries handled by the automation pipeline
+    at ErgoClean?
+  relates_to: ErgoClean - automation pipeline
+  answer: skip
+  status: declined
+- id: what-was-the-0314bb77
+  round: 2
+  topic: missing_metric
+  impact: high
+  question: What was the percentage increase in student engagement on the SchoolTalk
+    platform after implementing the new features?
+  relates_to: SchoolTalk - student engagement
+  answer: skip
+  status: declined

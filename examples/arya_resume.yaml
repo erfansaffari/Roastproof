@@ -1,0 +1,82 @@
+name: Arya Rahimi
+email: arya.rahimi@torontomu.ca
+phone: 647-709-0942
+linkedin: ""
+github: ""
+target_role: Backend Developer
+year: year_3
+has_internships: true
+profile_summary: >
+  Third-year CS student with production backend and blockchain infrastructure
+  experience, specializing in Python/FastAPI microservices, containerized
+  distributed systems, and secure multi-chain applications.
+education:
+  - school: Toronto Metropolitan University
+    degree: B.S. Computer Science
+    dates: Expected 2027
+    location: Toronto, ON
+    details: >
+      Dean's List, Fall 2024 (GPA >= 3.5 with full course load).
+experience:
+  - company: Sarox Technology Inc.
+    title: Backend Developer Intern/Co-op
+    dates: Mar. 2024 -- Nov. 2024
+    location: Toronto, ON
+    description: >
+      Architected and deployed scalable Python backend pipelines with Docker
+      and Kubernetes for reliable, high-performance containerized services.
+      Built FastAPI microservices integrated with Celery async queues and
+      RabbitMQ for distributed, high-throughput ML inference and real-time
+      task processing. Optimized ML data pipelines and automation scripts,
+      cutting processing and training time by 70% while maintaining
+      production-grade reliability. Implemented CI/CD workflows, container
+      orchestration, and cloud automation to support team velocity and
+      secure deployments.
+  - company: SindadSec
+    title: DevOps Intern
+    dates: Aug. 2022 -- Nov. 2022
+    location: Tehran, Iran
+    description: >
+      Deployed production security tooling with Docker and Kubernetes,
+      including MISP for threat intelligence in hardened cloud environments.
+      Configured secure Linux servers using Nginx reverse proxies, firewalls,
+      and hardening; integrated RabbitMQ for reliable messaging in
+      distributed services.
+projects:
+  - name: glnc -- Multi-Chain Blockchain CLI (glnc.dev)
+    technologies: Node.js, Python, Docker, EVM, Solana, Bitcoin
+    dates: ""
+    description: >
+      Built and shipped a zero-config blockchain CLI supporting 9 chains
+      (EVM L1/L2s, Solana, Bitcoin) with wallet balances, live gas tracking,
+      and ERC-20/DeFi/NFT decoding without API keys or browsers. Engineered
+      a multi-RPC quorum engine with fallback and majority consensus for
+      reliable low-latency responses. Implemented a deep transaction decoder
+      for Uniswap, Aave, Governor, Safe, and Gnosis contracts with recursive
+      parsing plus FIFO cost-basis export. Hardened webhook alerts against
+      SSRF with strict allowlists, DNS pre-resolution, and blocking of
+      private ranges. Distributed via Homebrew with 500+ installs.
+  - name: Proof of Handshake -- Algorand Hackathon
+    technologies: Algorand, Smart Contracts, Cryptography
+    dates: ""
+    description: >
+      Designed a decentralized protocol on Algorand to verify real-world
+      physical meetings via on-chain smart contract logic and cryptographic
+      commitments. Modeled handshake verification as a two-party consent
+      protocol ensuring non-repudiation, replay resistance, and trust
+      minimization without centralized authorities. Leveraged Algorand's
+      fast finality and low-cost transactions to enable scalable, real-time
+      proof submissions for identity, events, and credential systems.
+skills:
+  - Python
+  - Node.js
+  - FastAPI
+  - Docker
+  - Kubernetes
+  - Celery
+  - RabbitMQ
+  - PostgreSQL
+  - Nginx
+  - CI/CD
+  - Solidity/Smart Contracts
+  - Algorand

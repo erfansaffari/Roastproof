@@ -91,6 +91,7 @@ def complete(
     phase: str,
     max_tokens: int,
     system: str | None = None,
+    temperature: float | None = None,
 ) -> str:
     """
     Calls the OpenAI Chat Completions API.
@@ -101,6 +102,7 @@ def complete(
         phase: The current development phase (for logging, G5).
         max_tokens: The maximum number of tokens to generate.
         system: An optional system prompt.
+        temperature: Optional sampling temperature (0 = deterministic).
 
     Returns:
         The completed text.
@@ -111,11 +113,15 @@ def complete(
         messages.append({"role": "system", "content": system})
     messages.append({"role": "user", "content": prompt})
 
-    response = client.chat.completions.create(
-        model=model,
-        messages=messages,
-        max_tokens=max_tokens,
-    )
+    kwargs: dict = {
+        "model": model,
+        "messages": messages,
+        "max_tokens": max_tokens,
+    }
+    if temperature is not None:
+        kwargs["temperature"] = temperature
+
+    response = client.chat.completions.create(**kwargs)
     content = response.choices[0].message.content or ""
     usage = _usage_dict(response.usage)
     _log_llm_call(phase, model, prompt, content, usage)
@@ -129,12 +135,13 @@ def complete_json(
     schema: Type[T],
     system: str | None = None,
     max_tokens: int = 4096,
+    temperature: float | None = None,
 ) -> T:
     """
     Calls OpenAI and parses the JSON response into a Pydantic schema.
 
     Uses response_format=json_object. Retries once on validation failure with
-    the error appended to the prompt.
+    the error appended to the prompt. Optional temperature (0 for judgment calls).
     """
     client = _client()
     system_msg = system or (
@@ -147,12 +154,15 @@ def complete_json(
     ]
 
     for _ in range(2):  # initial attempt + one retry
-        response = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            max_tokens=max_tokens,
-            response_format={"type": "json_object"},
-        )
+        kwargs: dict = {
+            "model": model,
+            "messages": messages,
+            "max_tokens": max_tokens,
+            "response_format": {"type": "json_object"},
+        }
+        if temperature is not None:
+            kwargs["temperature"] = temperature
+        response = client.chat.completions.create(**kwargs)
         content = response.choices[0].message.content or ""
         usage = _usage_dict(response.usage)
         _log_llm_call(phase, model, prompt, content, usage)
