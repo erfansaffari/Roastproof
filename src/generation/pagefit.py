@@ -98,11 +98,13 @@ def fit_to_one_page(
         excess = pages - 1
         # Rough heuristic: ~3–4 bullets per extra page-ish; ask to cut a few.
         cut = max(2, min(6, excess * 3 + attempt))
-        trim = (
-            f"The previous draft compiled to {pages} pages. Cut the lowest-value "
-            f"bullets and tighten wording to target roughly {cut} fewer lines. "
-            f"Prefer dropping weak project bullets first. Keep G1 — do not invent "
-            f"content to fill space. Current bullet count ≈ {total_bullets(result.resume)}."
+        from src.generation.prompts import pagefit_trim_instruction, resolve_role_profile
+
+        trim = pagefit_trim_instruction(
+            pages=pages,
+            cut_lines=cut,
+            bullet_count=total_bullets(result.resume),
+            role=resolve_role_profile(intake.target_role),
         )
         result = generate_fn(intake, trim_instruction=trim)
         tex_path, pdf_path = render_and_compile(result.resume, out_dir, basename=basename)

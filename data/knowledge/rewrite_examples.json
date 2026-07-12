@@ -1,0 +1,599 @@
+{
+  "meta": {
+    "n_pairs": 59,
+    "model": "gpt-4o-mini",
+    "filtered": true
+  },
+  "pairs": [
+    {
+      "before": "ensures end to end functionality",
+      "critique_verbatim": "I dunno if \u001censures end to end functionality\u001d is meaningful as a phrase; you can instead talk about whether you improved code coverage, or made the edge case testing more robust or something",
+      "after": "Talk about whether you improved code coverage or made edge case testing more robust",
+      "section": "experience",
+      "thread_id": "1292160519779651659",
+      "supporting_thread_ids": [
+        "1292160519779651659"
+      ]
+    },
+    {
+      "before": "improving app functionality and delivering a seamless, consistent user experience across device",
+      "critique_verbatim": "Your actual work is very vague and the focus is just on listing tech stacks. For example, your first bullet spends 2 whole lines to just tell me you used React Native. \"improving app functionality and delivering a seamless, consistent user experience across device\" isn't specific enough to tell me anything about what you actually did",
+      "after": "Provide specific details about what you actually did",
+      "section": "experience",
+      "thread_id": "1325906784581451956",
+      "supporting_thread_ids": [
+        "1325906784581451956"
+      ]
+    },
+    {
+      "before": "more accurate job matches",
+      "critique_verbatim": "What are \"more accurate job matches\"? Like the rank-match kind of match? You're describing what the tool should ideally do (enhance UX, optimize job search), but you haven't told me enough of what it does to believe you",
+      "after": "Clarify what more accurate job matches mean and what the tool actually does",
+      "section": "experience",
+      "thread_id": "1325906784581451956",
+      "supporting_thread_ids": [
+        "1325906784581451956"
+      ]
+    },
+    {
+      "before": "Achieved measurable performance improvement",
+      "critique_verbatim": "\"Achieved measurable performance improvement\" - This is the perfect place to give me some stats",
+      "after": "Provide specific statistics to support the claim",
+      "section": "experience",
+      "thread_id": "1325906784581451956",
+      "supporting_thread_ids": [
+        "1325906784581451956"
+      ]
+    },
+    {
+      "before": "Wrote a recursive equation evaluation algorithm to compare function values with points on the graph",
+      "critique_verbatim": "You could also expand on \"Wrote a recursive equation evaluation algorithm to compare function values with points on the graph\". I assume this is to calculate how to colour different points on the graph? This project could be a good differentiator since generic full stack/discord bot projects are common, so give it more focus if you can",
+      "after": "Expand on the project to clarify its purpose and contribution",
+      "section": "projects",
+      "thread_id": "1325977031552401408",
+      "supporting_thread_ids": [
+        "1325977031552401408"
+      ]
+    },
+    {
+      "before": "Lightweight but delicated React",
+      "critique_verbatim": "Couple spelling issues I saw. \"Lightweight but delicated React\" delicate?",
+      "after": "Correct spelling to 'Lightweight but delicate React'",
+      "section": "projects",
+      "thread_id": "1326242422778236941",
+      "supporting_thread_ids": [
+        "1326242422778236941"
+      ]
+    },
+    {
+      "before": "__candidate for __ honours bachelor's of X",
+      "critique_verbatim": "i normally put it as \"__candidate for __ honours bachelor's of X\" - would help to fill out the space a bit more",
+      "after": "Format degree as '__candidate for __ honours bachelor's of X'",
+      "section": "education",
+      "thread_id": "1329288078044696627",
+      "supporting_thread_ids": [
+        "1329288078044696627"
+      ]
+    },
+    {
+      "before": "Its also nice to simplify down some sentences; your line about improving test performance by 80% somewhat repeats the opening of that line (optimized test performance), and this can be shortened by just opening with \u201cimplemented parallel execution utilizing multithreading \u2026\u201d",
+      "critique_verbatim": "implemented parallel execution utilizing multithreading \u2026",
+      "after": "Begin with 'implemented parallel execution utilizing multithreading \u2026' to simplify the sentence.",
+      "section": "experience",
+      "thread_id": "1290678757912219748",
+      "supporting_thread_ids": [
+        "1290678757912219748"
+      ]
+    },
+    {
+      "before": "Executed competitive analysis",
+      "critique_verbatim": "Executed competitive analysis",
+      "after": "Clarify the meaning of 'executed competitive analysis'.",
+      "section": "experience",
+      "thread_id": "1290739698444009665",
+      "supporting_thread_ids": [
+        "1290739698444009665"
+      ]
+    },
+    {
+      "before": "focused on CI/CD practices",
+      "critique_verbatim": "focused on CI/CD practices",
+      "after": "Avoid using fluff words that don't convey meaningful information.",
+      "section": "experience",
+      "thread_id": "1291597715867701329",
+      "supporting_thread_ids": [
+        "1291597715867701329"
+      ]
+    },
+    {
+      "before": "Handled the previous bugs and issues related to database",
+      "critique_verbatim": "Handled the previous bugs and issues related to database",
+      "after": "Provide more details to clarify the scope of handling bugs and issues related to the database.",
+      "section": "experience",
+      "thread_id": "1312597684410126396",
+      "supporting_thread_ids": [
+        "1312597684410126396"
+      ]
+    },
+    {
+      "before": "Developed full data **ingestion** pipeline for the CanDIG federated cancer research database using __________, allowing for researchers to upload partient data for the first time.",
+      "critique_verbatim": "Developed full data **ingestion** pipeline for the CanDIG federated cancer research database using __________, allowing for researchers to upload partient data for the first time.",
+      "after": "Ensure that both bullet points belong to the same sentence for fluidity.",
+      "section": "experience",
+      "thread_id": "1326614270510764134",
+      "supporting_thread_ids": [
+        "1326614270510764134"
+      ]
+    },
+    {
+      "before": "developed the backend",
+      "critique_verbatim": "developed the backend",
+      "after": "Provide more detail by specifying what was developed, such as 'developed user registration system?' or 'developed emailer?'.",
+      "section": "experience",
+      "thread_id": "1333350591107305514",
+      "supporting_thread_ids": [
+        "1333350591107305514"
+      ]
+    },
+    {
+      "before": "Created over X articles on company website by developing templates using ....",
+      "critique_verbatim": "Created over X articles on company website by developing templates using ....",
+      "after": "Rephrase to show quantifiable impact, such as 'Created over X articles on company website by developing templates using ....'.",
+      "section": "experience",
+      "thread_id": "1358229048085450842",
+      "supporting_thread_ids": [
+        "1358229048085450842"
+      ]
+    },
+    {
+      "before": "Web stuff is featured prominently",
+      "critique_verbatim": "cut that down",
+      "after": "Cut down the prominence of web-related content.",
+      "section": "projects",
+      "thread_id": "1287910925835309117",
+      "supporting_thread_ids": [
+        "1287910925835309117"
+      ]
+    },
+    {
+      "before": "'utilized the atlassian API along with'",
+      "critique_verbatim": "is so much fluff. Start your sentences/bullets with, what did you build, followed by the tech",
+      "after": "Start sentences/bullets with what you built, followed by the technology used.",
+      "section": "experience",
+      "thread_id": "1287910925835309117",
+      "supporting_thread_ids": [
+        "1287910925835309117"
+      ]
+    },
+    {
+      "before": "most bigger/reasonable tech internships we give a dedicated project for the intern to own from start to finish",
+      "critique_verbatim": "so this is more of the norm",
+      "after": "Highlight that most internships provide a dedicated project for the intern to own from start to finish.",
+      "section": "experience",
+      "thread_id": "1287910925835309117",
+      "supporting_thread_ids": [
+        "1287910925835309117"
+      ]
+    },
+    {
+      "before": "it's good rn but non technical ppl reading it would just find it too wordy",
+      "critique_verbatim": "for a technical person",
+      "after": "Simplify wording to ensure clarity for non-technical readers.",
+      "section": "general",
+      "thread_id": "1289087515059425341",
+      "supporting_thread_ids": [
+        "1289087515059425341"
+      ]
+    },
+    {
+      "before": "if u are gonna use 2 line bullets make sure u use the whole second line",
+      "critique_verbatim": "bc otherwise it's just wasted space that could be used better",
+      "after": "Ensure to use the entire second line when using two-line bullets to utilize space effectively.",
+      "section": "experience",
+      "thread_id": "1289087515059425341",
+      "supporting_thread_ids": [
+        "1289087515059425341"
+      ]
+    },
+    {
+      "before": "60% company wide productivity increase",
+      "critique_verbatim": "doesn't seem feasible for an intern to do (maybe u did do it but as a reader it seems dubious)",
+      "after": "Reconsider presenting the 60% productivity increase as it may seem dubious for an intern.",
+      "section": "experience",
+      "thread_id": "1289087515059425341",
+      "supporting_thread_ids": [
+        "1289087515059425341"
+      ]
+    },
+    {
+      "before": "I have no idea what you did at Connexix",
+      "critique_verbatim": "Looks like you implemented some things you learnt in school. No idea why those were used or what problems they were solving though.",
+      "after": "Clarify your contributions and the problems addressed during your time at Connexix.",
+      "section": "experience",
+      "thread_id": "1289288977068593183",
+      "supporting_thread_ids": [
+        "1289288977068593183"
+      ]
+    },
+    {
+      "before": "No one 'architects' tests",
+      "critique_verbatim": "just say you wrote 100+ tests",
+      "after": "State that you wrote 100+ tests instead of using the term 'architects'.",
+      "section": "experience",
+      "thread_id": "1292160519779651659",
+      "supporting_thread_ids": [
+        "1292160519779651659"
+      ]
+    },
+    {
+      "before": "The first job is p reasonable",
+      "critique_verbatim": "but just reads a lil clunky. You\u2019re stuffing a lot of impactful but a teeny bit generic info there.",
+      "after": "Revise the description of the first job to improve clarity and narrative coherence.",
+      "section": "experience",
+      "thread_id": "1292160519779651659",
+      "supporting_thread_ids": [
+        "1292160519779651659"
+      ]
+    },
+    {
+      "before": "there\u2019s a lot of types of things you worked on that you\u2019re writing as either an afterthought or you\u2019re bundling with not like items",
+      "critique_verbatim": "Framing matters here, so think about what narrative you want to present and it will come naturally to you what you should say.",
+      "after": "Improve framing of diverse experiences to present a cohesive narrative.",
+      "section": "general",
+      "thread_id": "1292160519779651659",
+      "supporting_thread_ids": [
+        "1292160519779651659"
+      ]
+    },
+    {
+      "before": "I see a hint of these in yours, but it\u2019s a little jumbled",
+      "critique_verbatim": "Every resume tells a narrative about the person. What their history is, what their background is, but also what interests them and drives them.",
+      "after": "Ensure your resume clearly communicates your personal narrative, interests, and motivations.",
+      "section": "general",
+      "thread_id": "1292160519779651659",
+      "supporting_thread_ids": [
+        "1292160519779651659"
+      ]
+    },
+    {
+      "before": "You wrote SQL for this, not SQL scripts",
+      "critique_verbatim": "People are familiar with ETLs, but 'SQL scripts' probably undersells what you actually did.",
+      "after": "Specify that you wrote SQL instead of referencing it as 'SQL scripts'.",
+      "section": "experience",
+      "thread_id": "1292160519779651659",
+      "supporting_thread_ids": [
+        "1292160519779651659"
+      ]
+    },
+    {
+      "before": "increased accuracy by 30%",
+      "critique_verbatim": "increased accuracy by 30% - is this additive or multiplicative? unsure",
+      "after": "Clarify if the 30% increase in accuracy is additive or multiplicative.",
+      "section": "experience",
+      "thread_id": "1325869624696242228",
+      "supporting_thread_ids": [
+        "1325869624696242228"
+      ]
+    },
+    {
+      "before": "for mathsoc director, finance",
+      "critique_verbatim": "we could expand on the bullet points here - how many requests did you audit, what was involved in cash closing procedures.",
+      "after": "Expand on the bullet points by adding how many requests were audited and details about cash closing procedures.",
+      "section": "experience",
+      "thread_id": "1329288078044696627",
+      "supporting_thread_ids": [
+        "1329288078044696627"
+      ]
+    },
+    {
+      "before": "for the competitions/conferences:",
+      "critique_verbatim": "the cumc talk is really cool - we could consider adding how many people you presented to? or where it was physically? mention that it's a national conference?",
+      "after": "Include the number of attendees and location of the cumc talk, and mention that it was a national conference.",
+      "section": "projects",
+      "thread_id": "1329288078044696627",
+      "supporting_thread_ids": [
+        "1329288078044696627"
+      ]
+    },
+    {
+      "before": "You have really good projects, the formatting things i said above apply here i.e. bolding and quantifying.",
+      "critique_verbatim": "You have really good projects, the formatting things i said above apply here i.e. bolding and quantifying.",
+      "after": "Apply bolding and quantifying to the project descriptions.",
+      "section": "projects",
+      "thread_id": "1330750850142048341",
+      "supporting_thread_ids": [
+        "1330750850142048341"
+      ]
+    },
+    {
+      "before": "For example, here you bolded a metric ($300) and some libraries (MappedIn, MERN)",
+      "critique_verbatim": "For example, here you bolded a metric ($300) and some libraries (MappedIn, MERN), however you didnt bold Express.js and MongoDB, which id argue is just as important or more important than MappedIn.",
+      "after": "Bold all key technologies and metrics for consistency in emphasis.",
+      "section": "formatting",
+      "thread_id": "1332036394423681086",
+      "supporting_thread_ids": [
+        "1332036394423681086"
+      ]
+    },
+    {
+      "before": "no need to tell the recruiter about the company you worked for",
+      "critique_verbatim": "no need to tell the recruiter about the company you worked for; tell them what you did while there!",
+      "after": "Focus on responsibilities and accomplishments rather than the company details.",
+      "section": "experience",
+      "thread_id": "1336524154777767947",
+      "supporting_thread_ids": [
+        "1336524154777767947"
+      ]
+    },
+    {
+      "before": "Your resume is cracked for first coop lol.",
+      "critique_verbatim": "I would elaborate on the engineering and technical experience for your extra cirriculars.",
+      "after": "Elaborate on the engineering and technical experience for extracurriculars.",
+      "section": "experience",
+      "thread_id": "1354952685996216452",
+      "supporting_thread_ids": [
+        "1354952685996216452"
+      ]
+    },
+    {
+      "before": "across your projects/experiences, highlight relevant keywords or things you want recruiters to notice by bolding them.",
+      "critique_verbatim": "across your projects/experiences, highlight relevant keywords or things you want recruiters to notice by bolding them.",
+      "after": "Highlight relevant keywords by bolding them.",
+      "section": "experience",
+      "thread_id": "1456324557483933717",
+      "supporting_thread_ids": [
+        "1456324557483933717"
+      ]
+    },
+    {
+      "before": "You havent put languages with any other job, doesnt make sense to put it under mongo",
+      "critique_verbatim": "You havent put languages with any other job, doesnt make sense to put it under mongo",
+      "after": "Include languages with other job experiences instead of placing them under Mongo.",
+      "section": "experience",
+      "thread_id": "1471311796878053426",
+      "supporting_thread_ids": [
+        "1471311796878053426"
+      ]
+    },
+    {
+      "before": "Maybe try expanding on some points in your back end. Don\u2019t be afraid to use some two liners.",
+      "critique_verbatim": "Maybe try expanding on some points in your back end. Don\u2019t be afraid to use some two liners.",
+      "after": "Expand on some points in the back end and use two-line bullet points where necessary.",
+      "section": "experience",
+      "thread_id": "1472351084034130053",
+      "supporting_thread_ids": [
+        "1472351084034130053"
+      ]
+    },
+    {
+      "before": "Those 4 bullets in the first job are all disjoint, it makes you look more like the guy they call to go fix random things.",
+      "critique_verbatim": "Those 4 bullets in the first job are all disjoint, it makes you look more like the guy they call to go fix random things.",
+      "after": "Ensure the bullets in the first job are cohesive to avoid the perception of being a 'fixer.'",
+      "section": "experience",
+      "thread_id": "1289058604095111232",
+      "supporting_thread_ids": [
+        "1289058604095111232"
+      ]
+    },
+    {
+      "before": "Also increasing the annual revenue like.... I have no idea how revamping the AI contributes to that annual revenue change.",
+      "critique_verbatim": "Also increasing the annual revenue like.... I have no idea how revamping the AI contributes to that annual revenue change.",
+      "after": "Clarify how revamping the AI contributes to the annual revenue change for more impactful statements.",
+      "section": "experience",
+      "thread_id": "1289058604095111232",
+      "supporting_thread_ids": [
+        "1289058604095111232"
+      ]
+    },
+    {
+      "before": "Hmm, it's realllyyy hard to explain in 1-2 sentences as it needs a LOT of context.",
+      "critique_verbatim": "Hmm, it's realllyyy hard to explain in 1-2 sentences as it needs a LOT of context.",
+      "after": "Provide sufficient context in your project descriptions for clarity.",
+      "section": "projects",
+      "thread_id": "1289058604095111232",
+      "supporting_thread_ids": [
+        "1289058604095111232"
+      ]
+    },
+    {
+      "before": "Your projects section; I dunno what they are lol.",
+      "critique_verbatim": "Your projects section; I dunno what they are lol.",
+      "after": "Clarify the projects section to ensure it communicates what the projects are.",
+      "section": "projects",
+      "thread_id": "1289058604095111232",
+      "supporting_thread_ids": [
+        "1289058604095111232"
+      ]
+    },
+    {
+      "before": "I personally also bold the parts of each bullet point encapsulate the important technical contributions.",
+      "critique_verbatim": "I personally also bold the parts of each bullet point encapsulate the important technical contributions.",
+      "after": "Bold parts of each bullet point that encapsulate important technical contributions.",
+      "section": "experience",
+      "thread_id": "1290739698444009665",
+      "supporting_thread_ids": [
+        "1290739698444009665"
+      ]
+    },
+    {
+      "before": "This also means you can emphasize specifics of your extracurriculars so that readers can get the important details with a glance.",
+      "critique_verbatim": "This also means you can emphasize specifics of your extracurriculars so that readers can get the important details with a glance.",
+      "after": "Emphasize specifics of extracurriculars to convey important details at a glance.",
+      "section": "experience",
+      "thread_id": "1290739698444009665",
+      "supporting_thread_ids": [
+        "1290739698444009665"
+      ]
+    },
+    {
+      "before": "I dunno what mobile app you built, like what was it for",
+      "critique_verbatim": "I dunno what mobile app you built, like what was it for.",
+      "after": "Specify what the mobile app you built was for.",
+      "section": "projects",
+      "thread_id": "1290739698444009665",
+      "supporting_thread_ids": [
+        "1290739698444009665"
+      ]
+    },
+    {
+      "before": "AI schizophrenia detection is a bit weird.... if that was initiated by you and you soloed it not affiliated with anything, it's a lil questionable",
+      "critique_verbatim": "AI schizophrenia detection is a bit weird.... if that was initiated by you and you soloed it not affiliated with anything, it's a lil questionable.",
+      "after": "Clarify your role in AI schizophrenia detection to avoid any ambiguity about your contributions.",
+      "section": "projects",
+      "thread_id": "1291597715867701329",
+      "supporting_thread_ids": [
+        "1291597715867701329"
+      ]
+    },
+    {
+      "before": "You\u2019re not writing the art exp well though",
+      "critique_verbatim": "You\u2019re not writing the art exp well though.",
+      "after": "Improve the writing of the art experience section.",
+      "section": "experience",
+      "thread_id": "1292213857342849164",
+      "supporting_thread_ids": [
+        "1292213857342849164"
+      ]
+    },
+    {
+      "before": "You probably don't need a whole section for relevant coursework and can list the most important ones in education.",
+      "critique_verbatim": "You probably don't need a whole section for relevant coursework and can list the most important ones in education.",
+      "after": "List the most important coursework in the education section instead of creating a whole section for it.",
+      "section": "education",
+      "thread_id": "1296580861248143422",
+      "supporting_thread_ids": [
+        "1296580861248143422"
+      ]
+    },
+    {
+      "before": "C and C++ have diverged significantly enough that they're separate languages",
+      "critique_verbatim": "C and C++ have diverged significantly enough that they're separate languages",
+      "after": "Clarify that C and C++ are separate languages.",
+      "section": "skills",
+      "thread_id": "1301065080703811666",
+      "supporting_thread_ids": [
+        "1301065080703811666"
+      ]
+    },
+    {
+      "before": "for your second experience, the first bullet point, even though you mention AI, it's actually extremely weak",
+      "critique_verbatim": "for your second experience, the first bullet point, even though you mention AI, it's actually extremely weak",
+      "after": "Enhance the first bullet point in your second experience to strengthen the mention of AI.",
+      "section": "experience",
+      "thread_id": "1301065080703811666",
+      "supporting_thread_ids": [
+        "1301065080703811666"
+      ]
+    },
+    {
+      "before": "first experience, second bullet point has no context",
+      "critique_verbatim": "first experience, second bullet point has no context",
+      "after": "Provide context for the second bullet point in your first experience.",
+      "section": "experience",
+      "thread_id": "1301065080703811666",
+      "supporting_thread_ids": [
+        "1301065080703811666"
+      ]
+    },
+    {
+      "before": "'Boosted productivity by 800%' \u0001f602 no offense where did you get these numbers",
+      "critique_verbatim": "'Boosted productivity by 800%' \u0001f602 no offense where did you get these numbers",
+      "after": "Provide credible sources for the claimed productivity increase.",
+      "section": "experience",
+      "thread_id": "1301065080703811666",
+      "supporting_thread_ids": [
+        "1301065080703811666"
+      ]
+    },
+    {
+      "before": "Your SQL bullet point is really weak, doing queries is really useful for any company so express what you've done with it",
+      "critique_verbatim": "Your SQL bullet point is really weak, doing queries is really useful for any company so express what you've done with it",
+      "after": "Strengthen your SQL bullet point by detailing specific contributions.",
+      "section": "experience",
+      "thread_id": "1301065080703811666",
+      "supporting_thread_ids": [
+        "1301065080703811666"
+      ]
+    },
+    {
+      "before": "The raspberry pi bullet point.... Says absolutely nothing",
+      "critique_verbatim": "The raspberry pi bullet point.... Says absolutely nothing",
+      "after": "Revise the Raspberry Pi bullet point to convey meaningful information.",
+      "section": "projects",
+      "thread_id": "1301065080703811666",
+      "supporting_thread_ids": [
+        "1301065080703811666"
+      ]
+    },
+    {
+      "before": "same w concepts - it actually duplicates what is implied from your languages. It's clear you know frontend/backend/databases/oop/memory from the languages you've listed alone. The space we're using on re-listing it could better be used elsewhere!",
+      "critique_verbatim": "same w concepts - it actually duplicates what is implied from your languages. It's clear you know frontend/backend/databases/oop/memory from the languages you've listed alone. The space we're using on re-listing it could better be used elsewhere!",
+      "after": "Eliminate redundant concepts as they duplicate information implied by your listed languages.",
+      "section": "skills",
+      "thread_id": "1333350591107305514",
+      "supporting_thread_ids": [
+        "1333350591107305514"
+      ]
+    },
+    {
+      "before": "Looks good, just bold your metrics and technologies for a better view",
+      "critique_verbatim": "Looks good, just bold your metrics and technologies for a better view",
+      "after": "Bold your metrics and technologies for improved visibility.",
+      "section": "experience",
+      "thread_id": "1365724239445102592",
+      "supporting_thread_ids": [
+        "1365724239445102592"
+      ]
+    },
+    {
+      "before": "id combine the two cco points since theyre kinda repetitive",
+      "critique_verbatim": "id combine the two cco points since theyre kinda repetitive",
+      "after": "Combine the two CCO points to eliminate redundancy.",
+      "section": "experience",
+      "thread_id": "1454792829003104369",
+      "supporting_thread_ids": [
+        "1454792829003104369"
+      ]
+    },
+    {
+      "before": "first job title to software engineer or software engineering intern (maybe add data engineer as well if you want)",
+      "critique_verbatim": "I\u2019d change first job title to software engineer or software engineering intern (maybe add data engineer as well if you want)",
+      "after": "Change first job title to software engineer or software engineering intern; consider adding data engineer.",
+      "section": "experience",
+      "thread_id": "1468067378926457002",
+      "supporting_thread_ids": [
+        "1468067378926457002"
+      ]
+    },
+    {
+      "before": "quantify bullet points 3-5 and maybe explain what you did there since it seems generic / filler",
+      "critique_verbatim": "For first exp id quantify bullet points 3-5 and maybe explain what you did there since it seems generic / filler",
+      "after": "Quantify bullet points 3-5 and explain your contributions to avoid generic descriptions.",
+      "section": "experience",
+      "thread_id": "1468067378926457002",
+      "supporting_thread_ids": [
+        "1468067378926457002"
+      ]
+    },
+    {
+      "before": "simplify the wording of the first project, too many big words but as a recruiter i would have no idea what it achieves",
+      "critique_verbatim": "i would simplify the wording of the first project, too many big words but as a recruiter i would have no idea what it achieves",
+      "after": "Simplify the wording of the first project to ensure clarity on its achievements.",
+      "section": "projects",
+      "thread_id": "1469875033563332839",
+      "supporting_thread_ids": [
+        "1469875033563332839"
+      ]
+    },
+    {
+      "before": "big bro big sis sounds kinda far from 'social work'. 3 years the jot note is too bland.",
+      "critique_verbatim": "And lowk the way u wrote the big bro big sis sounds kinda far from \u2018social work\u2019. 3 years the jot note is too bland. imo, im just a rando online",
+      "after": "Revise the description for 'big bro big sis' to better align with 'social work', and enhance the jot note for the three years.",
+      "section": "experience",
+      "thread_id": "1473751525183717602",
+      "supporting_thread_ids": [
+        "1473751525183717602"
+      ]
+    }
+  ]
+}

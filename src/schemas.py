@@ -171,14 +171,94 @@ class ResumeContent(BaseModel):
 
 class Suggestion(BaseModel):
     """Gap surfaced to the user — never silently added to the resume (G1)."""
-    type: str = Field(..., description="missing_skill | missing_metric | content_gap")
+    type: str = Field(
+        ...,
+        description=(
+            "missing_skill | missing_metric | content_gap | project_evaluation"
+        ),
+    )
     detail: str
+
+
+class ProjectVerdict(BaseModel):
+    name: str
+    verdict: str = Field(..., description="strong_keep | strengthen | replace")
+    rationale: str = ""
+    improvements: List[str] = Field(default_factory=list)
+    evidence_ids: List[str] = Field(default_factory=list)
+
+
+class FieldGap(BaseModel):
+    gap: str
+    evidence_ids: List[str] = Field(default_factory=list)
+
+
+class ProjectEvalResult(BaseModel):
+    projects: List[ProjectVerdict] = Field(default_factory=list)
+    field_gaps: List[FieldGap] = Field(default_factory=list)
+
+
+class AnnotatedBullet(BaseModel):
+    """
+    Generator must rewrite each bullet and attest provenance + gaps.
+    `text` is what lands on the resume; gaps feed suggestions.
+    """
+    text: str
+    rewritten_from: str = Field(
+        "",
+        description="Source phrase/sentence from intake this bullet was rewritten from.",
+    )
+    gaps: List[str] = Field(
+        default_factory=list,
+        description='Zero or more of: "no_metric", "vague_scope". Empty if solid.',
+    )
+
+
+class AnnotatedExperience(BaseModel):
+    company: str
+    title: str
+    dates: str
+    location: str = ""
+    bullets: List[AnnotatedBullet] = Field(default_factory=list)
+
+
+class AnnotatedProject(BaseModel):
+    name: str
+    technologies: str = ""
+    dates: str = ""
+    bullets: List[AnnotatedBullet] = Field(default_factory=list)
+
+
+class AnnotatedResume(BaseModel):
+    """LLM-facing resume shape with annotated bullets (flattened for rendering)."""
+    contact: Dict[str, str]
+    education: List[Dict[str, str]]
+    experience: List[AnnotatedExperience]
+    projects: List[AnnotatedProject]
+    skills: Dict[str, List[str]]
+    section_order: List[str]
+
+
+class AnnotatedGenerationResult(BaseModel):
+    resume: AnnotatedResume
+    suggestions: List[Suggestion] = Field(default_factory=list)
 
 
 class GenerationResult(BaseModel):
     """Generator output: structured resume + suggestions report seed."""
     resume: ResumeContent
     suggestions: List[Suggestion] = Field(default_factory=list)
+
+
+class ElicitationQuestion(BaseModel):
+    id: str
+    topic: str = Field(..., description="missing_metric | vague_scope | missing_skill | other")
+    question: str
+    relates_to: str = Field("", description="Company/project + short context snippet.")
+
+
+class ElicitationResult(BaseModel):
+    questions: List[ElicitationQuestion] = Field(default_factory=list)
 
 
 class IntakeEducation(BaseModel):
@@ -227,6 +307,24 @@ class Intake(BaseModel):
     experience: List[IntakeExperience] = Field(default_factory=list)
     projects: List[IntakeProject] = Field(default_factory=list)
     skills: List[str] = Field(default_factory=list)
+    answers: Dict[str, str] = Field(
+        default_factory=dict,
+        description="Map of elicitation question id → user answer (second-run facts).",
+    )
+
+    @field_validator("answers", mode="before")
+    @classmethod
+    def drop_null_answers(cls, v):
+        """Allow YAML `q6: null` / empty values — treat as unanswered."""
+        if v is None:
+            return {}
+        if not isinstance(v, dict):
+            return v
+        return {
+            str(k): str(val)
+            for k, val in v.items()
+            if val is not None and str(val).strip() and str(val).strip().lower() != "null"
+        }
 
     def to_applicant_profile(self) -> ApplicantProfile:
         return ApplicantProfile(

@@ -82,6 +82,13 @@ projects:
       types, dynamically setting retrieval depth and token budget.
       Ran ablations (hierarchical vs. flat retrieval) across 10 query
       classes, logging results to Weights & Biases for reproducibility.
+answers:
+  q1: "1,000 total users on the ErgoClean commercial-client analytics dashboard."
+  q2: "63% reduction in repeat production failure reports after debugging."
+  q3: "2,300 total inquiries handled so far by the automation pipeline."
+  q4: "9+ feature modules: posts, clubs, chatrooms, events, notifications, RBAC, invite-code verification, per-school moderation, and points/leaderboard system."
+  q5: "40% growth in student engagement on the SchoolTalk platform."
+  # q6 omitted — no real chaos-test numbers yet; add when available
 skills:
   - Python
   - Go

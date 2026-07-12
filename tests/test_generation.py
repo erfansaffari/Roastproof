@@ -1,22 +1,34 @@
-"""Unit tests for Phase 4 generation helpers (no live LLM required)."""
+"""Unit tests for Phase 4 / 4.5 generation helpers (no live LLM required)."""
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import pytest
 
+from src.generation.fluff import find_fluff_hits, lint_resume_fluff
 from src.generation.generator import (
     allowed_skills,
+    annotated_to_resume,
     enforce_g1,
+    expand_skill_tokens,
     format_norms_block,
     intake_norms_bucket,
+    skill_is_owned,
 )
 from src.generation.intake import load_intake
 from src.generation.pagefit import hard_trim, total_bullets
 from src.generation.renderer import latex_escape, render_tex
-from src.schemas import GenerationResult, Intake, ResumeContent, Suggestion
+from src.schemas import (
+    AnnotatedBullet,
+    AnnotatedExperience,
+    AnnotatedGenerationResult,
+    AnnotatedProject,
+    AnnotatedResume,
+    Intake,
+    ResumeContent,
+    Suggestion,
+)
 
 
 def _long(s: str, n: int = 70) -> str:
@@ -24,6 +36,75 @@ def _long(s: str, n: int = 70) -> str:
     if len(s) >= n:
         return s[:140]
     return (s + " " + ("x" * (n - len(s) - 1))).strip()
+
+
+def _annotated(
+    *,
+    skills: dict | None = None,
+    experience_bullets: list[AnnotatedBullet] | None = None,
+    suggestions: list[Suggestion] | None = None,
+) -> AnnotatedGenerationResult:
+    bullets = experience_bullets or [
+        AnnotatedBullet(
+            text=_long("Built internal tooling in Python for equipment checkout workflows"),
+            rewritten_from="Built internal tooling",
+            gaps=[],
+        )
+    ]
+    return AnnotatedGenerationResult(
+        resume=AnnotatedResume(
+            contact={
+                "name": "Alex Chen",
+                "email": "a@b.com",
+                "phone": "555",
+                "linkedin": "",
+                "github": "",
+                "website": "",
+            },
+            education=[
+                {
+                    "school": "State U",
+                    "degree": "BS CS",
+                    "dates": "2023--Present",
+                    "location": "TX",
+                    "details": "",
+                }
+            ],
+            experience=[
+                AnnotatedExperience(
+                    company="Lab",
+                    title="Intern",
+                    dates="2025",
+                    location="TX",
+                    bullets=bullets,
+                )
+            ],
+            projects=[
+                AnnotatedProject(
+                    name="Planner",
+                    technologies="React, TypeScript",
+                    dates="2025",
+                    bullets=[
+                        AnnotatedBullet(
+                            text=_long(
+                                "Built a degree planner web app used by classmates during advising"
+                            ),
+                            rewritten_from="degree planner",
+                            gaps=[],
+                        )
+                    ],
+                )
+            ],
+            skills=skills
+            or {
+                "Languages": ["Python", "TypeScript"],
+                "Frameworks": ["React"],
+                "Developer Tools": ["Docker"],
+            },
+            section_order=["education", "experience", "projects", "skills"],
+        ),
+        suggestions=suggestions or [],
+    )
 
 
 def _minimal_resume(**overrides) -> ResumeContent:
@@ -84,7 +165,6 @@ def test_latex_escape_adversarial():
     assert r"\_" in escaped
     assert r"\%" in escaped
     assert "#" in escaped or r"\#" in escaped
-    # Full specials
     all_specials = r"\ % & # _ $ { } ~ ^"
     out = latex_escape(all_specials)
     assert r"\textbackslash{}" in out
@@ -113,34 +193,102 @@ def test_fabrication_g1_git_to_suggestions_not_resume():
     intake = load_intake(Path("examples/intake_example.yaml"))
     assert "git" not in {s.lower() for s in intake.skills}
 
-    resume = _minimal_resume(
+    annotated = _annotated(
         skills={
             "Languages": ["Python", "TypeScript"],
             "Developer Tools": ["Git", "Docker"],  # fabricated Git
         }
     )
-    result = GenerationResult(resume=resume, suggestions=[])
     prevalence = {"Git": 0.7237, "Python": 0.8684, "Docker": 0.5132}
 
-    out = enforce_g1(result, intake, prevalence)
+    out = enforce_g1(annotated, intake, prevalence)
 
     flat = [s for items in out.resume.skills.values() for s in items]
     assert not any(s.lower() == "git" for s in flat), flat
-    assert "Docker" in flat  # was in intake
+    assert "Docker" in flat
     assert "Python" in flat
 
     missing = [s for s in out.suggestions if s.type == "missing_skill"]
-    assert any("Git" in s.detail for s in missing), missing
+    assert any("Git" in s.detail and "%" in s.detail for s in missing), missing
+
+
+def test_compound_git_skill_not_suggested():
+    """Git/GitHub Actions CI in intake/resume must count as owning Git."""
+    intake = Intake(
+        name="Erfan",
+        target_role="Software Engineer",
+        year="year_1",
+        has_internships=True,
+        skills=["Python", "Git/GitHub Actions CI", "Docker"],
+    )
+    owned = expand_skill_tokens(intake.skills)
+    assert skill_is_owned("Git", owned)
+
+    annotated = _annotated(
+        skills={
+            "Languages": ["Python"],
+            "Developer Tools": ["Git/GitHub Actions CI", "Docker"],
+        },
+        suggestions=[
+            Suggestion(
+                type="missing_skill",
+                detail="Consider adding Git, Java, HTML to showcase breadth.",
+            )
+        ],
+    )
+    out = enforce_g1(annotated, intake, {"Git": 0.72, "Python": 0.86, "Java": 0.58})
+    missing = [s for s in out.suggestions if s.type == "missing_skill"]
+    assert not any("Git" in s.detail for s in missing), missing
+    assert any("Java" in s.detail and "58%" in s.detail for s in missing), missing
+    # LLM padding suggestion discarded
+    assert not any("showcase breadth" in s.detail for s in out.suggestions)
+
+
+def test_bullet_gaps_feed_missing_metric():
+    annotated = _annotated(
+        experience_bullets=[
+            AnnotatedBullet(
+                text=_long(
+                    "Triaged production pipeline failures and landed fixes for incident reports"
+                ),
+                rewritten_from="Resolved production issues",
+                gaps=["no_metric"],
+            )
+        ]
+    )
+    intake = load_intake(Path("examples/intake_example.yaml"))
+    out = enforce_g1(annotated, intake, {"Python": 0.86})
+    assert any(s.type == "missing_metric" for s in out.suggestions)
 
 
 def test_norms_block_marks_absent_git():
-    block = format_norms_block(
-        {"Git": 0.72, "Python": 0.86},
-        intake_skills=["Python"],
-    )
+    owned = expand_skill_tokens(["Python"])
+    block = format_norms_block({"Git": 0.72, "Python": 0.86}, owned, bucket="swe_intern")
     assert "Git" in block
     assert "ABSENT" in block
     assert "PRESENT" in block
+    assert "Core" in block
+
+
+def test_norms_block_compound_git_present():
+    owned = expand_skill_tokens(["Git/GitHub Actions CI"])
+    block = format_norms_block({"Git": 0.72}, owned, bucket="swe_intern")
+    assert "[PRESENT]" in block
+
+
+def test_tiered_skill_gap_includes_common():
+    from src.generation.generator import build_missing_skill_suggestions
+
+    owned = expand_skill_tokens(["Python"])
+    sugs = build_missing_skill_suggestions(
+        {"Python": 0.86, "Git": 0.72, "Redis": 0.30, "Obscure": 0.10},
+        owned,
+        bucket="swe_intern",
+    )
+    details = " ".join(s.detail for s in sugs)
+    assert "Git" in details and "core gap" in details
+    assert "Redis" in details and "common gap" in details
+    assert "Obscure" not in details
 
 
 def test_allowed_skills_includes_project_tech():
@@ -159,6 +307,38 @@ def test_allowed_skills_includes_project_tech():
     assert "python" in allowed
     assert "react" in allowed
     assert "nodejs" in allowed
+
+
+def test_fluff_lint_catches_banned_words():
+    assert find_fluff_hits("Packaged for seamless macOS distribution") == ["seamless"]
+    assert find_fluff_hits("Built a robust RBAC system to ensure integrity") == [
+        "robust",
+        "ensure",
+    ]
+    dirty = _minimal_resume(
+        projects=[
+            {
+                "name": "Bina",
+                "technologies": "Python",
+                "dates": "2025",
+                "bullets": [
+                    _long("Packaged the application using PyInstaller for seamless macOS distribution")
+                ],
+            }
+        ]
+    )
+    violations = lint_resume_fluff(dirty)
+    assert violations
+    assert any("seamless" in v for v in violations)
+
+    clean = _minimal_resume()
+    assert lint_resume_fluff(clean) == []
+
+
+def test_annotated_to_resume_flattens_bullets():
+    ann = _annotated()
+    resume = annotated_to_resume(ann.resume)
+    assert isinstance(resume.experience[0]["bullets"][0], str)
 
 
 def test_render_tex_contains_name_and_escaped_ampersand():
@@ -267,7 +447,6 @@ def test_pagefit_hard_trim_on_fat_resume(tmp_path: Path):
         }
         for i in range(4)
     ]
-    # Bypass total-bullet validator for the fat fixture via model_construct.
     fat = ResumeContent.model_construct(
         contact={
             "name": "Fat Resume",

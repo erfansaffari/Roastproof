@@ -1,0 +1,565 @@
+{
+  "meta": {
+    "n_banned": 16,
+    "n_preferred": 55,
+    "model": "gpt-4o-mini",
+    "filtered": true
+  },
+  "banned_phrases": [
+    {
+      "phrase": "fluff",
+      "example_critique": "Like, 'utilized the atlassian API along with' is so much fluff. Start your sentences/bullets with, what did you build, followed by the tech",
+      "supporting_thread_ids": [
+        "1287910925835309117"
+      ],
+      "frequency": 1
+    },
+    {
+      "phrase": "hand-wavey",
+      "example_critique": "the wsib bullet points are very hand-wavey and doesn\u2019t really highlight any real technical proficiencies",
+      "supporting_thread_ids": [
+        "1287910925835309117"
+      ],
+      "frequency": 1
+    },
+    {
+      "phrase": "wordy",
+      "example_critique": "for a technical person it's good rn but non technical ppl reading it would just find it too wordy",
+      "supporting_thread_ids": [
+        "1289087515059425341"
+      ],
+      "frequency": 1
+    },
+    {
+      "phrase": "demonstrated agility in development",
+      "example_critique": "\"demonstrated agility in development\" is a nonsense statement",
+      "supporting_thread_ids": [
+        "1289241418430283786"
+      ],
+      "frequency": 1
+    },
+    {
+      "phrase": "\"skillfully implemented change\"",
+      "example_critique": "I don't care that you \"skillfully implemented change\", I'm sure many people can do that",
+      "supporting_thread_ids": [
+        "1289241418430283786"
+      ],
+      "frequency": 1
+    },
+    {
+      "phrase": "utilized x scripts",
+      "example_critique": "Utilized X scripts is very passive in action description, you\u2019re not committing in your sentences.",
+      "supporting_thread_ids": [
+        "1292160519779651659"
+      ],
+      "frequency": 1
+    },
+    {
+      "phrase": "fluff wording",
+      "example_critique": "remove some fluff wording",
+      "supporting_thread_ids": [
+        "1354952685996216452"
+      ],
+      "frequency": 1
+    },
+    {
+      "phrase": "fluff words",
+      "example_critique": "that's like just a lot of fluff words after that that don't mean anything",
+      "supporting_thread_ids": [
+        "1291597715867701329"
+      ],
+      "frequency": 1
+    },
+    {
+      "phrase": "seamless",
+      "example_critique": "seed",
+      "supporting_thread_ids": [],
+      "frequency": 1
+    },
+    {
+      "phrase": "robust",
+      "example_critique": "seed",
+      "supporting_thread_ids": [],
+      "frequency": 1
+    },
+    {
+      "phrase": "effective",
+      "example_critique": "seed",
+      "supporting_thread_ids": [],
+      "frequency": 1
+    },
+    {
+      "phrase": "enhanced",
+      "example_critique": "seed",
+      "supporting_thread_ids": [],
+      "frequency": 1
+    },
+    {
+      "phrase": "streamlined",
+      "example_critique": "seed",
+      "supporting_thread_ids": [],
+      "frequency": 1
+    },
+    {
+      "phrase": "ensure",
+      "example_critique": "seed",
+      "supporting_thread_ids": [],
+      "frequency": 1
+    },
+    {
+      "phrase": "utilized",
+      "example_critique": "seed",
+      "supporting_thread_ids": [],
+      "frequency": 1
+    },
+    {
+      "phrase": "leveraged",
+      "example_critique": "seed",
+      "supporting_thread_ids": [],
+      "frequency": 1
+    }
+  ],
+  "preferred_patterns": [
+    {
+      "pattern": "quantify achievements",
+      "example_critique": "From Xms to Yms is weak framing unless the numbers are really bold.",
+      "supporting_thread_ids": [
+        "1459088933035048970",
+        "1296580861248143422"
+      ],
+      "frequency": 2
+    },
+    {
+      "pattern": "Start your sentences/bullets with, what did you build, followed by the tech",
+      "example_critique": "Like, 'utilized the atlassian API along with' is so much fluff. Start your sentences/bullets with, what did you build, followed by the tech",
+      "supporting_thread_ids": [
+        "1287910925835309117"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "cut down on loosely descriptive sections",
+      "example_critique": "AI is featured prominently in your resume, cut that down",
+      "supporting_thread_ids": [
+        "1287910925835309117"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "Be specific about roles",
+      "example_critique": "maybe mention it was specifically business dev",
+      "supporting_thread_ids": [
+        "1289087515059425341"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "use a concepts section to generalize skills",
+      "example_critique": "i've found that adding a concepts section to skills is helpful",
+      "supporting_thread_ids": [
+        "1289087515059425341"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "write specific metrics",
+      "example_critique": "Maybe quantify the bullets for your most recent coop.",
+      "supporting_thread_ids": [
+        "1323712897230307460"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "provide specifics about projects",
+      "example_critique": "Explain the features, and explain what the apps do",
+      "supporting_thread_ids": [
+        "1292160519779651659"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "focus on the narrative of your work",
+      "example_critique": "What were you brought on to solve and why?",
+      "supporting_thread_ids": [
+        "1292160519779651659"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "quantify your experience",
+      "example_critique": "I would definitely quantify your co-op experience.",
+      "supporting_thread_ids": [
+        "1325906784581451956"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "directly state actions taken",
+      "example_critique": "Better to say Wrote X directly.",
+      "supporting_thread_ids": [
+        "1292160519779651659"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "avoid vague descriptions",
+      "example_critique": "Without any specific features/improvements I can't tell what the scope of your work was.",
+      "supporting_thread_ids": [
+        "1325906784581451956"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "add some metrics",
+      "example_critique": "I would maybe add some metrics for the CSC discord bot (i.e. how many ppl are in the server/how many ppl are using it).",
+      "supporting_thread_ids": [
+        "1325977031552401408"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "avoid having only 1 or 2 words on a line",
+      "example_critique": "I would avoid having only 1 or 2 words on a line, either add more or make it more concise.",
+      "supporting_thread_ids": [
+        "1325977031552401408"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "check verb tense consistency",
+      "example_critique": "the first word of your bullet points changes from past tense to present tense a lot.... they should all be past.",
+      "supporting_thread_ids": [
+        "1326007139105378356"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "quantify your impact",
+      "example_critique": "it might be helpful to talk about the impact of what this change does, ie. used in X devices or handling X TB of data, or saves Y hours compared to Z.",
+      "supporting_thread_ids": [
+        "1327394093126516746"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "use concise and concrete language",
+      "example_critique": "your P2P network project description is the best one here. It avoids the vague descriptive language to be concise about what you built.",
+      "supporting_thread_ids": [
+        "1327030691828863007"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "order sections effectively",
+      "example_critique": "I would order your sections as Skills, Work experience, Projects and Education.",
+      "supporting_thread_ids": [
+        "1327020438928494623"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "bold keywords or metrics for emphasis",
+      "example_critique": "IMO, i would stick to either bolding your key technologies (Next.js, NEAR, etc.) or your metrics.",
+      "supporting_thread_ids": [
+        "1327020438928494623"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "reword for clarity",
+      "example_critique": "I would reword to \"via several [concurrent or async/asynchronous] SSH sessions\".",
+      "supporting_thread_ids": [
+        "1328111791867428925"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "reduce redundant technology mentions",
+      "example_critique": "you have a tendency to list the same technologies many times.",
+      "supporting_thread_ids": [
+        "1328111791867428925"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "quantify your experiences",
+      "example_critique": "it is important to try and quanitfy your experiences to show impact.",
+      "supporting_thread_ids": [
+        "1332036394423681086"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "be specific",
+      "example_critique": "- Be more specific",
+      "supporting_thread_ids": [
+        "1344113142468186112"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "add more detail to job points",
+      "example_critique": "add more detail to ur job points add the usage of the tech more specifically",
+      "supporting_thread_ids": [
+        "1347621886435004437"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "consider adding metrics",
+      "example_critique": "we could consider adding how many people you presented to?",
+      "supporting_thread_ids": [
+        "1330750850142048341"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "list specific achievements",
+      "example_critique": "Talk about what some of them were. What you actually did",
+      "supporting_thread_ids": [
+        "1344113142468186112"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "discuss impact",
+      "example_critique": "I would try to add more detail about impact (why/how you built things).",
+      "supporting_thread_ids": [
+        "1348719891330502697"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "quantify your bullet points",
+      "example_critique": "Quantify your bullet points. Right now, you're just listing things you did in your tasks, not showing any impact.",
+      "supporting_thread_ids": [
+        "1356374813089992956"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "elaborate on your experience",
+      "example_critique": "elaborate on what you actually did. quantifying loss of data is very vague, explain how C++ was used, what the business impact was, etc.",
+      "supporting_thread_ids": [
+        "1350849047488889096"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "bold important information",
+      "example_critique": "try to bold metrics and other important information in the experience section bullet points",
+      "supporting_thread_ids": [
+        "1374216231078330480"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "split long bullet points",
+      "example_critique": "having 3 line bullets is bad",
+      "supporting_thread_ids": [
+        "1387856289576652821"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "remove unnecessary details",
+      "example_critique": "remove technician and design team experience since they're less relevant.",
+      "supporting_thread_ids": [
+        "1369421625497485392"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "list technologies/tools where applicable",
+      "example_critique": "Also, how did you develop the teaching materials? This would be a good place to incorporate technologies/tools.",
+      "supporting_thread_ids": [
+        "1356374813089992956"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "use metrics in projects/experiences",
+      "example_critique": "across your projects/experiences, try and come up with quantitative metrics, like \"improved x by y percent\"",
+      "supporting_thread_ids": [
+        "1456324557483933717"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "bold relevant keywords",
+      "example_critique": "across your projects/experiences, highlight relevant keywords or things you want recruiters to notice by bolding them.",
+      "supporting_thread_ids": [
+        "1456324557483933717"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "use concrete data",
+      "example_critique": "maybe add more about your impact and the results of what you did.",
+      "supporting_thread_ids": [
+        "1470218254214631658"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "start with impact and purpose",
+      "example_critique": "There's nothing wrong with this structure ... but out of 10 bullet points for your experiences, i would say 9 fit this form. it just gets boring.",
+      "supporting_thread_ids": [
+        "1456586200058957994"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "use simpler titles",
+      "example_critique": "Just call it software engineer intern",
+      "supporting_thread_ids": [
+        "1461551909939712122"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "replace semicolons with line breaks",
+      "example_critique": "longer sentences tend to be harder to parse. my heuristic is you should only have a small handful of 2-liners in your whole resume. easy first step is replace semicolons with line breaks.",
+      "supporting_thread_ids": [
+        "1459088933035048970"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "did something using this tech to achieve some metric increase",
+      "example_critique": "I generally structure all my bullet points as 'did something using this tech to achieve some metric increase' to standardize how people read each bullet point",
+      "supporting_thread_ids": [
+        "1290678757912219748"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "simplify sentences",
+      "example_critique": "Its also nice to simplify down some sentences",
+      "supporting_thread_ids": [
+        "1290678757912219748"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "bolding parts to emphasize important contributions",
+      "example_critique": "I personally also bold the parts of each bullet point encapsulate the important technical contributions",
+      "supporting_thread_ids": [
+        "1290739698444009665"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "removing redundancy",
+      "example_critique": "you have stripe twice in the last project",
+      "supporting_thread_ids": [
+        "1291597715867701329"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "state metrics clearly",
+      "example_critique": "If you're looking to work at bigco, like those numbers/changes are semi-meaningless because they are tiny numbers",
+      "supporting_thread_ids": [
+        "1290104804894445683"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "add more detail",
+      "example_critique": "I think you should give more details in the \"Handled the previous bugs and issues related to database\", i feel like it's too vague",
+      "supporting_thread_ids": [
+        "1312597684410126396"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "merge bullet points when necessary",
+      "example_critique": "By continuation, I mean both bullet points belong to the same sentence.",
+      "supporting_thread_ids": [
+        "1326614270510764134"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "expand upon bullet points",
+      "example_critique": "you should expand upon your last two bullet points and include some metrics for impact",
+      "supporting_thread_ids": [
+        "1326614270510764134"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "provide context for projects",
+      "example_critique": "Also for the Web Scraper Program project, why did you make it? What was it for?",
+      "supporting_thread_ids": [
+        "1312597684410126396"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "impact-oriented formatting",
+      "example_critique": "try to format some of your bullet points to be \"impact-oriented\".",
+      "supporting_thread_ids": [
+        "1338603001073500243"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "quantify bullet points",
+      "example_critique": "I would definitely try and quantify your bullet points if possible here to show your impact",
+      "supporting_thread_ids": [
+        "1358229048085450842"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "replace vague phrases with specific actions",
+      "example_critique": "consider replacing \"developed the backend\" with more detail",
+      "supporting_thread_ids": [
+        "1333350591107305514"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "simplify wording",
+      "example_critique": "i would simplify the wording of the first project, too many big words",
+      "supporting_thread_ids": [
+        "1469875033563332839"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "avoid excessive technical language",
+      "example_critique": "Try to avoid using language that's too technical or domain specific.",
+      "supporting_thread_ids": [
+        "1461958388211519682"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "bold metrics and technologies",
+      "example_critique": "just bold your metrics and technologies for a better view",
+      "supporting_thread_ids": [
+        "1365724239445102592"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "remove the without marketing",
+      "example_critique": "Lowk remove the without marketing.",
+      "supporting_thread_ids": [
+        "1478875436866863277"
+      ],
+      "frequency": 1
+    },
+    {
+      "pattern": "apply at least 400",
+      "example_critique": "u gotta apply atleast 400",
+      "supporting_thread_ids": [
+        "1478875436866863277"
+      ],
+      "frequency": 1
+    }
+  ]
+}

@@ -5,6 +5,69 @@ Newest entries at the top. Suggested commit messages included per entry.
 
 ---
 
+## 2026-07-11 (g) — Phase 4.6 corpus-derived writer knowledge
+
+De-hardcode fluff/few-shots; professional hiring-reviewer prompts; project eval.
+
+### Prompt library
+- `src/generation/prompts.py` — big-tech 30s-screen persona, role profiles
+  (SWE/ML/AI/FE/BE/…), data-wins clause; wired into generator, elicit,
+  project eval, miners, page-fit trim.
+
+### Mined artifacts
+- `src/knowledge/style_mine.py` → `data/knowledge/style_lexicon.json`
+  (55→filtered banned/preferred with thread ids).
+- `src/knowledge/rewrite_mine.py` → `data/knowledge/rewrite_examples.json`
+  (filtered action-bullet pairs for few-shots).
+- `fluff.py` loads lexicon; seed list is fallback; refuses noisy nouns.
+
+### Project eval + skill gaps
+- `src/generation/project_eval.py` — grounded verdicts + field gaps;
+  suggestion type `project_evaluation`; critique ids in prompt.
+- Tiered missing-skill suggestions: core (>50%) / common (25–50%) with
+  bucket disclosure.
+
+### Tests / docs
+- `tests/test_phase46.py` + updated generation tests (23 passed).
+- `docs/phases/phase4.6-corpus-writer.md`
+
+### Suggested commits
+- `feat(phase4.6): prompt library, style/rewrite mining, project eval`
+- `feat(phase4.6): tiered corpus skill-gap suggestions`
+
+---
+
+## 2026-07-11 (f) — Phase 4.5 writer quality
+
+Generator was formatting intake into LaTeX; now forced to **rewrite** against
+community rules. Log check showed rules/critiques/norms *were* injected —
+failure was framing + skill matching + no fluff lint.
+
+### Fixes
+- Prompt: facts-frozen / wording-mandatory; few-shot before→after; annotated
+  bullets `{text, rewritten_from, gaps}` → `missing_metric` suggestions.
+- Skills gap: `expand_skill_tokens` so `Git/GitHub Actions CI` owns `Git`;
+  rebuild missing_skill suggestions from final owned set with prevalence %;
+  drop LLM "showcase breadth" padding.
+- `fluff.py` banned-word lint + one generator retry; pytest coverage.
+- `elicit.py` pre-pass → `questions.json`; intake `answers:` for second run.
+- CLI: `--elicit-only`, `--skip-elicit`.
+
+### Live check (`examples/my_intake.yaml` → `out/mine/`)
+- Git no longer suggested (compound skill present).
+- `missing_metric` emitted for unquantified bullets.
+- 6 elicitation questions written; SchoolTalk bullets rewritten with concrete
+  schema/RBAC detail instead of "robust…ensure".
+
+### Docs
+- `docs/phases/phase4.5-writer-quality.md`
+
+### Suggested commits
+- `feat(phase4.5): writer prompt, annotated bullets, fluff lint, elicitation`
+- `fix(phase4): compound skill matching for norms gap suggestions`
+
+---
+
 ## 2026-07-11 (e) — Phase 4 generation pipeline
 
 End-to-end: YAML intake → gpt-4o `ResumeContent` → Jake's LaTeX → one-page PDF.

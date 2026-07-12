@@ -36,6 +36,10 @@ End-to-end: user info → `ResumeContent` JSON → LaTeX → compiled one-page P
 - [x] `latex_escape` unit tests pass including adversarial strings (`"C# & F_measure 100%"`).
 - [x] Page-fit loop demonstrated on a deliberately overstuffed intake (live pipeline + hard-trim unit test).
 
+## Follow-on
+- Writer-quality: [phase4.5-writer-quality.md](phase4.5-writer-quality.md)
+- Corpus-derived knowledge + prompt library: [phase4.6-corpus-writer.md](phase4.6-corpus-writer.md)
+
 ## Human Sign-Off Gate
 None formally required; but the fabrication test result should be shared with Erfan since G1 is a hard guardrail.
 
