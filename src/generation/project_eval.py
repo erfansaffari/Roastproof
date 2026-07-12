@@ -84,33 +84,76 @@ def quote_in_block(quote: str, critiques_block: str, *, min_len: int = 12) -> bo
     return q in block
 
 
+def _has_critique_id(evid: list[str], allowed_ids: set[str]) -> bool:
+    """True if evidence cites at least one real retrieved critique id (not rule:)."""
+    for e in evid:
+        e = str(e)
+        if e.startswith("rule:"):
+            continue
+        if e in allowed_ids:
+            return True
+        if any(e in aid or aid in e for aid in allowed_ids):
+            return True
+    return False
+
+
+def _grounded_verdict(
+    evid: list[str],
+    allowed_ids: set[str],
+    *,
+    require_critique_id: bool,
+) -> bool:
+    if not evid:
+        return False
+    if not allowed_ids:
+        # Retrieval failed — accept any non-empty evidence (incl. rule:)
+        return bool(evid)
+    if require_critique_id:
+        return _has_critique_id(evid, allowed_ids)
+    # Soft path (field gaps): rule: or critique id OK
+    for e in evid:
+        e = str(e)
+        if e.startswith("rule:"):
+            return True
+        if e in allowed_ids:
+            return True
+        if any(e in aid or aid in e for aid in allowed_ids):
+            return True
+    return False
+
+
 def drop_ungrounded(
     result: ProjectEvalResult,
     allowed_ids: set[str],
     *,
     critiques_block: str = "",
+    require_critique_ids: bool | None = None,
 ) -> ProjectEvalResult:
-    """Keep verdicts/gaps that cite retrieved critique ids or rule:; require quotes for gaps."""
+    """
+    Keep verdicts/gaps that cite retrieved critique ids.
 
-    def _grounded(evid: list[str]) -> bool:
-        if not evid:
-            return False
-        if not allowed_ids:
-            return True
-        for e in evid:
-            e = str(e)
-            if e.startswith("rule:"):
-                return True
-            if e in allowed_ids:
-                return True
-            if any(e in aid or aid in e for aid in allowed_ids):
-                return True
-        return False
+    When retrieval returned critique ids, project verdicts MUST cite at least one
+    real id — rule:-only evidence is rejected (the previous escape hatch).
+    """
+    if require_critique_ids is None:
+        require_critique_ids = bool(allowed_ids)
 
-    kept_projects = [pv for pv in result.projects if _grounded(list(pv.evidence_ids or []))]
+    kept_projects = [
+        pv
+        for pv in result.projects
+        if _grounded_verdict(
+            list(pv.evidence_ids or []),
+            allowed_ids,
+            require_critique_id=require_critique_ids,
+        )
+    ]
     kept_gaps: list[FieldGap] = []
     for g in result.field_gaps:
-        if not _grounded(list(g.evidence_ids or [])):
+        if not _grounded_verdict(
+            list(g.evidence_ids or []),
+            allowed_ids,
+            require_critique_id=False,
+        ):
             continue
         # Verbatim quote required when we have a critiques block to check against
         if critiques_block and critiques_block != "(no critiques retrieved)":
@@ -128,6 +171,29 @@ def drop_ungrounded(
         projects=kept_projects,
         field_gaps=kept_gaps,
     )
+
+
+def missing_improvements(result: ProjectEvalResult) -> list[str]:
+    """Project names that lack a non-empty improvements list."""
+    return [
+        pv.name
+        for pv in result.projects
+        if not any(str(x).strip() for x in (pv.improvements or []))
+    ]
+
+
+def grounding_failures(
+    result: ProjectEvalResult,
+    allowed_ids: set[str],
+) -> list[str]:
+    """Project names whose evidence is rule-only or empty despite available ids."""
+    if not allowed_ids:
+        return []
+    bad: list[str] = []
+    for pv in result.projects:
+        if not _has_critique_id(list(pv.evidence_ids or []), allowed_ids):
+            bad.append(pv.name)
+    return bad
 
 
 def eval_changed(prev: ProjectEvalResult | None, curr: ProjectEvalResult) -> bool:
@@ -167,22 +233,56 @@ def evaluate_projects(
         indent=2,
     )
     prior_json = prior_eval.model_dump_json(indent=2) if prior_eval else None
-    raw = complete_json(
-        prompt=project_eval_user(
-            intake_projects_json=projects_json,
-            critiques_block=critiques_block,
-            rules_block=rules_block,
-            role=role,
-            prior_eval_json=prior_json,
-        ),
-        model=MODEL_SYNTHESIS,
-        phase=phase,
-        schema=ProjectEvalResult,
-        system=project_eval_system(intake),
-        max_tokens=4096,
-        temperature=0,
+
+    def _call(prompt: str) -> ProjectEvalResult:
+        return complete_json(
+            prompt=prompt,
+            model=MODEL_SYNTHESIS,
+            phase=phase,
+            schema=ProjectEvalResult,
+            system=project_eval_system(intake),
+            max_tokens=4096,
+            temperature=0,
+        )
+
+    base_prompt = project_eval_user(
+        intake_projects_json=projects_json,
+        critiques_block=critiques_block,
+        rules_block=rules_block,
+        role=role,
+        prior_eval_json=prior_json,
     )
-    return drop_ungrounded(raw, allowed_ids, critiques_block=critiques_block)
+    raw = _call(base_prompt)
+
+    # Soft post-checks + one retry when critique ids exist but model used rule: only
+    # or left improvements empty.
+    bad_ground = grounding_failures(raw, allowed_ids)
+    bad_impr = missing_improvements(raw)
+    if allowed_ids and (bad_ground or bad_impr):
+        err_bits = []
+        if bad_ground:
+            err_bits.append(
+                "These projects used rule:-only or empty evidence_ids — cite real "
+                f"critique id= values from the block instead: {bad_ground}"
+            )
+        if bad_impr:
+            err_bits.append(
+                "These projects have empty improvements — every verdict including "
+                f"strong_keep needs ≥1 improvement: {bad_impr}"
+            )
+        retry_prompt = (
+            base_prompt
+            + "\n\n## Validation errors from previous attempt (fix and resubmit)\n"
+            + "\n".join(f"- {b}" for b in err_bits)
+        )
+        raw = _call(retry_prompt)
+
+    grounded = drop_ungrounded(raw, allowed_ids, critiques_block=critiques_block)
+
+    # If grounding wiped all projects despite a full raw response, keep raw projects
+    # that at least have improvements (better than empty eval) only when no ids —
+    # otherwise return grounded (may be empty) so caller sees the failure mode.
+    return grounded
 
 
 def project_eval_to_suggestions(result: ProjectEvalResult) -> list[Suggestion]:

@@ -233,6 +233,38 @@ def test_stopping_rule_complete_and_budget():
     assert stop2
     assert "max" in reason2
 
+    # Round 1 + dropped_covered > 0 must NOT latch (over-filter failure mode)
+    store3 = QAStore(round=0, questions=[])
+    stop3, _ = should_stop_elicitation(
+        store3,
+        model_complete=True,
+        new_surviving=0,
+        dropped_covered=2,
+        next_round=1,
+    )
+    assert not stop3
+
+
+def test_reopen_if_stale_empty_convergence_and_intake_hash():
+    from src.generation.qa_store import reopen_if_stale
+
+    stale = QAStore(round=1, converged=True, questions=[], intake_hash="")
+    opened, reason = reopen_if_stale(stale, current_intake_hash="abc123")
+    assert not opened.converged
+    assert "stale" in reason.lower() or "re-open" in reason.lower()
+    assert opened.intake_hash == "abc123"
+
+    changed = QAStore(
+        round=2,
+        converged=True,
+        intake_hash="oldhash",
+        questions=[QAEntry(id="a", question="q", answer="1", status="answered")],
+    )
+    reopened, reason2 = reopen_if_stale(changed, current_intake_hash="newhash")
+    assert not reopened.converged
+    assert "intake" in reason2.lower()
+    assert reopened.intake_hash == "newhash"
+
 
 def test_append_assigns_stable_ids():
     store = QAStore()
@@ -339,13 +371,45 @@ def test_declined_suppresses_missing_metric_suggestion():
 
 def test_elicit_prompt_includes_history():
     intake = _intake()
-    sys = elicit_system(intake)
+    sys = elicit_system(intake, next_round=1)
     assert "complete" in sys.lower()
     assert "impact" in sys.lower()
-    user = elicit_user(intake, history_block='- [a] Q: How many?\n  A: 100')
+    assert "round 1" in sys.lower()
+    assert "2–4" in sys or "2-4" in sys
+    user = elicit_user(
+        intake,
+        history_block='- [a] Q: How many?\n  A: 100',
+        critiques_block="1. id=x:1 [experience/metrics] avoid unowned we-built claims",
+    )
     assert "Prior Q&A history" in user
     assert "How many?" in user
     assert "100" in user
+    assert "Retrieved community critiques" in user
+    assert "unowned" in user
+
+
+def test_drop_ungrounded_rejects_rule_only_when_ids_exist():
+    raw = ProjectEvalResult(
+        projects=[
+            ProjectVerdict(
+                name="Good",
+                verdict="strong_keep",
+                rationale="solid systems depth",
+                improvements=["Add chaos-test metrics"],
+                evidence_ids=["abc:1"],
+            ),
+            ProjectVerdict(
+                name="Lazy",
+                verdict="strong_keep",
+                rationale="looks fine",
+                improvements=[],
+                evidence_ids=["rule:project_selection/projects"],
+            ),
+        ],
+        field_gaps=[],
+    )
+    cleaned = drop_ungrounded(raw, {"abc:1"}, critiques_block="1. id=abc:1 stuff")
+    assert [p.name for p in cleaned.projects] == ["Good"]
 
 
 def test_quote_in_block_and_field_gap_drop():

@@ -117,6 +117,12 @@ def test_drop_ungrounded_project_eval():
                 rationale="made up",
                 evidence_ids=["hallucinated-id"],
             ),
+            ProjectVerdict(
+                name="RuleOnly",
+                verdict="strong_keep",
+                rationale="lazy",
+                evidence_ids=["rule:project_selection/projects"],
+            ),
         ],
         field_gaps=[
             FieldGap(gap="systems project", evidence_ids=["crit-1"]),
@@ -125,7 +131,7 @@ def test_drop_ungrounded_project_eval():
     )
     cleaned = drop_ungrounded(raw, {"crit-1"})
     names = [p.name for p in cleaned.projects]
-    assert names == ["Good"]
+    assert names == ["Good"]  # Bad + RuleOnly dropped when critique ids exist
     assert len(cleaned.field_gaps) == 1
     sugs = project_eval_to_suggestions(cleaned)
     assert all(s.type == "project_evaluation" for s in sugs)

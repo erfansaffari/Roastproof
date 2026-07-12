@@ -5,6 +5,36 @@ Newest entries at the top. Suggested commit messages included per entry.
 
 ---
 
+## 2026-07-12 (d) — Restore elicitation curiosity + grounded project eval
+
+`erfan2` converged with `questions: []` and only skill-prevalence suggestions because
+intake coverage over-filtered (any digit → covered) and latched `converged: true`,
+skipping the elicitation LLM forever. Project eval accepted `rule:`-only evidence.
+
+### Fixes
+- **Precision coverage** (`intake_coverage.py`): dimension-match only
+  (users/leads/%/time/money/installs); never filter `vague_scope`/`expand_content`.
+- **Un-latch** (`qa_store.py` / `elicit.py` / `pipeline.py`): `intake_hash` on
+  sidecar; reopen when intake changes or when `converged` with zero questions;
+  round-1 never converges solely because the coverage filter emptied the list.
+- **Corpus-grounded elicit**: retrieve experience/project critiques into
+  `elicit_user`; round-1 prompt requires 2–4 reviewer questions (ownership/scope/
+  tradeoffs when metrics are already present).
+- **Opinionated project eval**: reject `rule:`-only verdicts when critique ids
+  exist; require non-empty `improvements` even for `strong_keep`; one retry.
+- **Suggestions re-merge**: after page-fit, re-attach `project_evaluation`
+  suggestions so a trim/expand regen cannot drop them from `suggestions.json`.
+
+### Live check (`out/erfan3`)
+- Sidecar re-opened with 2 pending corpus-grounded questions (ownership decision
+  + tooling), `converged=false`.
+- `project_eval.json`: real critique ids, non-empty improvements, field gap.
+- Fill 98% / 1 page.
+
+Suggested commit: `fix(phase4.7): restore elicitation curiosity and grounded project eval`
+
+---
+
 ## 2026-07-12 (c) — Page-fill density: tech lines + QA unused-fact fix
 
 Thin intakes (e.g. arya6 ~0.77 fill) under-filled because legitimate content was
@@ -35,6 +65,10 @@ template couldn't fill a page (`mine49` already hits ~0.93 on the same template)
   (`A \ $\cdot$ \ B`), `\item[] \textit{\small ...}`, and dedicated gap before
   bullets (`\vspace{4pt}`); bullet `itemsep=3pt`; bullets at body 11pt (no
   `\small` shrink); slight textheight bump to stay one page.
+- Fix: elicitation no longer re-asks metrics already in intake descriptions
+  (`intake_coverage.py` prompt block + deterministic filter + autofill pending).
+- Fix: experience tech lines inferred from intake prose when the LLM leaves
+  `technologies` empty (`resolve_entry_technologies`).
 
 ### Suggested commits
 - `feat(phase4.8): dedicated technologies lines for experience and projects`

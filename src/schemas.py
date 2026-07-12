@@ -315,6 +315,13 @@ class QAStore(BaseModel):
     """Persistent Q&A memory next to the intake YAML (*.qa.yaml)."""
     round: int = 0
     converged: bool = False
+    intake_hash: str = Field(
+        "",
+        description=(
+            "sha1 of intake YAML content when last elicited. "
+            "If intake changes, elicitation re-opens (converged reset)."
+        ),
+    )
     questions: List[QAEntry] = Field(default_factory=list)
 
 

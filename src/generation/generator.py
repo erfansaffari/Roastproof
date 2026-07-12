@@ -465,6 +465,191 @@ def ground_technologies(tech_line: str, attested_blob: str) -> str:
     return ", ".join(out)
 
 
+_PLUS_CHAIN = re.compile(
+    r"((?:[A-Za-z0-9][\w.#/-]*)(?:\s+[A-Za-z][\w.#/-]*){0,2}"
+    r"(?:\s*\+\s*[A-Za-z0-9][\w.#/-]*(?:\s+[A-Za-z][\w.#/-]*){0,2}){1,6})"
+)
+_AND_STACK = re.compile(
+    r"\b(?:in|with|using|via)\s+"
+    r"([A-Za-z][\w.+#/-]*(?:\s+[A-Za-z][\w.+#/-]*){0,2})"
+    r"\s+and\s+"
+    r"([A-Za-z][\w.+#/-]*(?:\s+[A-Za-z][\w.+#/-]*){0,2})",
+    re.I,
+)
+_TRAILING_PROSE = frozenset(
+    {
+        "pipeline",
+        "pipelines",
+        "dashboard",
+        "system",
+        "systems",
+        "platform",
+        "app",
+        "application",
+        "service",
+        "services",
+        "agent",
+        "tooling",
+        "stack",
+        "backend",
+        "frontend",
+        "tables",
+        "table",
+        "region",
+        "fallback",
+    }
+)
+_LEADING_PROSE = frozenset(
+    {
+        "an", "a", "the", "our", "their", "and", "or", "to", "for", "from",
+        "with", "using", "via", "in", "on", "of", "as", "by", "built", "shipped",
+        "automated", "support", "combining",
+    }
+)
+_PROSE_STOP = frozenset(
+    {
+        "leads", "lead", "clients", "client", "users", "user", "inquiries",
+        "inquiry", "weekly", "monthly", "qualified", "commercial", "across",
+        "without", "per", "queries", "query", "wired", "directly", "giving",
+        "cutting", "handling", "generating", "producing", "reducing", "active",
+        "schools", "school", "team", "sales", "response", "time", "times",
+        "requests", "request", "visibility", "campaigns", "campaign",
+    }
+)
+_REJECT_SOLO = frozenset(
+    {
+        "ai", "api", "apis", "gpt", "gta", "saas", "linkedin", "montreal",
+        "toronto", "waterloo", "remote", "llm", "ml", "rpc", "tcp", "http",
+        "https", "json", "yaml", "csv", "pdf", "cli", "ui", "ux", "db",
+    }
+)
+
+
+def technology_vocab_from_intake(intake: Intake) -> list[str]:
+    """Candidate tech names from skills + any technologies fields on intake."""
+    vocab: list[str] = list(intake.skills or [])
+    for exp in intake.experience or []:
+        if getattr(exp, "technologies", None):
+            vocab.extend(re.split(r"\s*,\s*", exp.technologies))
+    for proj in intake.projects or []:
+        if proj.technologies:
+            vocab.extend(re.split(r"\s*,\s*", proj.technologies))
+    # Dedupe preserving order (longer names first helps matching)
+    seen: set[str] = set()
+    out: list[str] = []
+    for v in sorted((x.strip() for x in vocab if x and str(x).strip()), key=len, reverse=True):
+        k = _norm_skill(v)
+        if not k or k in seen:
+            continue
+        seen.add(k)
+        out.append(v)
+    return out
+
+
+def infer_technologies_from_blob(blob: str, vocab: list[str]) -> str:
+    """
+    Deterministic G1-safe tech line: vocab items attested in blob, plus tools
+    appearing in ``A + B + C`` / ``X and Y`` stacks in the same prose.
+    """
+    if not (blob or "").strip():
+        return ""
+    blob_l = blob.lower()
+    found: list[str] = []
+    seen: set[str] = set()
+    vocab_norm = {_norm_skill(v): v for v in vocab if v}
+
+    def _add(name: str, *, require_toolish: bool = False) -> None:
+        name = (name or "").strip(" .,;:")
+        if not name or len(name) < 2 or len(name) > 48:
+            return
+        words = name.split()
+        while words and words[0].lower().strip(".,") in _LEADING_PROSE:
+            words = words[1:]
+        while len(words) > 1 and words[-1].lower().strip(".,") in _TRAILING_PROSE:
+            words = words[:-1]
+        name = " ".join(words).strip(" .,;:")
+        if not name or len(name) < 2:
+            return
+        low = name.lower()
+        if low in _TRAILING_PROSE or low in _LEADING_PROSE:
+            return
+        if low in _REJECT_SOLO:
+            return
+        # Pure metrics / counts are not technologies
+        if re.fullmatch(r"[\d,+.%]+", name):
+            return
+        if any(w.lower().strip(".,") in _PROSE_STOP for w in words):
+            return
+        # Drop sentence fragments (period+space), not tool names like Next.js
+        if re.search(r"\.\s", name) or name.endswith("...") or len(words) > 4:
+            return
+        key = _norm_skill(name)
+        if not key or key in seen:
+            return
+        if require_toolish:
+            # Must look like a tool: capital letter, digit mix (n8n), or known vocab
+            if key not in vocab_norm and not (
+                re.search(r"[A-Z]", name) or re.search(r"[a-z]+\d|\d+[a-z]", low)
+            ):
+                return
+        seen.add(key)
+        found.append(vocab_norm.get(key, name))
+
+    for v in vocab:
+        if v.lower() in blob_l:
+            _add(v, require_toolish=False)
+
+    # Normalize spaced pluses so "n8n + OpenAI API + Resend" parses cleanly
+    plus_blob = re.sub(r"\s*\+\s*", " + ", blob)
+    for m in _PLUS_CHAIN.finditer(plus_blob):
+        for part in m.group(1).split(" + "):
+            _add(part, require_toolish=True)
+
+    for m in _AND_STACK.finditer(blob):
+        _add(m.group(1), require_toolish=True)
+        _add(m.group(2), require_toolish=True)
+
+    # Mid-sentence TitleCase / CamelCase tokens (Convex, Clerk, Gemini, …)
+    for m in re.finditer(r"(?<=\s)([A-Z][A-Za-z0-9+#]*(?:\.[A-Za-z]+)?)\b", blob):
+        tok = m.group(1)
+        if tok.lower() in _PROSE_STOP | _LEADING_PROSE | _TRAILING_PROSE | _REJECT_SOLO:
+            continue
+        if tok in {
+            "Canadian", "President", "Mathematics", "International", "Students",
+            "Entrance", "Scholarship", "Remote", "Bachelor", "Computer", "Science",
+            "Founded", "Built", "Architected", "Shipped", "Implemented", "Designed",
+            "Created", "Developed", "Established", "Crafted",
+        }:
+            continue
+        _add(tok, require_toolish=True)
+
+    # Drop shorter tokens already covered by a longer one ("OpenAI" vs "OpenAI API")
+    compact: list[str] = []
+    norms = [_norm_skill(x) for x in found]
+    for i, name in enumerate(found):
+        ni = norms[i]
+        if any(i != j and ni != nj and ni in nj for j, nj in enumerate(norms)):
+            continue
+        compact.append(name)
+    return ", ".join(compact)
+
+
+def resolve_entry_technologies(
+    llm_tech: str,
+    attested_blob: str,
+    vocab: list[str],
+    *,
+    infer_from: str | None = None,
+) -> str:
+    """Prefer grounded LLM tech; if empty, infer from intake prose (not bullets)."""
+    grounded = ground_technologies(llm_tech or "", attested_blob)
+    if grounded:
+        return grounded
+    source = infer_from if infer_from is not None else attested_blob
+    inferred = infer_technologies_from_blob(source, vocab)
+    return ground_technologies(inferred, attested_blob) if inferred else ""
+
+
 def entry_attested_blob(
     intake: Intake,
     *,
@@ -669,25 +854,37 @@ def enforce_g1(
 
     annotated.resume.skills = cleaned_skills
 
-    # Ground experience/project technologies lines to intake + related QA (G1)
+    # Ground experience/project technologies lines to intake + related QA (G1).
+    # If the LLM left technologies empty, infer from attested intake prose.
+    vocab = technology_vocab_from_intake(intake)
     for e in annotated.resume.experience:
-        blob = entry_attested_blob(
+        desc_blob = entry_attested_blob(
             intake, company=e.company, qa_store=qa_store
         )
-        # Also allow tools named in this entry's bullets (already rewritten from intake)
         bullet_text = " ".join(b.text for b in (e.bullets or []))
-        e.technologies = ground_technologies(
+        e.technologies = resolve_entry_technologies(
             getattr(e, "technologies", "") or "",
-            f"{blob}\n{bullet_text}",
+            f"{desc_blob}\n{bullet_text}",
+            vocab,
+            infer_from=desc_blob,
         )
     for p in annotated.resume.projects:
-        blob = entry_attested_blob(
+        desc_blob = entry_attested_blob(
             intake, project_name=p.name, qa_store=qa_store
         )
         bullet_text = " ".join(b.text for b in (p.bullets or []))
-        p.technologies = ground_technologies(
-            p.technologies or "",
-            f"{blob}\n{bullet_text}",
+        # Prefer intake project.technologies when LLM blanks it
+        llm_or_intake = (p.technologies or "").strip()
+        if not llm_or_intake:
+            for ip in intake.projects:
+                if ip.name == p.name and ip.technologies:
+                    llm_or_intake = ip.technologies
+                    break
+        p.technologies = resolve_entry_technologies(
+            llm_or_intake,
+            f"{desc_blob}\n{bullet_text}",
+            vocab,
+            infer_from=desc_blob,
         )
 
     resume = annotated_to_resume(annotated.resume)

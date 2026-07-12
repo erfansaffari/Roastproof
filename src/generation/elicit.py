@@ -13,6 +13,10 @@ from src.generation.prompts import (
     expand_elicit_system,
     expand_elicit_user,
 )
+from src.generation.intake_coverage import (
+    autofill_covered_pending,
+    filter_questions_covered_by_intake,
+)
 from src.generation.qa_store import (
     DEFAULT_MAX_ROUNDS,
     append_new_questions,
@@ -26,12 +30,53 @@ from src.llm import MODEL_BULK, complete_json
 from src.schemas import ElicitationResult, Intake, QAStore
 
 
+def _elicit_critiques_block(intake: Intake, k: int = 6) -> str:
+    """Retrieve experience/project critiques so elicitation is corpus-grounded."""
+    try:
+        from src.knowledge.retrieve import retrieve
+    except Exception:
+        return "(no critiques retrieved)"
+
+    profile = intake.to_applicant_profile()
+    query_parts = [intake.target_role, intake.profile_summary or ""]
+    for exp in intake.experience or []:
+        query_parts.append(f"{exp.company} {exp.title} {(exp.description or '')[:160]}")
+    for p in intake.projects or []:
+        query_parts.append(f"{p.name} {p.technologies} {(p.description or '')[:160]}")
+    query = " ".join(query_parts)
+
+    points = []
+    seen: set[str] = set()
+    for section in ("experience", "projects", "general"):
+        try:
+            batch = retrieve(profile, section, query, k=k)
+        except Exception:
+            continue
+        for pt in batch:
+            if not pt.id or pt.id in seen:
+                continue
+            seen.add(pt.id)
+            points.append(pt)
+
+    if not points:
+        return "(no critiques retrieved)"
+
+    lines: list[str] = []
+    for i, p in enumerate(points[:12], 1):
+        score = f"{p.score:.3f}" if p.score is not None else "?"
+        lines.append(
+            f"{i}. id={p.id} [{p.section}/{p.category}] (score={score}) {p.issue}"
+        )
+    return "\n".join(lines)
+
+
 def elicit_questions(
     intake: Intake,
     store: QAStore,
     *,
     phase: str = "phase4.7-elicit",
     max_rounds: int = DEFAULT_MAX_ROUNDS,
+    intake_hash: str = "",
 ) -> tuple[ElicitationResult, QAStore, dict]:
     """
     Cheap bulk-model call → structured questions, merged into the QA sidecar.
@@ -39,6 +84,9 @@ def elicit_questions(
     Returns (raw_llm_result, updated_store, meta) where meta has:
       round, new_count, surviving_count, converged, stop_reason, counts
     """
+    # Auto-answer pending questions whose facts are already in the intake text
+    store = autofill_covered_pending(store, intake)
+
     if store.converged:
         empty = ElicitationResult(
             questions=[],
@@ -58,12 +106,17 @@ def elicit_questions(
 
     next_round = store.round + 1
     history = format_history_block(store)
+    critiques_block = _elicit_critiques_block(intake)
     raw = complete_json(
-        prompt=elicit_user(intake, history_block=history),
+        prompt=elicit_user(
+            intake,
+            history_block=history,
+            critiques_block=critiques_block,
+        ),
         model=MODEL_BULK,
         phase=phase,
         schema=ElicitationResult,
-        system=elicit_system(intake),
+        system=elicit_system(intake, next_round=next_round),
         max_tokens=2048,
         temperature=0,
     )
@@ -75,18 +128,34 @@ def elicit_questions(
         q.impact = q.impact.lower()
 
     after_impact = filter_by_round_impact(raw.questions, next_round=next_round)
-    surviving = semantic_dedup_questions(after_impact, store.questions)
+    # Drop questions already answered by intake descriptions (deterministic)
+    after_coverage = filter_questions_covered_by_intake(after_impact, intake)
+    dropped_covered = len(after_impact) - len(after_coverage)
+    surviving = semantic_dedup_questions(after_coverage, store.questions)
     updated = append_new_questions(store, surviving, round_num=next_round)
+    if intake_hash:
+        updated = updated.model_copy(update={"intake_hash": intake_hash})
 
     stop, reason = should_stop_elicitation(
         updated,
         model_complete=bool(raw.complete),
         new_surviving=len(surviving),
         max_rounds=max_rounds,
+        dropped_covered=dropped_covered,
+        next_round=next_round,
     )
-    # Also stop if model said complete even with questions we dropped as dupes
-    if raw.complete and len(surviving) == 0:
+    # Round 1: do NOT latch on empty surviving just because filters ate everything.
+    # Only converge on round 1 when model said complete AND we dropped nothing.
+    if next_round <= 1 and len(surviving) == 0 and counts(updated).get("pending", 0) == 0:
+        if raw.complete and dropped_covered == 0:
+            stop, reason = True, raw.completion_reason or "model marked complete"
+        else:
+            stop, reason = False, ""
+    elif raw.complete and len(surviving) == 0 and next_round > 1:
         stop, reason = True, raw.completion_reason or "model marked complete"
+    elif len(surviving) == 0 and counts(updated).get("pending", 0) == 0 and next_round > 1:
+        stop, reason = True, reason or "intake already covers material gaps"
+
     if stop:
         updated = updated.model_copy(update={"converged": True})
 
@@ -99,6 +168,8 @@ def elicit_questions(
         "counts": counts(updated),
         "skipped_llm": False,
         "completion_reason": raw.completion_reason or "",
+        "dropped_covered": dropped_covered,
+        "critiques_injected": critiques_block != "(no critiques retrieved)",
     }
     return raw, updated, meta
 

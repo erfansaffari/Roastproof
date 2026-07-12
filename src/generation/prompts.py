@@ -251,6 +251,8 @@ Bullet constraints (ceilings are safety caps — fill toward community targets):
   Extract tool/framework names attested in that entry's intake description, intake.technologies
   field, or answered QA that relates to that entry. If none are attested, use "".
   NEVER invent tools from role norms or "typical stacks" — corpus prevalence is not a fact source.
+  REQUIRED when the description names tools (e.g. React, Next.js, n8n, Convex): you MUST fill
+  technologies — leaving it "" while tools appear in the description is a failure.
 - Skills: ONLY skills the user listed (or named in experience/project technologies). Never pad for breadth.
 
 {REFUSAL_CLAUSE}
@@ -427,8 +429,20 @@ def expand_elicit_user(
 # Elicitation
 # ---------------------------------------------------------------------------
 
-def elicit_system(intake: Intake) -> str:
+def elicit_system(intake: Intake, *, next_round: int = 1) -> str:
     role = resolve_role_profile(intake.target_role)
+    round_rule = (
+        "ROUND 1 REQUIREMENT: Emit 2–4 high-impact questions unless the intake is "
+        "genuinely exhaustive across metrics, ownership, scope, and differentiation. "
+        "Zero questions on round 1 is almost never correct — if metrics are covered, "
+        "probe ownership, hardest technical decision, deployment/users, or "
+        "differentiation vs tutorial projects instead."
+        if next_round <= 1
+        else (
+            "Rounds ≥2: returning ZERO questions is valid when prior answers + intake "
+            "already cover material gaps. Prefer high-impact only."
+        )
+    )
     return f"""{hiring_persona(role)}
 
 You are preparing clarifying questions BEFORE rewriting this resume. Ask only what
@@ -437,15 +451,23 @@ you would need answered to shortlist for {role.display_name}.
 Do NOT rewrite the resume. Do NOT invent answers.
 
 Rules:
-- Emit 0–5 focused questions max. Prefer high-impact metric gaps on experience/project bullets.
-- Skip trivia. Do NOT re-ask or rephrase anything in the prior Q&A history (answered, declined, or pending).
-- If an answer already provides a number/fact about a company, project, or bullet, that topic is COVERED —
-  do not ask for the same metric again (even when the old question text says "legacy" / unavailable).
-- Returning ZERO questions is valid and expected when the intake + answers already cover material gaps.
-- Set complete=true when further questions would not materially strengthen the resume for this role.
-- Each question needs: topic (missing_metric|vague_scope|missing_skill|other), impact (high|medium),
-  question text, and relates_to (company or project name + short snippet). Leave id empty
-  (the pipeline assigns a stable hash).
+- Prefer questions grounded in the retrieved community critiques below. When you ask,
+  name the critique theme in `relates_to` or the question text (e.g. "community flags
+  unowned 'we built' claims — which modules did you personally own at SchoolTalk?").
+- Metrics already written in the intake (users, leads, %, installs, etc.) are COVERED
+  for that *dimension* — do NOT re-ask the same number. You MAY still ask a different
+  dimension, or ownership / scope / tradeoff / differentiation questions.
+- Skip trivia. Do NOT re-ask or rephrase anything in the prior Q&A history (answered,
+  declined, or pending).
+- Topics to prefer when metrics are already present: ownership ("which parts did you
+  own?"), scope vs team, hardest technical decision, deployment/reliability, users of
+  side projects, differentiation vs coursework/tutorials.
+- Each question needs: topic (missing_metric|vague_scope|missing_skill|other),
+  impact (high|medium), question text, and relates_to (company/project + critique theme).
+  Leave id empty (the pipeline assigns a stable hash).
+- {round_rule}
+- Set complete=true only when further questions would not materially strengthen the
+  resume for this role (rare on round 1).
 
 ## Output JSON contract
 {{
@@ -458,16 +480,27 @@ Rules:
 """
 
 
-def elicit_user(intake: Intake, history_block: str = "(none)") -> str:
+def elicit_user(
+    intake: Intake,
+    history_block: str = "(none)",
+    *,
+    critiques_block: str = "(no critiques retrieved)",
+) -> str:
     import json
+
+    from src.generation.intake_coverage import format_intake_metrics_block
 
     return (
         "## Intake\n"
         f"{json.dumps(intake.model_dump(exclude={'answers'}), indent=2)}\n\n"
+        f"{format_intake_metrics_block(intake)}\n\n"
+        "## Retrieved community critiques (ground your questions in these themes)\n"
+        f"{critiques_block}\n\n"
         "## Prior Q&A history (do not re-ask or rephrase any of these)\n"
         f"{history_block}\n\n"
-        "Only ask genuinely NEW questions that would materially change the resume. "
-        "If none, return {\"questions\": [], \"complete\": true, "
+        "Ask genuinely NEW questions a hiring reviewer from this community would ask. "
+        "Do not re-ask metric dimensions already listed above. "
+        "If none remain on rounds ≥2, return {\"questions\": [], \"complete\": true, "
         "\"completion_reason\": \"...\"}.\n\n"
         "Return the JSON object now."
     )
@@ -483,8 +516,9 @@ def project_eval_system(intake: Intake) -> str:
 
 You evaluate this applicant's PROJECT PORTFOLIO for a {role.display_name} screen.
 Use ONLY the retrieved community critiques and rules provided. Every verdict MUST
-cite critique_ids and/or rule statements from that context. Drop any claim you
-cannot ground.
+cite real critique `id=` values from the retrieval block whenever any are present.
+Do NOT use "rule:..." as your only evidence when critique ids exist — rules may
+supplement, never replace, critique grounding.
 
 FIRST emit portfolio_composition: classify each project domain as one of
 frontend | backend | systems | ml | ai | fullstack | other. Use this to decide
@@ -492,9 +526,12 @@ field_gaps — do not claim a gap in a domain the portfolio already covers.
 
 For each project emit:
 - verdict: strong_keep | strengthen | replace
-- rationale: short, grounded
-- improvements: what to add (metrics, users, deployment) if strengthen — empty if strong_keep
-- evidence_ids: list of critique id strings or "rule:<short>" markers you used
+- rationale: short, grounded in a specific critique theme (name it)
+- improvements: ALWAYS non-empty — even for strong_keep, say what would make it
+  even stronger (metric, users, deployment, ownership clarity). Empty improvements
+  are invalid.
+- evidence_ids: list of critique id strings copied verbatim from the block
+  (e.g. "1289087515059425341:3"). Optionally also "rule:<short>" as a supplement.
 
 Also emit field_gaps: project TYPES the community expects for this role that the
 applicant's portfolio lacks (grounded in critiques). Empty list if none evidenced.
@@ -502,9 +539,9 @@ For EVERY field gap you MUST include evidence_quote: a VERBATIM substring copied
 from the retrieved critiques block (not paraphrased). Gaps without a real quote
 are discarded.
 
-CRITICAL: Copy critique `id=` values verbatim into evidence_ids (e.g.
-"1289087515059425341:3"). You may also use "rule:<short phrase from rules block>".
-Every project verdict MUST include ≥1 evidence_id. Ungrounded rows are discarded.
+CRITICAL: Copy critique `id=` values verbatim into evidence_ids. Every project
+verdict MUST include ≥1 real critique id when the critiques block lists ids.
+Ungrounded rows are discarded.
 
 If a previous evaluation is provided, keep verdicts and field_gaps STABLE unless
 the intake facts changed — if you change one, state exactly which new fact justified it.

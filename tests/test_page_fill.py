@@ -311,6 +311,176 @@ def test_ground_technologies_rejects_unattested_tools():
     assert "aws" not in low
 
 
+def test_infer_experience_technologies_when_llm_blank():
+    from src.generation.generator import (
+        infer_technologies_from_blob,
+        resolve_entry_technologies,
+        technology_vocab_from_intake,
+    )
+
+    intake = _intake(
+        skills=["React", "Next.js", "OpenAI API", "Python", "TypeScript"],
+        experience=[
+            {
+                "company": "ErgoClean",
+                "title": "SWE",
+                "dates": "2024",
+                "description": (
+                    "Built an AI lead-generation agent. Shipped a dashboard in React and Next.js. "
+                    "Automated support with an n8n + OpenAI API + Resend pipeline."
+                ),
+            }
+        ],
+    )
+    vocab = technology_vocab_from_intake(intake)
+    blob = intake.experience[0].description
+    inferred = infer_technologies_from_blob(blob, vocab)
+    low = inferred.lower()
+    assert "react" in low
+    assert "next.js" in low or "nextjs" in low.replace(".", "")
+    assert "openai" in low
+    assert "n8n" in low
+    assert "resend" in low
+    # Empty LLM tech → still resolves via inference
+    resolved = resolve_entry_technologies("", blob, vocab)
+    assert "React" in resolved or "react" in resolved.lower()
+    assert resolved  # must not stay empty
+
+
+def test_elicit_skips_metrics_already_in_intake():
+    from src.generation.intake_coverage import (
+        autofill_covered_pending,
+        covering_quote,
+        filter_questions_covered_by_intake,
+        format_intake_metrics_block,
+        question_covered_by_intake,
+    )
+    from src.schemas import ElicitationQuestion, QAEntry, QAStore
+
+    intake = _intake(
+        experience=[
+            {
+                "company": "ErgoClean",
+                "title": "SWE",
+                "dates": "2024",
+                "description": (
+                    "Built an AI lead-generation agent generating 50+ qualified leads per week. "
+                    "Cut response time by 80% while handling 500+ monthly inquiries."
+                ),
+            },
+            {
+                "company": "SchoolTalk",
+                "title": "Founder",
+                "dates": "2024",
+                "description": (
+                    "Built a multi-tenant SaaS from 0 to 100+ active users across 3 schools."
+                ),
+            },
+        ],
+        projects=[
+            {
+                "name": "kv-store",
+                "technologies": "Go",
+                "description": "Implemented Raft consensus across three nodes.",
+            }
+        ],
+    )
+    block = format_intake_metrics_block(intake)
+    assert "50+" in block
+    assert "100+" in block
+
+    qs = [
+        ElicitationQuestion(
+            topic="missing_metric",
+            impact="high",
+            question="What was the percentage increase in lead generation at ErgoClean?",
+            relates_to="ErgoClean - AI lead-generation agent",
+        ),
+        ElicitationQuestion(
+            topic="missing_metric",
+            impact="high",
+            question="Can you provide the total number of users on the SchoolTalk platform?",
+            relates_to="SchoolTalk - multi-tenant SaaS community platform",
+        ),
+        ElicitationQuestion(
+            topic="missing_metric",
+            impact="high",
+            question="How many nodes does the chaos test kill in kv-store under partition?",
+            relates_to="kv-store",
+        ),
+    ]
+    kept = filter_questions_covered_by_intake(qs, intake)
+    # First two covered by intake; third may survive (no matching metric about nodes killed)
+    assert all("ErgoClean" not in (q.relates_to or "") for q in kept)
+    assert all("SchoolTalk" not in (q.relates_to or "") for q in kept)
+
+    store = QAStore(
+        round=1,
+        questions=[
+            QAEntry(
+                id="q1",
+                topic="missing_metric",
+                question="total number of users on SchoolTalk?",
+                relates_to="SchoolTalk",
+                answer=None,
+                status="pending",
+            )
+        ],
+    )
+    filled = autofill_covered_pending(store, intake)
+    assert filled.questions[0].status == "answered"
+    assert "100" in (filled.questions[0].answer or "")
+    assert covering_quote(intake, qs[1].question, qs[1].relates_to)
+
+
+def test_coverage_is_dimension_precise_not_any_digit():
+    """Users question must NOT be covered just because the entry has a leads number."""
+    from src.generation.intake_coverage import (
+        covering_quote,
+        filter_questions_covered_by_intake,
+        question_covered_by_intake,
+    )
+    from src.schemas import ElicitationQuestion
+
+    intake = _intake(
+        experience=[
+            {
+                "company": "ErgoClean",
+                "title": "SWE",
+                "dates": "2024",
+                "description": (
+                    "Built an AI lead-generation agent generating 50+ qualified leads per week."
+                ),
+            }
+        ],
+    )
+    users_q = ElicitationQuestion(
+        topic="missing_metric",
+        impact="high",
+        question="How many end users actually used the ErgoClean dashboard?",
+        relates_to="ErgoClean",
+    )
+    leads_q = ElicitationQuestion(
+        topic="missing_metric",
+        impact="high",
+        question="How many qualified leads per week did the agent generate?",
+        relates_to="ErgoClean",
+    )
+    ownership_q = ElicitationQuestion(
+        topic="vague_scope",
+        impact="high",
+        question="Which parts of the agent pipeline did you personally own?",
+        relates_to="ErgoClean — community ownership theme",
+    )
+    assert covering_quote(intake, users_q.question, users_q.relates_to) is None
+    assert covering_quote(intake, leads_q.question, leads_q.relates_to)
+    assert not question_covered_by_intake(intake, ownership_q)
+    kept = filter_questions_covered_by_intake([users_q, leads_q, ownership_q], intake)
+    assert len(kept) == 2
+    assert {q.topic for q in kept} == {"missing_metric", "vague_scope"}
+    assert any("users" in q.question.lower() for q in kept)
+
+
 def test_render_technologies_on_own_line():
     from src.generation.renderer import render_tex
 

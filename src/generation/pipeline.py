@@ -65,6 +65,24 @@ def run_pipeline(
             f"  merged {len(intake.answers)} legacy intake.answers into sidecar "
             f"({qa_path.name}). Prefer editing the sidecar going forward."
         )
+    from src.generation.intake_coverage import autofill_covered_pending
+    from src.generation.qa_store import hash_intake_path, reopen_if_stale
+
+    intake_hash = hash_intake_path(intake_path)
+    qa_store, reopen_reason = reopen_if_stale(qa_store, current_intake_hash=intake_hash)
+    if reopen_reason:
+        print(f"  {reopen_reason}")
+        save_qa_store(qa_store, qa_path)
+
+    before_pending = sum(1 for q in qa_store.questions if q.status == "pending")
+    qa_store = autofill_covered_pending(qa_store, intake)
+    after_pending = sum(1 for q in qa_store.questions if q.status == "pending")
+    if after_pending < before_pending:
+        print(
+            f"  auto-answered {before_pending - after_pending} question(s) "
+            f"already covered by intake text."
+        )
+        save_qa_store(qa_store, qa_path)
 
     questions_path = out_dir / "questions.json"
     elicit_meta: dict = {
@@ -81,6 +99,7 @@ def run_pipeline(
             intake,
             qa_store,
             max_rounds=max_elicit_rounds,
+            intake_hash=intake_hash,
         )
         save_qa_store(qa_store, qa_path)
         write_questions(qa_store, questions_path)
@@ -135,6 +154,7 @@ def run_pipeline(
 
     eval_changed_flag = False
     peval_path = out_dir / "project_eval.json"
+    peval: ProjectEvalResult | None = None
     if not skip_project_eval and intake.projects:
         print("Project evaluation (gpt-4o, temp=0)…")
         prior_path = prev_eval_path or peval_path
@@ -230,6 +250,14 @@ def run_pipeline(
 
     content_path = out_dir / "content.json"
     suggestions_path = out_dir / "suggestions.json"
+    # Page-fit may regenerate via generate_fn and drop project-eval suggestions —
+    # re-merge them so suggestions.json always includes corpus portfolio feedback.
+    if peval is not None:
+        existing = {(s.type, s.detail) for s in result.suggestions}
+        for s in project_eval_to_suggestions(peval):
+            if (s.type, s.detail) not in existing:
+                result.suggestions.append(s)
+                existing.add((s.type, s.detail))
     content_path.write_text(
         result.resume.model_dump_json(indent=2),
         encoding="utf-8",

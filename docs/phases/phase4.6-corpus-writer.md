@@ -14,11 +14,12 @@ Stop hardcoding fluff lists and few-shots. Mine style + rewrite knowledge from t
 ## Phase 4.7 follow-on — Elicitation memory & convergence
 Fixes infinite/shifting questions and flipping project field gaps:
 
-1. **`src/generation/qa_store.py`** — sidecar `*.qa.yaml` next to intake; stable content-hash ids; statuses `pending|answered|declined`; legacy `intake.answers` merged once.
-2. **Elicitation** — full prior Q&A history in the prompt; `impact` + `complete` fields; MiniLM semantic dedup; round budget (`--max-elicit-rounds`, default 3); rounds 2+ only admit `high` impact.
-3. **Generator** — answers block is full Q→A pairs; declined topics suppress repeat `missing_metric` suggestions.
-4. **Project eval** — prior-eval memory, `portfolio_composition`, verbatim `evidence_quote` validation for field gaps; `temperature=0`.
-5. **`status.json`** — round / converged / pending / eval_changed printed every run.
+1. **`src/generation/qa_store.py`** — sidecar `*.qa.yaml` next to intake; stable content-hash ids; statuses `pending|answered|declined`; legacy `intake.answers` merged once; `intake_hash` re-opens elicitation when the intake changes; empty `converged: true` latches are treated as stale.
+2. **Elicitation** — full prior Q&A history + **retrieved community critiques** in the prompt; `impact` + `complete` fields; MiniLM semantic dedup; round budget (`--max-elicit-rounds`, default 3); rounds 2+ only admit `high` impact. Round 1 requires 2–4 reviewer questions (ownership/scope/tradeoffs when metrics are already present).
+3. **Intake coverage** — dimension-precise only (`users`/`leads`/`%`/`time`/`money`/`installs`); never filters `vague_scope` / `expand_content`. No "any digit → covered" fallback.
+4. **Generator** — answers block is full Q→A pairs; declined topics suppress repeat `missing_metric` suggestions.
+5. **Project eval** — prior-eval memory, `portfolio_composition`, verbatim `evidence_quote` validation for field gaps; `temperature=0`; when critique ids exist, **`rule:`-only evidence is rejected** and every verdict (incl. `strong_keep`) needs non-empty `improvements` (one retry on failure).
+6. **`status.json`** — round / converged / pending / eval_changed printed every run.
 
 ```bash
 # First run seeds examples/my_intake.qa.yaml
@@ -68,6 +69,8 @@ python -m src.generation.pipeline --intake examples/my_intake.yaml --out out/min
 - [x] Page-fill measurement + expand loop + expand_content elicitation.
 - [x] Dedicated technologies lines for experience + projects; QA unused-fact coverage fix.
 - [x] Live arya intake fill improved ~0.77 → ~0.85 with tech lines + recovered QA facts.
+- [x] Elicitation curiosity restored: dimension-precise coverage, intake_hash re-open,
+  corpus critiques in elicit prompts, critique-id-required project eval (`out/erfan3`).
 
 ## Honesty
 Corpus is swe_intern-heavy. Thin roles fall back to SWE-family norms/retrieval with an explicit disclosure in the norms block and skill suggestions.

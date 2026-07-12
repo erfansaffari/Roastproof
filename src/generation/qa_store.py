@@ -29,6 +29,55 @@ def sidecar_path(intake_path: Path) -> Path:
     return intake_path.with_suffix("").with_name(intake_path.stem + ".qa.yaml")
 
 
+def hash_intake_bytes(raw: bytes | str) -> str:
+    """Stable sha1 of intake YAML bytes (or utf-8 string)."""
+    if isinstance(raw, str):
+        raw = raw.encode("utf-8")
+    return hashlib.sha1(raw).hexdigest()[:16]
+
+
+def hash_intake_path(intake_path: Path) -> str:
+    return hash_intake_bytes(Path(intake_path).read_bytes())
+
+
+def reopen_if_stale(
+    store: QAStore,
+    *,
+    current_intake_hash: str,
+) -> tuple[QAStore, str]:
+    """
+    Re-open elicitation when the intake changed or the sidecar is a stale latch
+    (converged with zero questions ever asked — the over-filter failure mode).
+
+    Returns (possibly updated store, reason) where reason is empty if unchanged.
+    """
+    reason = ""
+    updates: dict = {}
+    stored_hash = (store.intake_hash or "").strip()
+    if current_intake_hash and stored_hash and stored_hash != current_intake_hash:
+        updates["converged"] = False
+        updates["intake_hash"] = current_intake_hash
+        reason = "intake changed — re-opening elicitation"
+    elif current_intake_hash and not stored_hash:
+        updates["intake_hash"] = current_intake_hash
+        # Stale latch: converged with nothing ever asked
+        if store.converged and not store.questions:
+            updates["converged"] = False
+            reason = "stale empty convergence — re-opening elicitation"
+    elif store.converged and not store.questions:
+        updates["converged"] = False
+        if current_intake_hash:
+            updates["intake_hash"] = current_intake_hash
+        reason = "stale empty convergence — re-opening elicitation"
+    elif current_intake_hash and store.intake_hash != current_intake_hash:
+        updates["intake_hash"] = current_intake_hash
+
+    if not updates:
+        return store, ""
+    return store.model_copy(update=updates), reason
+
+
+
 def normalize_question_text(text: str) -> str:
     t = (text or "").lower().strip()
     t = re.sub(r"[^\w\s]", " ", t)
@@ -334,16 +383,31 @@ def should_stop_elicitation(
     model_complete: bool,
     new_surviving: int,
     max_rounds: int = DEFAULT_MAX_ROUNDS,
+    dropped_covered: int = 0,
+    next_round: int | None = None,
 ) -> tuple[bool, str]:
     """
     Structural stopping rule.
     Returns (stop, reason).
+
+    Round 1 never converges solely because the coverage filter emptied the
+    question list — that was the failure mode that silenced elicitation.
+    On round 1, converge only when the model says complete AND nothing was
+    dropped as "already in intake" (so the model genuinely had nothing to ask).
     """
     if store.converged:
         return True, "already converged"
+    round_num = next_round if next_round is not None else store.round
     if model_complete and new_surviving == 0:
+        # Over-filter latch: do not converge on round 1 when we dropped questions
+        if round_num <= 1 and dropped_covered > 0:
+            return False, ""
         return True, "model marked complete with no new questions"
-    if new_surviving == 0 and store.round >= 1 and counts(store)["answered"] + counts(store)["declined"] > 0:
+    if (
+        new_surviving == 0
+        and store.round >= 1
+        and counts(store)["answered"] + counts(store)["declined"] > 0
+    ):
         return True, "no new material questions after prior answers"
     if store.round >= max_rounds:
         return True, f"reached max elicit rounds ({max_rounds})"
