@@ -1,7 +1,7 @@
 # Roastproof elicitation Q&A sidecar — edit `answer:` in place.
 # Leave null to skip for now; set to 'skip' to decline (never re-ask).
 # Re-run the pipeline after answering; do not copy ids into intake.yaml.
-round: 8
+round: 11
 converged: false
 questions:
 - id: what-was-the-5a2a5f6d
@@ -121,5 +121,41 @@ questions:
     development of the security tooling at SindadSec, including any specific tools
     or methodologies used?
   relates_to: SindadSec
+  answer: null
+  status: pending
+- id: can-you-add-50acb9ff
+  round: 10
+  topic: expand_content
+  impact: high
+  question: 'Can you add more concrete detail (tools, scope, outcome) for: [Sarox
+    Technology Inc.] Architected and deployed scalable Python backend pipelines with
+    Docker and Kubernetes for reliable, high-performance containerized services. —
+    enough for a full resume bullet?'
+  relates_to: '[Sarox Technology Inc.] Architected and deployed scalable Python backend
+    pipelines with Docker and Kubernetes for reliab'
+  answer: null
+  status: pending
+- id: can-you-add-6e60fad9
+  round: 10
+  topic: expand_content
+  impact: high
+  question: 'Can you add more concrete detail (tools, scope, outcome) for: [Sarox
+    Technology Inc.] Optimized ML data pipelines and automation scripts, cutting processing
+    and training time by 70% while maintaining production-grade reliability. — enough
+    for a full resume bullet?'
+  relates_to: '[Sarox Technology Inc.] Optimized ML data pipelines and automation
+    scripts, cutting processing and training time by 70% '
+  answer: null
+  status: pending
+- id: can-you-add-2af4b6c5
+  round: 10
+  topic: expand_content
+  impact: high
+  question: 'Can you add more concrete detail (tools, scope, outcome) for: [Sarox
+    Technology Inc.] Implemented CI/CD workflows, container orchestration, and cloud
+    automation to support team velocity and secure deployments. — enough for a full
+    resume bullet?'
+  relates_to: '[Sarox Technology Inc.] Implemented CI/CD workflows, container orchestration,
+    and cloud automation to support team veloc'
   answer: null
   status: pending

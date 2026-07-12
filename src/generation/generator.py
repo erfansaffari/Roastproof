@@ -228,6 +228,9 @@ def skill_is_owned(skill: str, owned: set[str]) -> bool:
 
 def owned_skills_from_intake(intake: Intake) -> set[str]:
     parts: list[str] = list(intake.skills)
+    for exp in intake.experience:
+        if getattr(exp, "technologies", None):
+            parts.append(exp.technologies)
     for proj in intake.projects:
         if proj.technologies:
             parts.append(proj.technologies)
@@ -411,6 +414,92 @@ def fit_bullet_length(text: str) -> str | None:
     return t
 
 
+def ground_technologies(tech_line: str, attested_blob: str) -> str:
+    """
+    Keep only comma/middot-separated tech tokens attested in `attested_blob` (G1).
+
+    A token is kept if its normalized form appears in the attested text's skill
+    tokens, or as a substring of the raw attested blob (case-insensitive).
+    """
+    if not (tech_line or "").strip():
+        return ""
+    blob = attested_blob or ""
+    blob_l = blob.lower()
+    attested_tokens = expand_skill_tokens([blob])
+    kept: list[str] = []
+    # Split on commas or middot-like separators the model may emit
+    parts = re.split(r"\s*[,·|/]\s*|\s+\\?\\?cdot\s+", tech_line)
+    for part in parts:
+        part = part.strip().strip(".")
+        if not part:
+            continue
+        # Strip LaTeX middot leftovers if any
+        part = re.sub(r"\$\\cdot\$", "", part).strip()
+        if not part:
+            continue
+        key = _norm_skill(part)
+        if not key:
+            continue
+        if key in attested_tokens or skill_is_owned(part, attested_tokens):
+            kept.append(part)
+            continue
+        # Substring fallback for multi-word tools already written in prose
+        if part.lower() in blob_l or key in _norm_skill(blob):
+            kept.append(part)
+            continue
+        # Soft match: any attested token contained in part or vice versa
+        if any(
+            (key in o or o in key) and min(len(key), len(o)) >= 3
+            for o in attested_tokens
+        ):
+            kept.append(part)
+    # Dedupe preserving order
+    seen: set[str] = set()
+    out: list[str] = []
+    for k in kept:
+        nk = _norm_skill(k)
+        if nk in seen:
+            continue
+        seen.add(nk)
+        out.append(k)
+    return ", ".join(out)
+
+
+def entry_attested_blob(
+    intake: Intake,
+    *,
+    company: str | None = None,
+    project_name: str | None = None,
+    qa_store=None,
+) -> str:
+    """Concatenate intake text + related QA answers that ground an entry's tech line."""
+    parts: list[str] = []
+    if company:
+        for exp in intake.experience:
+            if exp.company == company:
+                if exp.technologies:
+                    parts.append(exp.technologies)
+                parts.append(exp.description or "")
+                break
+    if project_name:
+        for proj in intake.projects:
+            if proj.name == project_name:
+                if proj.technologies:
+                    parts.append(proj.technologies)
+                parts.append(proj.description or "")
+                break
+    needle = (company or project_name or "").lower()
+    if qa_store is not None and needle:
+        for q in getattr(qa_store, "questions", []) or []:
+            if q.status != "answered" or not q.answer:
+                continue
+            relates = (q.relates_to or "").lower()
+            if needle in relates or relates in needle:
+                parts.append(q.answer)
+                parts.append(q.relates_to or "")
+    return "\n".join(parts)
+
+
 def annotated_to_resume(annotated: AnnotatedResume) -> ResumeContent:
     experience = []
     for e in annotated.experience:
@@ -434,6 +523,7 @@ def annotated_to_resume(annotated: AnnotatedResume) -> ResumeContent:
                 "title": e.title,
                 "dates": e.dates,
                 "location": e.location,
+                "technologies": getattr(e, "technologies", "") or "",
                 "bullets": bullets,
             }
         )
@@ -561,6 +651,7 @@ def enforce_g1(
     bucket: str = "",
     thin: bool = False,
     declined_needles: list[str] | None = None,
+    qa_store=None,
 ) -> GenerationResult:
     allow = allowed_skills(intake)
     cleaned_skills: dict[str, list[str]] = {}
@@ -577,6 +668,28 @@ def enforce_g1(
             cleaned_skills[cat] = kept
 
     annotated.resume.skills = cleaned_skills
+
+    # Ground experience/project technologies lines to intake + related QA (G1)
+    for e in annotated.resume.experience:
+        blob = entry_attested_blob(
+            intake, company=e.company, qa_store=qa_store
+        )
+        # Also allow tools named in this entry's bullets (already rewritten from intake)
+        bullet_text = " ".join(b.text for b in (e.bullets or []))
+        e.technologies = ground_technologies(
+            getattr(e, "technologies", "") or "",
+            f"{blob}\n{bullet_text}",
+        )
+    for p in annotated.resume.projects:
+        blob = entry_attested_blob(
+            intake, project_name=p.name, qa_store=qa_store
+        )
+        bullet_text = " ".join(b.text for b in (p.bullets or []))
+        p.technologies = ground_technologies(
+            p.technologies or "",
+            f"{blob}\n{bullet_text}",
+        )
+
     resume = annotated_to_resume(annotated.resume)
 
     owned = owned_skills_from_intake(intake) | owned_skills_from_resume(resume)
@@ -690,6 +803,7 @@ def generate_resume(
         bucket=bucket,
         thin=thin,
         declined_needles=declined,
+        qa_store=qa_store,
     )
 
     if fluff_retry:
@@ -713,6 +827,7 @@ def generate_resume(
                 bucket=bucket,
                 thin=thin,
                 declined_needles=declined,
+                qa_store=qa_store,
             )
 
     return result

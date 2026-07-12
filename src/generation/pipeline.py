@@ -164,6 +164,11 @@ def run_pipeline(
         for q in qa_store.questions
         if q.status == "answered" and q.answer
     ]
+    qa_entries = [
+        {"answer": q.answer or "", "relates_to": q.relates_to or ""}
+        for q in qa_store.questions
+        if q.status == "answered" and q.answer
+    ]
     fill_meta: dict = {
         "fill_ratio": None,
         "fill_target": fill_target,
@@ -195,6 +200,7 @@ def run_pipeline(
             generate_fn=gen_fn,
             fill_target=fill_target,
             qa_answers=qa_answers,
+            qa_entries=qa_entries,
         )
         print(
             f"  pages={pages}, fill={fill_meta.get('fill_ratio', 0):.0%}, "

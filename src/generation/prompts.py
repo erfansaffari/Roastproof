@@ -225,7 +225,7 @@ Ask of every bullet: would this line survive a 30-second screen for {role.displa
     "contact": {{"name","email","phone","linkedin","github","website"}},
     "education": [{{"school","degree","dates","location","details"}}],
     "experience": [{{
-      "company","title","dates","location",
+      "company","title","dates","location","technologies",
       "bullets": [{{"text": str, "rewritten_from": str, "gaps": ["no_metric"|"vague_scope"]}}]
     }}],
     "projects": [{{
@@ -247,7 +247,11 @@ Bullet constraints (ceilings are safety caps — fill toward community targets):
   when the intake description clearly supports more distinct accomplishments.
 - Every bullet MUST set rewritten_from to the intake phrase it came from.
 - gaps: "no_metric" when impact has no number; "vague_scope" when scope is unclear; [] when solid.
-- Skills: ONLY skills the user listed (or named in project technologies). Never pad for breadth.
+- technologies (experience AND projects): comma-separated stack line for that entry ONLY.
+  Extract tool/framework names attested in that entry's intake description, intake.technologies
+  field, or answered QA that relates to that entry. If none are attested, use "".
+  NEVER invent tools from role norms or "typical stacks" — corpus prevalence is not a fact source.
+- Skills: ONLY skills the user listed (or named in experience/project technologies). Never pad for breadth.
 
 {REFUSAL_CLAUSE}
 """

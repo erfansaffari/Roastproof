@@ -26,8 +26,8 @@
 \addtolength{\oddsidemargin}{-0.5in}
 \addtolength{\evensidemargin}{-0.5in}
 \addtolength{\textwidth}{1in}
-\addtolength{\topmargin}{-.5in}
-\addtolength{\textheight}{1.0in}
+\addtolength{\topmargin}{-.55in}
+\addtolength{\textheight}{1.15in}
 
 \urlstyle{same}
 \raggedbottom
@@ -35,37 +35,38 @@
 \setlength{\tabcolsep}{0in}
 
 \titleformat{\section}{
-  \vspace{-4pt}\scshape\raggedright\large
-}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+  \vspace{-2pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-3pt}]
 
 {% raw %}
 \newcommand{\resumeItem}[1]{
-  \item\small{
-    {#1 \vspace{-2pt}}
+  \item{
+    {#1}
   }
 }
 
 \newcommand{\resumeSubheading}[4]{
-  \vspace{-2pt}\item
+  \vspace{-1pt}\item
     \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
       \textbf{#1} & #2 \\
       \textit{\small#3} & \textit{\small #4} \\
-    \end{tabular*}\vspace{-7pt}
+    \end{tabular*}\vspace{-3pt}
 }
 
 \newcommand{\resumeProjectHeading}[2]{
     \item
     \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
-      \small#1 & #2 \\
-    \end{tabular*}\vspace{-7pt}
+      \textbf{\small#1} & #2 \\
+    \end{tabular*}\vspace{-3pt}
 }
 
 \renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
 
 \newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
 \newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
-\newcommand{\resumeItemListStart}{\begin{itemize}}
-\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+% Modest breathing room: gap after tech + bullet spacing (avoid over-compaction / 2-page overflow)
+\newcommand{\resumeItemListStart}{\begin{itemize}[leftmargin=1em, itemsep=3pt, parsep=0pt, topsep=2pt, partopsep=0pt]}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-2pt}}
 {% endraw %}
 
 \begin{document}
@@ -82,8 +83,7 @@
       {%- if not loop.last %} $|$ {% endif -%}
     {%- endfor %}
 \end{center}
-
-{% macro education_section() -%}
+{%- macro education_section() %}
 \section{Education}
   \resumeSubHeadingListStart
   {%- for e in education %}
@@ -99,7 +99,14 @@
   \resumeSubHeadingListEnd
 {%- endmacro %}
 
-{% macro experience_section() -%}
+{%- macro tech_line(techs) -%}
+{%- if techs and techs | trim -%}
+{%- set parts = (techs | string).replace('·', ',').replace('|', ',').split(',') -%}
+        \item[] \textit{\small {% for raw in parts if raw.strip() %}{{ raw.strip() | latex }}{% if not loop.last %} \ $\cdot$ \ {% endif %}{% endfor %}}\vspace{4pt}
+{%- endif -%}
+{%- endmacro %}
+
+{%- macro experience_section() %}
 \section{Experience}
   \resumeSubHeadingListStart
   {%- for x in experience %}
@@ -107,6 +114,7 @@
       { {{- x.title | latex -}} }{ {{- x.dates | latex -}} }
       { {{- x.company | latex -}} }{ {{- x.location | default('', true) | latex -}} }
       \resumeItemListStart
+{{ tech_line(x.technologies) }}
       {%- for b in x.bullets %}
         \resumeItem{ {{- b | latex -}} }
       {%- endfor %}
@@ -115,13 +123,14 @@
   \resumeSubHeadingListEnd
 {%- endmacro %}
 
-{% macro projects_section() -%}
+{%- macro projects_section() %}
 \section{Projects}
     \resumeSubHeadingListStart
     {%- for p in projects %}
       \resumeProjectHeading
-          {\textbf{ {{- p.name | latex -}} }{% if p.technologies %} $|$ \emph{ {{- p.technologies | latex -}} }{% endif %}}{ {{- p.dates | default('', true) | latex -}} }
+          {\textbf{ {{- p.name | latex -}} }}{ {{- p.dates | default('', true) | latex -}} }
           \resumeItemListStart
+{{ tech_line(p.technologies) }}
           {%- for b in p.bullets %}
             \resumeItem{ {{- b | latex -}} }
           {%- endfor %}
@@ -130,7 +139,7 @@
     \resumeSubHeadingListEnd
 {%- endmacro %}
 
-{% macro skills_section() -%}
+{%- macro skills_section() %}
 \section{Technical Skills}
  \begin{itemize}[leftmargin=0.15in, label={}]
     \small{\item{

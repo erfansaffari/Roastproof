@@ -244,6 +244,116 @@ def test_expansion_questions_append_even_when_converged(monkeypatch):
     assert any(q.status == "pending" for q in updated.questions)
 
 
+def test_unused_qa_answer_survives_partial_overlap():
+    """Elicited QA answers use a stricter threshold so a related bullet doesn't swallow them."""
+    intake = _intake(
+        experience=[
+            {
+                "company": "SindadSec",
+                "title": "DevOps Intern",
+                "dates": "2022",
+                "description": "Deployed Docker security tooling and configured Linux servers.",
+            }
+        ],
+        projects=[
+            {
+                "name": "kv-store",
+                "technologies": "Go",
+                "description": "Implemented Raft consensus across three nodes.",
+            }
+        ],
+    )
+    resume = _resume(
+        [
+            "Configured Linux with Nginx, UFW, and fail2ban against brute-force attacks.",
+        ],
+        [
+            "Implemented Raft consensus on a three-node cluster with leader election.",
+        ],
+    )
+    # Patch company name on resume to match
+    resume.experience[0]["company"] = "SindadSec"
+    result = GenerationResult(resume=resume, suggestions=[])
+    answer = (
+        "Faced repeated SSH brute-force attempts; fixed with key-only auth and fail2ban."
+    )
+    unused = unused_intake_facts(
+        intake,
+        result,
+        qa_entries=[
+            {
+                "answer": answer,
+                "relates_to": "SindadSec",
+            }
+        ],
+    )
+    joined = " ".join(unused).lower()
+    assert "ssh" in joined or "key-only" in joined
+    assert any("SindadSec" in u for u in unused)
+
+
+def test_ground_technologies_rejects_unattested_tools():
+    from src.generation.generator import ground_technologies
+
+    blob = (
+        "Architected Python backend with Docker and Kubernetes. "
+        "Built FastAPI microservices with Celery and RabbitMQ."
+    )
+    grounded = ground_technologies(
+        "Python, FastAPI, Docker, Kubernetes, Celery, Terraform, AWS",
+        blob,
+    )
+    low = grounded.lower()
+    assert "python" in low
+    assert "fastapi" in low
+    assert "docker" in low
+    assert "terraform" not in low
+    assert "aws" not in low
+
+
+def test_render_technologies_on_own_line():
+    from src.generation.renderer import render_tex
+
+    resume = ResumeContent.model_construct(
+        contact={"name": "T"},
+        education=[],
+        experience=[
+            {
+                "company": "Acme",
+                "title": "Intern",
+                "dates": "2024",
+                "location": "",
+                "technologies": "Python, FastAPI, Docker",
+                "bullets": [
+                    "Built a Go API gateway that served about ten thousand requests daily for clients."
+                ],
+            }
+        ],
+        projects=[
+            {
+                "name": "kv-store",
+                "technologies": "Go, Raft, Docker",
+                "dates": "",
+                "bullets": [
+                    "Implemented Raft consensus on a three-node cluster with leader election."
+                ],
+            }
+        ],
+        skills={"Languages": ["Python", "Go"]},
+        section_order=["experience", "projects", "skills"],
+    )
+    tex = render_tex(resume)
+    assert r"\item[] \textit{\small" in tex
+    assert r"\cdot" in tex
+    assert r"\vspace{4pt}" in tex
+    # Project tech must NOT be inline on the heading row
+    assert r"$|$ \emph{Go" not in tex
+    assert r"\textbf{kv-store}" in tex
+    # space.tex-style: tech line after ItemListStart, before bullets
+    assert tex.index(r"\resumeItemListStart") < tex.index(r"\item[] \textit{\small")
+    assert "Python" in tex and "FastAPI" in tex and "Docker" in tex
+
+
 def test_measure_page_fill_on_existing_pdf():
     from src.generation.renderer import measure_page_fill
 

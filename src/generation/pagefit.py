@@ -118,18 +118,23 @@ def unused_intake_facts(
     result: GenerationResult,
     *,
     qa_answers: list[str] | None = None,
+    qa_entries: list[dict[str, str]] | None = None,
 ) -> list[str]:
     """
     Intake description sentences + answered QA facts that are not covered by
     any generated bullet text (token overlap heuristic). G1-safe expansion fuel.
+
+    `qa_entries` is preferred: each item is ``{"answer": ..., "relates_to": ...}``.
+    Answered QA uses a stricter overlap threshold (0.75) so partially-related
+    bullets do not swallow a distinct elicited fact. Description sentences keep
+    the looser 0.45 threshold.
     """
     attested_norm = [_normalize_fact(a) for a in attested_rewritten_from(result)]
 
-    def _covered(fact: str) -> bool:
+    def _covered(fact: str, *, threshold: float = 0.45) -> bool:
         fn = _normalize_fact(fact)
         if len(fn) < 12:
             return True
-        # Significant word overlap with any bullet → considered used
         fwords = {w for w in fn.split() if len(w) > 3}
         if not fwords:
             return True
@@ -138,22 +143,37 @@ def unused_intake_facts(
             if not awords:
                 continue
             overlap = len(fwords & awords) / max(1, len(fwords))
-            if overlap >= 0.45 or fn[:40] in a:
+            # Prefix match only counts as covered for the looser description path
+            if overlap >= threshold:
+                return True
+            if threshold <= 0.45 and fn[:40] in a:
                 return True
         return False
 
     unused: list[str] = []
     for exp in intake.experience:
         for sent in _split_facts(exp.description):
-            if not _covered(sent):
+            if not _covered(sent, threshold=0.45):
                 unused.append(f"[{exp.company}] {sent}")
     for proj in intake.projects:
         for sent in _split_facts(proj.description):
-            if not _covered(sent):
+            if not _covered(sent, threshold=0.45):
                 unused.append(f"[{proj.name}] {sent}")
-    for ans in qa_answers or []:
-        if ans and not _covered(ans):
-            unused.append(f"[answer] {ans}")
+
+    entries = list(qa_entries or [])
+    if not entries and qa_answers:
+        entries = [{"answer": a, "relates_to": ""} for a in qa_answers if a]
+
+    for entry in entries:
+        ans = (entry.get("answer") or "").strip()
+        if not ans:
+            continue
+        relates = (entry.get("relates_to") or "").strip()
+        # Prefer labeling with relates_to so the expand prompt targets the right entry
+        label = relates if relates else "answer"
+        # Stricter threshold: elicited answers exist because they filled a named gap
+        if not _covered(ans, threshold=0.75):
+            unused.append(f"[{label}] {ans}")
     return unused
 
 
@@ -195,6 +215,7 @@ def fit_to_one_page(
     max_expand_attempts: int = MAX_EXPAND_ATTEMPTS,
     norms_path: Path = DEFAULT_NORMS,
     qa_answers: list[str] | None = None,
+    qa_entries: list[dict[str, str]] | None = None,
 ) -> tuple[GenerationResult, Path, Path, int, dict[str, Any]]:
     """
     Trim if >1 page; if 1 page but under-filled, expand using unused intake facts.
@@ -305,7 +326,9 @@ def fit_to_one_page(
 
     # --- Expand loop ---
     while fill < fill_target and expand_attempts < max_expand_attempts:
-        unused = unused_intake_facts(intake, result, qa_answers=qa_answers)
+        unused = unused_intake_facts(
+            intake, result, qa_answers=qa_answers, qa_entries=qa_entries
+        )
         thin = thin_entries(result.resume, target_per_entry=p75)
         if not unused and not thin:
             break
@@ -319,6 +342,8 @@ def fit_to_one_page(
                 f"(each {BULLET_MIN_LEN}–{BULLET_MAX_LEN} chars). Prefer Homebrew/deploy/scale/security facts "
                 f"that are still missing. Lengthen short facts with tools/scope from "
                 f"the same sentence — do not invent new numbers.\n"
+                f"When a fact is labeled with a company/project name, attach the new "
+                f"bullet to that entry if it still has bullet budget remaining.\n"
             )
         instr = pagefit_expand_instruction(
             fill_ratio=fill,
@@ -359,7 +384,18 @@ def fit_to_one_page(
             best = (result, tex_path, pdf_path, pages, fill)
 
     result, tex_path, pdf_path, pages, fill = best
-    unused_final = unused_intake_facts(intake, result, qa_answers=qa_answers)
+    # Re-render the best draft — expand attempts share the same basename and may
+    # have overwritten tex/pdf on disk with a rejected (overflow / worse) candidate.
+    if pages == 1:
+        tex_path, pdf_path = render_and_compile(
+            result.resume, out_dir, basename=basename
+        )
+        pages = count_pdf_pages(pdf_path)
+        fill = measure_page_fill(pdf_path) if pages == 1 else fill
+
+    unused_final = unused_intake_facts(
+        intake, result, qa_answers=qa_answers, qa_entries=qa_entries
+    )
     thin_final = thin_entries(result.resume, target_per_entry=p75)
     # Under target → elicit more content even if entry bullet counts look fine
     needs_elicit = pages == 1 and fill < fill_target

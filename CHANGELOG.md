@@ -5,6 +5,45 @@ Newest entries at the top. Suggested commit messages included per entry.
 
 ---
 
+## 2026-07-12 (c) — Page-fill density: tech lines + QA unused-fact fix
+
+Thin intakes (e.g. arya6 ~0.77 fill) under-filled because legitimate content was
+not rendered or was discarded by the expand heuristic — not because the Jake's
+template couldn't fill a page (`mine49` already hits ~0.93 on the same template).
+
+### Technologies lines (G1-safe)
+- `IntakeExperience.technologies` + `AnnotatedExperience.technologies`.
+- Generator extracts stack names only from that entry's intake description /
+  related QA; `ground_technologies` strips unattested tools in `enforce_g1`.
+- Template: dedicated `\textit{\small ...}` line under title/date for **both**
+  experience and projects (project tech removed from the inline name row).
+- Jinja macro whitespace tightened (no blank-line leak after header).
+
+### Unused-fact coverage
+- Answered QA uses overlap threshold 0.75 (descriptions stay at 0.45).
+- `qa_entries` carry `relates_to` so expand prompts target the right entry.
+
+### Tests / docs
+- `tests/test_page_fill.py`: QA partial-overlap regression, G1 tech grounding,
+  render own-line assertion; phase4.6 doc + this changelog.
+- Live: `out/arya8` fill **0.85** (was arya6 **0.77**) with tech lines on all
+  entries; SSH/fail2ban QA fact recovered onto SindadSec; project ceiling 5.
+- Tech line placement fix: render as `\item[]` inside the entry itemize (under
+  company/title), not floating after `\resumeSubheading` where negative vspace
+  caused overlap with the company row.
+- Tech line now matches `examples/space.tex`: middot separators
+  (`A \ $\cdot$ \ B`), `\item[] \textit{\small ...}`, and dedicated gap before
+  bullets (`\vspace{4pt}`); bullet `itemsep=3pt`; bullets at body 11pt (no
+  `\small` shrink); slight textheight bump to stay one page.
+
+### Suggested commits
+- `feat(phase4.8): dedicated technologies lines for experience and projects`
+- `fix(phase4.8): stricter unused-fact coverage for answered QA`
+- `fix(phase4.8): re-render best draft after expand; tech-line spacing`
+- `chore(phase4.8): raise project bullet ceiling 4→5 / total 26→28 for fill`
+
+---
+
 ## 2026-07-12 (b) — Phase 4.8 bidirectional page-fill + content expansion
 
 Fill thin one-page drafts using unused intake facts and corpus bullet norms.

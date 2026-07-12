@@ -109,9 +109,9 @@ class CritiquePoint(BaseModel):
 BULLET_MIN_LEN = 50
 BULLET_MAX_LEN = 140
 MAX_BULLETS_PER_EXPERIENCE = 5
-MAX_BULLETS_PER_PROJECT = 4
+MAX_BULLETS_PER_PROJECT = 5
 MAX_PROJECTS = 4
-MAX_TOTAL_BULLETS = 26
+MAX_TOTAL_BULLETS = 28
 
 
 class ResumeContent(BaseModel):
@@ -232,6 +232,13 @@ class AnnotatedExperience(BaseModel):
     title: str
     dates: str
     location: str = ""
+    technologies: str = Field(
+        "",
+        description=(
+            "Comma-separated tools/stack for this role — only names attested in "
+            "the intake description or related QA answers (G1)."
+        ),
+    )
     bullets: List[AnnotatedBullet] = Field(default_factory=list)
 
 
@@ -324,6 +331,13 @@ class IntakeExperience(BaseModel):
     title: str
     dates: str
     location: str = ""
+    technologies: str = Field(
+        "",
+        description=(
+            "Optional comma-separated tools/stack for this role. "
+            "If blank, the generator may extract attested names from description/QA only."
+        ),
+    )
     description: str = Field(..., description="Raw free-text description of the role.")
 
 

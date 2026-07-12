@@ -37,6 +37,11 @@ Community resumes fill one page; thin drafts now expand instead of only trimming
 4. **`expand_content` elicitation** — when still under-filled, append questions to the QA sidecar even if metric-converged.
 5. **`status.json`** — `fill_ratio`, `fill_target`, `expand_attempts`, `expansion_questions_added`.
 
+### Page-fill density (tech lines + QA coverage)
+Under-fill on thin intakes was often layout density, not missing metrics:
+- Experience and projects both render a dedicated `\textit{\small ...}` **technologies line** under the title/date row (not inline with the name). Experience `technologies` is extracted only from that entry's intake description / related QA (G1); corpus norms never invent tools.
+- `unused_intake_facts` uses a stricter overlap threshold (0.75) for answered QA so a partially-related bullet does not swallow a distinct elicited fact; facts are labeled with `relates_to` so expand attaches them to the right entry.
+
 ```bash
 python -m src.generation.pipeline --intake examples/my_intake.yaml --out out/mine49 --fill-target 0.85
 ```
@@ -61,6 +66,8 @@ python -m src.generation.pipeline --intake examples/my_intake.yaml --out out/min
 - [x] QA sidecar + semantic dedup + convergence stopping rule.
 - [x] Field-gap quote validation + prior-eval stability.
 - [x] Page-fill measurement + expand loop + expand_content elicitation.
+- [x] Dedicated technologies lines for experience + projects; QA unused-fact coverage fix.
+- [x] Live arya intake fill improved ~0.77 → ~0.85 with tech lines + recovered QA facts.
 
 ## Honesty
 Corpus is swe_intern-heavy. Thin roles fall back to SWE-family norms/retrieval with an explicit disclosure in the norms block and skill suggestions.
