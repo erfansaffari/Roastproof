@@ -1,0 +1,155 @@
+%-----------------------------------------------------------------------------------------------------------------------------------------------%
+%   Erfan Saffari — Default Resume (Software Engineering / ML Engineering)
+%-----------------------------------------------------------------------------------------------------------------------------------------------%
+
+\documentclass[a4paper,10.5pt]{article}
+
+\usepackage{url}
+\usepackage{parskip}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage[top=0.32in, bottom=0.28in, left=0.6in, right=0.6in]{geometry}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{supertabular}
+\usepackage{titlesec}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage[unicode, draft=false]{hyperref}
+\usepackage{fontawesome5}
+
+% ---- Arial-equivalent font (Helvetica is metrically compatible with Arial;
+% ---- real Arial isn't available under pdflatex/Overleaf's default engine) ----
+\usepackage[scaled=0.92]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+\definecolor{linkcolour}{rgb}{0,0.2,0.6}
+\hypersetup{colorlinks,breaklinks,urlcolor=linkcolour,linkcolor=linkcolour}
+
+\titleformat{\section}{\large\scshape\raggedright}{}{0em}{}[\titlerule]
+\titlespacing{\section}{0pt}{2pt}{2pt}
+\setlength{\parskip}{2.5pt}
+
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+% Experience environment (title + date on one line, bullets below)
+\newenvironment{joblong}[2]
+    {
+    \begin{tabularx}{\linewidth}{@{}l X r@{}}
+    \textbf{#1} & \hfill & #2 \\[1.5pt]
+    \end{tabularx}
+    \begin{minipage}[t]{\linewidth}
+    \begin{itemize}[nosep,after=\strut, leftmargin=1em, itemsep=0.5pt,label=--]
+    }
+    {
+    \end{itemize}
+    \end{minipage}
+    }
+
+% Project environment (title + GitHub icon on first line, tech stack on second line, bullets below)
+\newenvironment{project}[3]
+    {
+    \begin{tabularx}{\linewidth}{@{}l X r@{}}
+    \textbf{#1} & \hfill & \href{#2}{\faGithub} \\[0.5pt]
+    \end{tabularx}
+    \begin{minipage}[t]{\linewidth}
+    \begin{itemize}[nosep,after=\strut, leftmargin=1em, itemsep=0.5pt,label=--]
+    }
+    {
+    \end{itemize}
+    \end{minipage}
+    }
+
+\begin{document}
+\pagestyle{empty}
+
+%----------------------------------------------------------------------------------------
+%   HEADER
+%----------------------------------------------------------------------------------------
+
+\begin{tabularx}{\linewidth}{@{} C @{}}
+\Huge{\textbf{Erfan Saffari}} \\[6pt]
+\href{https://github.com/erfansaffari}{\raisebox{-0.05\height}\faGithub\ erfansaffari} \ $|$ \
+\href{https://linkedin.com/in/erfansaffari}{\raisebox{-0.05\height}\faLinkedin\ erfansaffari} \ $|$ \
+\href{mailto:erfansaffari0@gmail.com}{\raisebox{-0.05\height}\faEnvelope\ erfansaffari0@gmail.com} \ $|$ \
+\href{tel:+16478603693}{\raisebox{-0.05\height}\faMobile\ +1 (647) 860-3693} \ $|$ \
+Waterloo, ON
+\end{tabularx}
+
+%----------------------------------------------------------------------------------------
+%   EDUCATION
+%----------------------------------------------------------------------------------------
+
+\section{Education}
+
+\begin{tabularx}{\linewidth}{@{}l X r@{}}
+\textbf{University of Waterloo} & & Expected 2030 \\
+\end{tabularx}
+Bachelor of Computer Science, Co-op \\[2pt]
+\textit{Awards:} \ President's Scholarship (\$2,000) \ $|$ \ Mathematics International Students Entrance Scholarship (\$5,000)
+
+%----------------------------------------------------------------------------------------
+%   EXPERIENCE
+%----------------------------------------------------------------------------------------
+
+\section{Experience}
+
+\begin{joblong}{Software Engineer --- ErgoClean}{Jun 2024 -- Apr 2026}
+    \item[] \textit{\small Next.js \ $\cdot$ \ React \ $\cdot$ \ n8n \ $\cdot$ \ OpenAI API \ $\cdot$ \ Vercel} \\[-8pt]
+    \item Built an end-to-end AI lead-generation agent (LinkedIn scraping, data-enrichment APIs, GPT-powered outreach), generating 50+ qualified leads/week and giving the sales team a repeatable, low-touch pipeline.
+    \item Shipped a client-facing analytics dashboard (React, Next.js) wired to the lead pipeline, giving 3,500+ commercial clients across the GTA real-time visibility into their campaigns and cutting manual status-update requests.
+    \item Automated customer support with an n8n + OpenAI API + Resend pipeline, cutting response time by 80\% while handling 500+ monthly inquiries without adding headcount.
+\end{joblong}
+
+\begin{joblong}{Founder \& Software Engineer --- SchoolTalk}{Jan 2024 -- Present}
+    \item[] \textit{\small Next.js 15 \ $\cdot$ \ TypeScript \ $\cdot$ \ Convex \ $\cdot$ \ Clerk \ $\cdot$ \ Tailwind/Shadcn} \\[-8pt]
+    \item Founded and built a multi-tenant SaaS community platform for Canadian high schools from 0 to 100+ active users across 3 schools as sole engineer, owning product, infrastructure, and growth decisions.
+    \item Architected a multi-tenant schema (17+ Convex tables, schoolId-scoped) with a shared tenant-safe auth pattern that derives school and role server-side from Clerk identity and asserts tenant ownership before every mutation.
+    \item Built RBAC (student/teacher/staff/school\_admin), invite-code and roster-based verification, and per-school moderation/ban enforcement backed by a content-moderation pipeline (OpenAI + Gemini fallback).
+    \item Shipped real-time community features (posts, clubs, chatrooms, events, notifications) and a points/leaderboard system; deployed on Vercel's Montreal region to meet Canadian data-residency requirements.
+\end{joblong}
+
+%----------------------------------------------------------------------------------------
+%   PROJECTS
+%----------------------------------------------------------------------------------------
+
+\section{Projects}
+
+\begin{project}{raft-kv-store --- Distributed Fault-Tolerant Key-Value Store}{https://github.com/erfansaffari/raft-kv-store}{raft-kv-store}
+    \item[] \textit{\small Go \ $\cdot$ \ Raft Consensus \ $\cdot$ \ TCP/RPC \ $\cdot$ \ Concurrency} \\[-8pt]
+    \item Built a distributed, fault-tolerant key-value store from scratch in Go, implementing the Raft consensus algorithm (leader election, log replication, persistence) across a 3-node cluster.
+    \item Implemented randomized election timeouts and majority-commit log replication, with a write-ahead persistence layer so nodes recover correctly after a crash and restart.
+    \item Wrote network-partition chaos tests that kill nodes and drop/delay messages between them, verifying the cluster still elects a leader and preserves data correctly once the partition heals.
+\end{project}
+
+\begin{project}{Bina --- AI Semantic File Manager}{https://github.com/erfansaffari/bina}{bina}
+    \item[] \textit{\small Python \ $\cdot$ \ FastAPI \ $\cdot$ \ React \ $\cdot$ \ TypeScript \ $\cdot$ \ Electron \ $\cdot$ \ NetworkX} \\[-8pt]
+    \item Built a macOS desktop app (Electron + React 18 + FastAPI sidecar) that indexes a local file vault into an interactive D3 knowledge graph, deduplicating by MD5 content hash so shared files are analyzed once across workspaces.
+    \item Designed a dual vector-store router (Moorcheh cloud + ChromaDB local cache) and a NetworkX graph-scoring algorithm (cosine similarity + entity-boost + forced edges) to keep search and graph construction resilient offline.
+    \item Shipped 3 swappable AI inference paths (hosted, local Ollama, user API key), a Railtracks tool-node agent for vault Q\&A, and PyInstaller packaging for standalone macOS distribution.
+\end{project}
+
+\begin{project}{MemOS --- Hierarchical AI Memory Architecture}{https://github.com/erfansaffari/memos}{memos}
+    \item[] \textit{\small Python \ $\cdot$ \ LangGraph \ $\cdot$ \ Claude API \ $\cdot$ \ ChromaDB \ $\cdot$ \ SQLite} \\[-8pt]
+    \item Designed a persistent memory layer for multi-model AI agents using a 5-node LangGraph pipeline and a 3-level memory hierarchy (identity, project, episodic), reducing redundant context re-fetching across sessions.
+    \item Built an adaptive retrieval router that classifies query intent into 4 types and dynamically sets retrieval depth and token budget, cutting average token spend per query versus a fixed-depth baseline.
+    \item Ran ablations (hierarchical vs.\ flat retrieval) across 10 query classes with a confidence-weighted contradiction-detection verifier agent, logging all results to Weights \& Biases for reproducibility.
+\end{project}
+
+%----------------------------------------------------------------------------------------
+%   SKILLS
+%----------------------------------------------------------------------------------------
+
+\section{Skills}
+{\small\begin{tabularx}{\linewidth}{@{}l X@{}}
+\textbf{Languages}    & Python, C, C++, TypeScript, JavaScript, SQL, HTML/CSS \\
+\textbf{AI / ML}      & PyTorch, scikit-learn, LangGraph, ChromaDB, NetworkX, sentence-transformers, Pydantic, NumPy, pandas, OpenAI API, Anthropic API (multi-model orchestration), Weights \& Biases \\
+\textbf{Backend}      & FastAPI, Node.js, PostgreSQL, SQLite, SQLAlchemy, Redis, Supabase, REST/GraphQL API design \\
+\textbf{Frontend}     & React, Next.js, Electron, Tailwind CSS, D3.js, Zustand, Vite \\
+\textbf{DevOps/Cloud} & Docker, Git/GitHub Actions CI, AWS, Vercel, PyInstaller, Linux, basic Kubernetes \\
+\textbf{Practices}    & Unit/integration testing (pytest), Agile/Scrum, system design fundamentals, technical mentorship, cross-functional communication \\
+\end{tabularx}}
+
+\vfill
+\end{document}

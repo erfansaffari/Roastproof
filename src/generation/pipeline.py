@@ -1,5 +1,5 @@
 """
-Phase 4 / 4.5 / 4.6 / 4.7 — end-to-end generation CLI.
+Phase 4 / 4.5 / 4.6 / 4.7 / 4.8 — end-to-end generation CLI.
 
   python -m src.generation.pipeline --intake examples/my_intake.yaml --out out/mine
 
@@ -16,10 +16,14 @@ import sys
 from functools import partial
 from pathlib import Path
 
-from src.generation.elicit import elicit_questions, write_questions
+from src.generation.elicit import (
+    elicit_expansion_questions,
+    elicit_questions,
+    write_questions,
+)
 from src.generation.generator import generate_resume
 from src.generation.intake import load_intake
-from src.generation.pagefit import fit_to_one_page
+from src.generation.pagefit import DEFAULT_FILL_TARGET, fit_to_one_page
 from src.generation.project_eval import (
     eval_changed,
     evaluate_projects,
@@ -46,6 +50,7 @@ def run_pipeline(
     skip_project_eval: bool = False,
     max_elicit_rounds: int = DEFAULT_MAX_ROUNDS,
     prev_eval_path: Path | None = None,
+    fill_target: float = DEFAULT_FILL_TARGET,
 ) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     intake_path = Path(intake_path)
@@ -122,7 +127,6 @@ def run_pipeline(
         print("ERROR: --elicit-only requires elicitation (omit --skip-elicit).", file=sys.stderr)
         raise SystemExit(2)
     else:
-        # Still persist any legacy-answer merge
         save_qa_store(qa_store, qa_path)
 
     print("Generating resume content (gpt-4o)…")
@@ -155,19 +159,68 @@ def run_pipeline(
             f"changed_since_prev={eval_changed_flag})."
         )
 
+    qa_answers = [
+        q.answer
+        for q in qa_store.questions
+        if q.status == "answered" and q.answer
+    ]
+    fill_meta: dict = {
+        "fill_ratio": None,
+        "fill_target": fill_target,
+        "expand_attempts": 0,
+        "needs_expansion_elicit": False,
+        "thin_entries": [],
+        "unused_facts": [],
+    }
+    expansion_questions_added = 0
+
     if skip_pagefit:
-        from src.generation.renderer import count_pdf_pages, render_and_compile
+        from src.generation.renderer import (
+            count_pdf_pages,
+            measure_page_fill,
+            render_and_compile,
+        )
 
         tex_path, pdf_path = render_and_compile(result.resume, out_dir)
         pages = count_pdf_pages(pdf_path)
+        fill_meta["fill_ratio"] = (
+            round(measure_page_fill(pdf_path), 4) if pages == 1 else 0.0
+        )
     else:
-        print("Rendering + page-fit…")
-        result, tex_path, pdf_path, pages = fit_to_one_page(
+        print(f"Rendering + page-fit (fill target {fill_target:.0%})…")
+        result, tex_path, pdf_path, pages, fill_meta = fit_to_one_page(
             intake,
             result,
             out_dir,
             generate_fn=gen_fn,
+            fill_target=fill_target,
+            qa_answers=qa_answers,
         )
+        print(
+            f"  pages={pages}, fill={fill_meta.get('fill_ratio', 0):.0%}, "
+            f"expand_attempts={fill_meta.get('expand_attempts', 0)}"
+        )
+
+        if fill_meta.get("needs_expansion_elicit"):
+            print("Page under-filled — expansion elicitation (gpt-4o-mini)…")
+            _raw, qa_store, exp_meta = elicit_expansion_questions(
+                intake,
+                qa_store,
+                fill_ratio=float(fill_meta.get("fill_ratio") or 0),
+                fill_target=fill_target,
+                thin_entries=list(fill_meta.get("thin_entries") or []),
+                unused_facts=list(fill_meta.get("unused_facts") or []),
+            )
+            expansion_questions_added = int(exp_meta.get("surviving_count") or 0)
+            save_qa_store(qa_store, qa_path)
+            write_questions(qa_store, questions_path)
+            if expansion_questions_added:
+                print(
+                    f"  +{expansion_questions_added} expand_content question(s) in "
+                    f"{qa_path} — answer and re-run to fill the page."
+                )
+            else:
+                print("  No new expansion questions (model complete or all dupes).")
 
     content_path = out_dir / "content.json"
     suggestions_path = out_dir / "suggestions.json"
@@ -181,6 +234,7 @@ def run_pipeline(
     )
 
     c = counts(qa_store)
+    fill_ratio = fill_meta.get("fill_ratio")
     status = {
         "round": qa_store.round,
         "converged": qa_store.converged,
@@ -190,11 +244,35 @@ def run_pipeline(
         "eval_changed_since_prev": eval_changed_flag,
         "sidecar": str(qa_path),
         "stop_reason": elicit_meta.get("stop_reason") or "",
+        "fill_ratio": fill_ratio,
+        "fill_target": fill_target,
+        "expand_attempts": fill_meta.get("expand_attempts", 0),
+        "expansion_questions_added": expansion_questions_added,
+        "pages": pages,
     }
     status_path = out_dir / "status.json"
     status_path.write_text(json.dumps(status, indent=2), encoding="utf-8")
 
-    if qa_store.converged:
+    if fill_ratio is not None:
+        if pages != 1:
+            fill_verdict = f"Fill: {pages} pages (not one-page yet)."
+        elif float(fill_ratio) >= fill_target:
+            fill_verdict = (
+                f"Fill: page {float(fill_ratio):.0%} full (target {fill_target:.0%}) — good."
+            )
+        elif expansion_questions_added:
+            fill_verdict = (
+                f"Fill: page {float(fill_ratio):.0%} full — "
+                f"{expansion_questions_added} expansion question(s) added to sidecar."
+            )
+        else:
+            fill_verdict = (
+                f"Fill: page {float(fill_ratio):.0%} full (target {fill_target:.0%}) — "
+                "thin; answer sidecar questions or add intake detail and re-run."
+            )
+        print(fill_verdict)
+
+    if qa_store.converged and not c["pending"]:
         verdict = (
             f"Status: CONVERGED (round {qa_store.round}) — "
             "no further elicitation needed; resume is as strong as facts allow."
@@ -202,7 +280,7 @@ def run_pipeline(
     elif c["pending"]:
         verdict = (
             f"Status: {c['pending']} pending question(s) in {qa_path.name} — "
-            "answer them and re-run for a stronger resume."
+            "answer them and re-run for a stronger / fuller resume."
         )
     else:
         verdict = f"Status: round {qa_store.round}, not yet converged."
@@ -219,6 +297,7 @@ def run_pipeline(
         "pages": pages,
         "n_suggestions": len(result.suggestions),
         "converged": qa_store.converged,
+        "fill_ratio": fill_ratio,
     }
     print(
         f"Done: {pdf_path} ({pages} page{'s' if pages != 1 else ''}), "
@@ -229,7 +308,7 @@ def run_pipeline(
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Roastproof Phase 4/4.5/4.6/4.7 generation pipeline"
+        description="Roastproof Phase 4/4.5/4.6/4.7/4.8 generation pipeline"
     )
     parser.add_argument("--intake", type=Path, required=True)
     parser.add_argument("--out", type=Path, default=Path("out"))
@@ -253,6 +332,12 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Prior project_eval.json for stability (default: out/project_eval.json)",
     )
+    parser.add_argument(
+        "--fill-target",
+        type=float,
+        default=DEFAULT_FILL_TARGET,
+        help="Target page-fill ratio on a one-page PDF (default 0.85)",
+    )
     args = parser.parse_args(argv)
     try:
         run_pipeline(
@@ -264,6 +349,7 @@ def main(argv: list[str] | None = None) -> int:
             skip_project_eval=args.skip_project_eval,
             max_elicit_rounds=args.max_elicit_rounds,
             prev_eval_path=args.prev_eval,
+            fill_target=args.fill_target,
         )
     except SystemExit:
         raise

@@ -370,6 +370,9 @@
         "skills"
       ],
       "median_bullets_per_entry": 2.0,
+      "bullets_per_entry_p75": 3.0,
+      "total_bullets_median": 13.5,
+      "total_bullets_p75": 19.0,
       "page_convention": "one_page"
     },
     "swe": {
@@ -514,6 +517,9 @@
         "education"
       ],
       "median_bullets_per_entry": 3.0,
+      "bullets_per_entry_p75": 4.0,
+      "total_bullets_median": 13.0,
+      "total_bullets_p75": 21.5,
       "page_convention": "one_page"
     },
     "data_intern": {
@@ -617,6 +623,9 @@
         "projects"
       ],
       "median_bullets_per_entry": 3.0,
+      "bullets_per_entry_p75": 4.0,
+      "total_bullets_median": 18.0,
+      "total_bullets_p75": 20.0,
       "page_convention": "one_page"
     },
     "swe_new_grad": {
@@ -696,6 +705,9 @@
         "projects"
       ],
       "median_bullets_per_entry": 2.0,
+      "bullets_per_entry_p75": 3.0,
+      "total_bullets_median": 14.0,
+      "total_bullets_p75": 16.25,
       "page_convention": "one_page"
     },
     "ml": {
@@ -749,6 +761,9 @@
         "education"
       ],
       "median_bullets_per_entry": 3.0,
+      "bullets_per_entry_p75": 3.0,
+      "total_bullets_median": 16.0,
+      "total_bullets_p75": 16.0,
       "page_convention": "one_page"
     },
     "data": {
@@ -795,6 +810,9 @@
         "coursework"
       ],
       "median_bullets_per_entry": 2.5,
+      "bullets_per_entry_p75": 3.0,
+      "total_bullets_median": 9.0,
+      "total_bullets_p75": 13.0,
       "page_convention": "one_page"
     }
   },

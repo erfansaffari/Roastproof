@@ -1,34 +1,125 @@
 # Roastproof elicitation Q&A sidecar — edit `answer:` in place.
 # Leave null to skip for now; set to 'skip' to decline (never re-ask).
 # Re-run the pipeline after answering; do not copy ids into intake.yaml.
-round: 2
-converged: true
+round: 8
+converged: false
 questions:
-- id: what-was-the-e7c85eb1
+- id: what-was-the-5a2a5f6d
   round: 1
   topic: missing_metric
   impact: high
   question: What was the scale of the backend systems you architected at Sarox Technology
-    Inc., such as the number of users or requests handled per second?
+    Inc. (e.g., number of users, requests per second)?
   relates_to: Sarox Technology Inc. - Architected and deployed scalable Python backend
     pipelines
   answer: ~200 req/sec at peak, across 15 services on a 3-node k8s cluster.
   status: answered
-- id: can-you-provide-2402f1cb
+- id: can-you-provide-2d4b9d83
   round: 1
   topic: missing_metric
   impact: high
   question: Can you provide the percentage improvement in latency or throughput achieved
-    through your optimizations in the ML data pipelines?
+    through your optimizations at Sarox Technology Inc.?
   relates_to: Sarox Technology Inc. - Optimized ML data pipelines and automation scripts
   answer: 70% reduction, training time went from ~42 min to ~12.5 min.
   status: answered
-- id: how-many-users-f9a17546
+- id: what-specific-metrics-c70df6f2
   round: 1
-  topic: missing_metric
-  impact: high
-  question: How many users or transactions did your multi-chain blockchain CLI support,
-    and what was the average response time for the RPC quorum engine?
-  relates_to: glnc -- Multi-Chain Blockchain CLI - Engineered a multi-RPC quorum engine
-  answer: 500+ installs, ~350ms avg response time for the quorum engine.
+  topic: vague_scope
+  impact: medium
+  question: What specific metrics or KPIs did you use to measure the reliability of
+    the systems you deployed at SindadSec?
+  relates_to: SindadSec - Deployed production security tooling with Docker and Kubernetes
+  answer: Tracked uptime (~99.9%) and MISP alert response time (under 5 min).
   status: answered
+- id: can-you-elaborate-bdb70270
+  round: 4
+  topic: expand_content
+  impact: high
+  question: Can you elaborate on the specific CI/CD workflows you implemented at Sarox
+    Technology Inc. and how they improved deployment efficiency or reduced errors?
+  relates_to: Sarox Technology Inc.
+  answer: Set up GitHub Actions for auto build/test/deploy to k8s, cut deploy time
+    from ~30 min to ~5 min.
+  status: answered
+- id: what-specific-security-92290eed
+  round: 4
+  topic: expand_content
+  impact: high
+  question: What specific security measures did you implement while configuring secure
+    Linux servers at SindadSec, and how did they enhance the overall security posture?
+  relates_to: SindadSec
+  answer: Set up Nginx reverse proxy, UFW firewall rules, and fail2ban to block brute-force
+    attempts.
+  status: answered
+- id: can-you-provide-d43f025a
+  round: 4
+  topic: expand_content
+  impact: high
+  question: Can you provide details on the performance metrics or user feedback you
+    received for the glnc CLI project, particularly regarding its reliability and
+    user experience?
+  relates_to: glnc -- Multi-Chain Blockchain CLI
+  answer: 500+ installs, mostly positive GitHub feedback on speed and no-API-key setup.
+  status: answered
+- id: what-was-your-fdcb9781
+  round: 4
+  topic: expand_content
+  impact: high
+  question: What was your role in the collaboration with other team members during
+    the development of the Proof of Handshake project, and how did it impact the project's
+    success?
+  relates_to: Proof of Handshake -- Algorand Hackathon
+  answer: Led the smart contract design; teamed with 2 others on frontend/demo, won
+    our track.
+  status: answered
+- id: can-you-provide-4b492f8c
+  round: 6
+  topic: expand_content
+  impact: high
+  question: Can you provide more details on the performance testing or load testing
+    you conducted for the FastAPI microservices at Sarox Technology Inc., including
+    any specific tools or methodologies used?
+  relates_to: Sarox Technology Inc.
+  answer: Used Locust for load testing, simulated ~500 concurrent users to validate
+    response times.
+  status: answered
+- id: what-specific-security-9a6725ad
+  round: 6
+  topic: expand_content
+  impact: high
+  question: What specific security challenges did you face while deploying production
+    security tooling at SindadSec, and how did you address them?
+  relates_to: SindadSec
+  answer: Faced repeated SSH brute-force attempts; fixed with key-only auth and fail2ban.
+  status: answered
+- id: can-you-provide-2bae5522
+  round: 8
+  topic: expand_content
+  impact: high
+  question: Can you provide more details on the deployment process for the scalable
+    Python backend pipelines at Sarox Technology Inc., including any specific challenges
+    you faced and how you overcame them?
+  relates_to: Sarox Technology Inc.
+  answer: null
+  status: pending
+- id: what-specific-metrics-45976062
+  round: 8
+  topic: expand_content
+  impact: high
+  question: What specific metrics did you track to measure the performance and reliability
+    of the FastAPI microservices you built, and how did you use this data to inform
+    improvements?
+  relates_to: Sarox Technology Inc.
+  answer: null
+  status: pending
+- id: can-you-elaborate-405a3807
+  round: 8
+  topic: expand_content
+  impact: high
+  question: Can you elaborate on the collaboration process with your team during the
+    development of the security tooling at SindadSec, including any specific tools
+    or methodologies used?
+  relates_to: SindadSec
+  answer: null
+  status: pending

@@ -187,3 +187,40 @@ def count_pdf_pages(pdf_path: Path) -> int:
 
     with fitz.open(pdf_path) as doc:
         return doc.page_count
+
+
+def measure_page_fill(pdf_path: Path, *, page_index: int = 0) -> float:
+    """
+    Fraction of usable page height occupied by content on page `page_index`.
+
+    Uses the union of text-block bounding boxes vs page height (minus small
+    margins inferred from the topmost/bottommost content when possible).
+    Returns 0.0–1.0. Multi-page PDFs still report fill for the requested page
+    only (page-fit callers typically check page count first).
+    """
+    import fitz  # PyMuPDF
+
+    with fitz.open(pdf_path) as doc:
+        if doc.page_count == 0:
+            return 0.0
+        page = doc[min(page_index, doc.page_count - 1)]
+        page_h = float(page.rect.height)
+        if page_h <= 0:
+            return 0.0
+
+        blocks = page.get_text("blocks") or []
+        text_blocks = [b for b in blocks if len(b) >= 5 and str(b[4]).strip()]
+        if not text_blocks:
+            return 0.0
+
+        y0 = min(float(b[1]) for b in text_blocks)
+        y1 = max(float(b[3]) for b in text_blocks)
+        content_h = max(0.0, y1 - y0)
+        # Usable height: page height minus the top margin above first content
+        # and a symmetric bottom margin estimate (Jake's template ~0.5in).
+        top_margin = max(0.0, y0)
+        bottom_margin = min(top_margin, max(0.0, page_h - y1))
+        usable = page_h - top_margin - bottom_margin
+        if usable <= 0:
+            usable = page_h
+        return max(0.0, min(1.0, content_h / usable))

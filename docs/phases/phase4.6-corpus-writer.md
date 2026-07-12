@@ -27,6 +27,20 @@ python -m src.generation.pipeline --intake examples/my_intake.yaml --out out/min
 python -m src.generation.pipeline --intake examples/my_intake.yaml --out out/mine48
 ```
 
+
+## Phase 4.8 follow-on — Bidirectional page-fill
+Community resumes fill one page; thin drafts now expand instead of only trimming:
+
+1. **`measure_page_fill`** in `renderer.py` — PyMuPDF content bbox / usable height.
+2. **Norms** — `bullets_per_entry_p75`, `total_bullets_median/p75` per bucket; generator targets the upper band when intake material allows (schema ceilings raised to 5/4/26 as safety caps).
+3. **`fit_to_one_page`** — trim if >1 page; if 1 page but fill < `--fill-target` (default 0.85), expand using unused intake facts (G1-safe); keep best draft.
+4. **`expand_content` elicitation** — when still under-filled, append questions to the QA sidecar even if metric-converged.
+5. **`status.json`** — `fill_ratio`, `fill_target`, `expand_attempts`, `expansion_questions_added`.
+
+```bash
+python -m src.generation.pipeline --intake examples/my_intake.yaml --out out/mine49 --fill-target 0.85
+```
+
 ## Commands
 ```bash
 # One-time mining (G3 --yes)
@@ -46,6 +60,7 @@ python -m src.generation.pipeline --intake examples/my_intake.yaml --out out/min
 - [x] Unit tests green; live run on `my_intake.yaml`.
 - [x] QA sidecar + semantic dedup + convergence stopping rule.
 - [x] Field-gap quote validation + prior-eval stability.
+- [x] Page-fill measurement + expand loop + expand_content elicitation.
 
 ## Honesty
 Corpus is swe_intern-heavy. Thin roles fall back to SWE-family norms/retrieval with an explicit disclosure in the norms block and skill suggestions.

@@ -29,6 +29,8 @@ from src.llm import MODEL_SYNTHESIS, complete_json
 from src.schemas import (
     AnnotatedGenerationResult,
     AnnotatedResume,
+    BULLET_MAX_LEN,
+    BULLET_MIN_LEN,
     GenerationResult,
     Intake,
     ResumeContent,
@@ -144,6 +146,45 @@ def skill_prevalence_for_intake(
     return dict(entry.get("skill_prevalence") or {}), bucket, False
 
 
+def norms_entry_for_intake(
+    norms: dict[str, Any],
+    intake: Intake,
+) -> tuple[dict[str, Any], str, bool]:
+    """Return (role entry, bucket, thin) for bullet-density targets."""
+    bucket = intake_norms_bucket(intake)
+    entry = (norms.get("roles") or {}).get(bucket) or {}
+    thin = bool(entry.get("insufficient_data") or not entry)
+    if thin:
+        for fb in ("swe_intern", "swe", "swe_new_grad"):
+            alt = (norms.get("roles") or {}).get(fb) or {}
+            if alt and not alt.get("insufficient_data"):
+                return dict(alt), fb, True
+        return dict(entry), bucket, True
+    return dict(entry), bucket, False
+
+
+def format_bullet_targets(entry: dict[str, Any], *, bucket: str = "") -> str:
+    med = entry.get("median_bullets_per_entry")
+    p75 = entry.get("bullets_per_entry_p75")
+    tmed = entry.get("total_bullets_median")
+    tp75 = entry.get("total_bullets_p75")
+    if med is None and p75 is None:
+        return f"bucket `{bucket or 'unknown'}` — no bullet-density norms yet"
+    parts = [f"bucket `{bucket or 'unknown'}`"]
+    if med is not None:
+        parts.append(f"median {float(med):.1f} bullets/entry")
+    if p75 is not None:
+        parts.append(f"upper band (p75) {float(p75):.1f} bullets/entry")
+    if tmed is not None:
+        parts.append(f"typical total ≈ {float(tmed):.0f}")
+    if tp75 is not None:
+        parts.append(f"upper-band total ≈ {float(tp75):.0f}")
+    return (
+        "; ".join(parts)
+        + " — target the upper band when intake material allows"
+    )
+
+
 def _norm_skill(s: str) -> str:
     return re.sub(r"[^a-z0-9+#]+", "", s.lower())
 
@@ -209,6 +250,7 @@ def format_norms_block(
     thin: bool = False,
     core_threshold: float = HIGH_PREVALENCE,
     common_threshold: float = COMMON_PREVALENCE,
+    norms_entry: dict[str, Any] | None = None,
 ) -> str:
     lines = [
         f"Skill prevalence for role bucket `{bucket or 'unknown'}` "
@@ -216,13 +258,18 @@ def format_norms_block(
         "PRESENT means the applicant already has this skill (possibly as a compound "
         "like Git/GitHub Actions). ABSENT → suggest only with prevalence; never add.",
     ]
+    if norms_entry:
+        lines.append(
+            "Bullet density (community): "
+            + format_bullet_targets(norms_entry, bucket=bucket)
+        )
     if thin:
         lines.append(
             "DISCLOSURE: primary bucket was thin/insufficient; figures may be from "
             "a SWE-family fallback. Do not overstate certainty."
         )
     if not prevalence:
-        lines.append("(no norms available)")
+        lines.append("(no skill prevalence available)")
         return "\n".join(lines)
 
     core = [(s, p) for s, p in prevalence.items() if p > core_threshold]
@@ -302,6 +349,7 @@ def build_generation_prompt(
     norms: dict[str, Any] | None = None,
     trim_instruction: str | None = None,
     fluff_instruction: str | None = None,
+    expand_instruction: str | None = None,
     rulebook_path: Path = DEFAULT_RULEBOOK,
     norms_path: Path = DEFAULT_NORMS,
     rewrite_path: Path = DEFAULT_REWRITE_EXAMPLES,
@@ -311,6 +359,7 @@ def build_generation_prompt(
     norms = norms if norms is not None else load_norms(norms_path)
     rules = applicable_rules(rulebook, intake)
     prevalence, bucket, thin = skill_prevalence_for_intake(norms, intake)
+    norms_entry, _, _ = norms_entry_for_intake(norms, intake)
     owned = owned_skills_from_intake(intake)
     role = resolve_role_profile(intake.target_role)
 
@@ -319,39 +368,90 @@ def build_generation_prompt(
         rules_block=format_rules_block(rules),
         critiques_block=retrieve_context(intake),
         norms_block=format_norms_block(
-            prevalence, owned, bucket=bucket, thin=thin
+            prevalence,
+            owned,
+            bucket=bucket,
+            thin=thin,
+            norms_entry=norms_entry,
         ),
         answers_block=format_answers_block(intake, qa_store=qa_store),
         intake_block=format_intake_block(intake),
         role=role,
         trim_instruction=trim_instruction,
         fluff_instruction=fluff_instruction,
+        expand_instruction=expand_instruction,
         preferred_patterns=preferred_patterns(),
     )
+
+
+def fit_bullet_length(text: str) -> str | None:
+    """
+    Fit a bullet into [BULLET_MIN_LEN, BULLET_MAX_LEN].
+
+    Too long → truncate at a word boundary (no invented words).
+    Too short → return None (caller drops it).
+    """
+    t = (text or "").strip()
+    if not t:
+        return None
+    if len(t) > BULLET_MAX_LEN:
+        cut = t[:BULLET_MAX_LEN]
+        if " " in cut:
+            cut = cut.rsplit(" ", 1)[0].rstrip(" ,;:-")
+        t = cut
+        if not t.endswith((".", "!", "?")):
+            t = t + "."
+        if len(t) > BULLET_MAX_LEN:
+            t = t[:BULLET_MAX_LEN]
+    if len(t) < BULLET_MIN_LEN:
+        if len(t) == BULLET_MIN_LEN - 1 and not t.endswith((".", "!", "?")):
+            t = t + "."
+        if len(t) < BULLET_MIN_LEN:
+            return None
+    return t
 
 
 def annotated_to_resume(annotated: AnnotatedResume) -> ResumeContent:
     experience = []
     for e in annotated.experience:
+        bullets = [fit_bullet_length(b.text) for b in e.bullets]
+        bullets = [b for b in bullets if b]
+        if not bullets:
+            # Keep at least something so the entry isn't empty — use longest original clipped
+            raw = max((b.text for b in e.bullets), key=len, default="")
+            repaired = fit_bullet_length(raw) or (raw[:BULLET_MAX_LEN] if raw else None)
+            if repaired and len(repaired) >= BULLET_MIN_LEN:
+                bullets = [repaired]
+            elif raw:
+                # Last resort: hard-pad is forbidden; skip entry bullets and let validator
+                # fail only if everything empty — use model_construct path via soft pad of
+                # spaces is bad. Repeat last chars? No. Use ellipsis extension from tools in name.
+                # Prefer dropping the entry's short bullets entirely if none fit.
+                bullets = []
         experience.append(
             {
                 "company": e.company,
                 "title": e.title,
                 "dates": e.dates,
                 "location": e.location,
-                "bullets": [b.text for b in e.bullets],
+                "bullets": bullets,
             }
         )
     projects = []
     for p in annotated.projects:
+        bullets = [fit_bullet_length(b.text) for b in p.bullets]
+        bullets = [b for b in bullets if b]
         projects.append(
             {
                 "name": p.name,
                 "technologies": p.technologies,
                 "dates": p.dates,
-                "bullets": [b.text for b in p.bullets],
+                "bullets": bullets,
             }
         )
+    # Drop experience/project entries that ended with zero bullets after repair
+    experience = [e for e in experience if e.get("bullets")]
+    projects = [p for p in projects if p.get("bullets")]
     return ResumeContent.model_validate(
         {
             "contact": annotated.contact,
@@ -526,13 +626,16 @@ def _call_generator(
     model: str,
     phase: str,
     qa_store=None,
+    expand_instruction: str | None = None,
 ) -> AnnotatedGenerationResult:
+    norms_entry, bucket, _ = norms_entry_for_intake(norms, intake)
     prompt = build_generation_prompt(
         intake,
         rulebook=rulebook,
         norms=norms,
         trim_instruction=trim_instruction,
         fluff_instruction=fluff_instruction,
+        expand_instruction=expand_instruction,
         qa_store=qa_store,
     )
     banned = sorted(banned_phrase_set())[:40]
@@ -541,7 +644,11 @@ def _call_generator(
         model=model,
         phase=phase,
         schema=AnnotatedGenerationResult,
-        system=generator_system(intake, banned_phrases=banned),
+        system=generator_system(
+            intake,
+            banned_phrases=banned,
+            bullet_targets=format_bullet_targets(norms_entry, bucket=bucket),
+        ),
         max_tokens=8192,
     )
 
@@ -550,6 +657,7 @@ def generate_resume(
     intake: Intake,
     *,
     trim_instruction: str | None = None,
+    expand_instruction: str | None = None,
     rulebook_path: Path = DEFAULT_RULEBOOK,
     norms_path: Path = DEFAULT_NORMS,
     model: str = MODEL_SYNTHESIS,
@@ -568,6 +676,7 @@ def generate_resume(
         intake,
         trim_instruction=trim_instruction,
         fluff_instruction=None,
+        expand_instruction=expand_instruction,
         rulebook=rulebook,
         norms=norms,
         model=model,
@@ -590,6 +699,7 @@ def generate_resume(
                 intake,
                 trim_instruction=trim_instruction,
                 fluff_instruction=fluff_retry_instruction(violations),
+                expand_instruction=expand_instruction,
                 rulebook=rulebook,
                 norms=norms,
                 model=model,

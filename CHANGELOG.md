@@ -5,6 +5,33 @@ Newest entries at the top. Suggested commit messages included per entry.
 
 ---
 
+## 2026-07-12 (b) — Phase 4.8 bidirectional page-fill + content expansion
+
+Fill thin one-page drafts using unused intake facts and corpus bullet norms.
+
+### Page fill
+- `renderer.measure_page_fill` — content bbox / usable height (PyMuPDF).
+- `pagefit.fit_to_one_page` expands when fill < `--fill-target` (default 0.85);
+  unused-intake-fact extraction; best-draft fallback if expand overflows.
+
+### Norms / prompts
+- `norms.py`: `bullets_per_entry_p75`, `total_bullets_median/p75`; regenerated.
+- Generator targets upper-band density; schema caps 5/4/26 as ceilings only.
+- `pagefit_expand_instruction` + `expand_elicit_*` prompts.
+
+### Expansion elicitation
+- `elicit_expansion_questions` appends `expand_content` Qs to sidecar even when
+  metric-converged; pipeline prints fill verdict + `status.json` fill fields.
+
+### Tests / docs
+- `tests/test_page_fill.py`; phase4.6 doc 4.8 section.
+
+### Suggested commits
+- `feat(phase4.8): bidirectional page-fill with unused-fact expansion`
+- `feat(phase4.8): expand_content elicitation when page under-filled`
+
+---
+
 ## 2026-07-12 — Phase 4.7 elicitation memory, convergence, stable project eval
 
 Persistent Q&A sidecar + semantic dedup + stopping rule; project-eval stability.

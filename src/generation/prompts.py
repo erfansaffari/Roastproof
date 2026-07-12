@@ -10,7 +10,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from src.schemas import BULLET_MAX_LEN, BULLET_MIN_LEN, Intake
+from src.schemas import (
+    BULLET_MAX_LEN,
+    BULLET_MIN_LEN,
+    MAX_BULLETS_PER_EXPERIENCE,
+    MAX_BULLETS_PER_PROJECT,
+    MAX_PROJECTS,
+    MAX_TOTAL_BULLETS,
+    Intake,
+)
 
 DATA_WINS_CLAUSE = (
     "Where your general knowledge conflicts with the community data below, "
@@ -178,13 +186,22 @@ def assert_prompt_invariants(text: str, *, require_output_contract: bool = True)
 # Generator
 # ---------------------------------------------------------------------------
 
-def generator_system(intake: Intake, banned_phrases: list[str] | None = None) -> str:
+def generator_system(
+    intake: Intake,
+    banned_phrases: list[str] | None = None,
+    *,
+    bullet_targets: str | None = None,
+) -> str:
     role = resolve_role_profile(intake.target_role)
     banned = banned_phrases or []
     banned_line = (
         ", ".join(banned[:40])
         if banned
         else "seamless, robust, effective, enhanced, streamlined, ensure, utilized"
+    )
+    targets = bullet_targets or (
+        "Target community upper-band density when intake material allows; "
+        "do not leave thin entries if unused facts remain."
     )
     return f"""{hiring_persona(role)}
 
@@ -221,9 +238,13 @@ Ask of every bullet: would this line survive a 30-second screen for {role.displa
   "suggestions": [{{"type": "missing_skill|missing_metric|content_gap|project_evaluation", "detail": str}}]
 }}
 
-Bullet constraints:
+Bullet constraints (ceilings are safety caps — fill toward community targets):
 - Each bullet text length {BULLET_MIN_LEN}–{BULLET_MAX_LEN} chars.
-- ≤4 bullets/experience, ≤3/project, ≤4 projects, ≤22 bullets total.
+- ≤{MAX_BULLETS_PER_EXPERIENCE} bullets/experience, ≤{MAX_BULLETS_PER_PROJECT}/project,
+  ≤{MAX_PROJECTS} projects, ≤{MAX_TOTAL_BULLETS} bullets total.
+- Community density targets: {targets}
+- Prefer the upper band (p75) when unused intake facts exist; thin 1–2 bullet entries are a failure
+  when the intake description clearly supports more distinct accomplishments.
 - Every bullet MUST set rewritten_from to the intake phrase it came from.
 - gaps: "no_metric" when impact has no number; "vague_scope" when scope is unclear; [] when solid.
 - Skills: ONLY skills the user listed (or named in project technologies). Never pad for breadth.
@@ -243,6 +264,7 @@ def generator_user_prompt(
     role: RoleProfile,
     trim_instruction: str | None = None,
     fluff_instruction: str | None = None,
+    expand_instruction: str | None = None,
     preferred_patterns: list[str] | None = None,
 ) -> str:
     patterns = preferred_patterns or []
@@ -267,7 +289,7 @@ def generator_user_prompt(
         "## Retrieved community critiques (MUST apply — avoid patterns they flag)",
         critiques_block,
         "",
-        "## Norms / skill prevalence (MUST apply for skill suggestions only)",
+        "## Norms / skill prevalence + bullet density (MUST apply)",
         norms_block,
         "",
         "## Elicitation answers (treat as facts)",
@@ -278,6 +300,8 @@ def generator_user_prompt(
     ]
     if trim_instruction:
         parts.extend(["", "## Page-fit trim instruction", trim_instruction])
+    if expand_instruction:
+        parts.extend(["", "## Page-fill expand instruction", expand_instruction])
     if fluff_instruction:
         parts.extend(["", "## Fluff lint retry", fluff_instruction])
     parts.append(
@@ -300,6 +324,98 @@ def pagefit_trim_instruction(
         f"lowest-value bullets and tighten wording to target roughly {cut_lines} "
         f"fewer lines. Prefer dropping weak project bullets first. Keep G1 — do "
         f"not invent content to fill space. Current bullet count ≈ {bullet_count}."
+    )
+
+
+def pagefit_expand_instruction(
+    *,
+    fill_ratio: float,
+    fill_target: float,
+    bullet_count: int,
+    thin_entries: list[str],
+    unused_facts: list[str],
+    role: RoleProfile,
+    bullets_per_entry_p75: float | None = None,
+) -> str:
+    thin = "\n".join(f"- {t}" for t in thin_entries) or "(none flagged)"
+    unused = "\n".join(f"- {f}" for f in unused_facts[:20]) or (
+        "(no unused intake sentences detected — do not invent; keep existing facts)"
+    )
+    band = (
+        f"Community upper band ≈ {bullets_per_entry_p75:.1f} bullets/entry. "
+        if bullets_per_entry_p75
+        else ""
+    )
+    return (
+        f"Hiring screen for {role.display_name}: the draft is ONE page but only "
+        f"{fill_ratio:.0%} full (target ≥{fill_target:.0%}). {band}"
+        f"Current bullet count ≈ {bullet_count}.\n"
+        f"Thin entries (add distinct bullets from unused facts only):\n{thin}\n\n"
+        f"UNUSED INTAKE FACTS (G1-safe — you MAY turn each into a new bullet or "
+        f"enrich an existing one; never invent beyond these):\n{unused}\n\n"
+        "Actions allowed: add bullets from unused facts; split a dense bullet into "
+        "two factual bullets; enrich education details from intake. "
+        "Do NOT invent metrics, tools, or experiences. Stay within schema ceilings."
+    )
+
+
+def expand_elicit_system(intake: Intake) -> str:
+    role = resolve_role_profile(intake.target_role)
+    return f"""{hiring_persona(role)}
+
+The current one-page draft is UNDER-FILLED (whitespace remains below skills). Ask
+clarifying questions that unlock NEW distinct bullets — additional work (testing,
+deployment, ownership, performance, collaboration, users/installs, security) the
+applicant may have done on thin OR density-ok entries.
+
+Rules:
+- Emit 2–4 questions when the page is under-filled. Topic MUST be "expand_content".
+- Prefer high impact. Target named entries and any UNUSED intake facts listed.
+- Do NOT re-ask prior Q&A history.
+- Set complete=true ONLY if fill is already adequate (user will say so) — if the
+  fill report shows under target, complete MUST be false and questions MUST be non-empty.
+- Leave id empty.
+
+## Output JSON contract
+{{
+  "questions": [{{"id": "", "topic": "expand_content", "impact": "high"|"medium", "question": str, "relates_to": str}}],
+  "complete": bool,
+  "completion_reason": str
+}}
+
+{REFUSAL_CLAUSE}
+"""
+
+
+def expand_elicit_user(
+    *,
+    intake: Intake,
+    history_block: str,
+    fill_report: str,
+    thin_entries: list[str],
+    unused_facts: list[str] | None = None,
+) -> str:
+    import json
+
+    role = resolve_role_profile(intake.target_role)
+    thin = "\n".join(f"- {t}" for t in thin_entries) or (
+        "(no thin entries by bullet count — still ask for more distinct work "
+        "to fill remaining page whitespace)"
+    )
+    unused = "\n".join(f"- {u}" for u in (unused_facts or [])[:10]) or "(none left)"
+    return (
+        f"## Role: {role.display_name}\n"
+        f"Scan first: {role.scan_first}\n\n"
+        f"## Fill report\n{fill_report}\n\n"
+        f"## Thin / under-used entries\n{thin}\n\n"
+        f"## Unused intake facts generation failed to place (ask user to expand these)\n"
+        f"{unused}\n\n"
+        "## Intake (facts only)\n"
+        f"{json.dumps(intake.model_dump(exclude={'answers'}), indent=2)}\n\n"
+        "## Prior Q&A history (do not re-ask)\n"
+        f"{history_block}\n\n"
+        "Because the page is under-filled, return 2–4 expand_content questions now. "
+        "complete must be false."
     )
 
 

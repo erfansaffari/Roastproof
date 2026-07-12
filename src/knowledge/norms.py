@@ -25,6 +25,26 @@ from src.schemas import ThreadRecord
 
 MIN_N = 30
 
+
+def _percentile(sorted_vals: list[float], p: float) -> float:
+    """Linear-interpolation percentile; `sorted_vals` must be sorted ascending."""
+    if not sorted_vals:
+        return 0.0
+    if len(sorted_vals) == 1:
+        return float(sorted_vals[0])
+    p = max(0.0, min(100.0, p))
+    k = (len(sorted_vals) - 1) * (p / 100.0)
+    f = int(k)
+    c = min(f + 1, len(sorted_vals) - 1)
+    if f == c:
+        return float(sorted_vals[f])
+    return float(sorted_vals[f] + (sorted_vals[c] - sorted_vals[f]) * (k - f))
+
+
+def total_bullets_for_record(record: ThreadRecord) -> int:
+    """Sum of bullets across experience + project entries."""
+    return int(sum(bullets_per_entry(record)))
+
 # Canonical skill spellings. Keys are lowercased lookup forms.
 SKILL_NORMALIZATION: dict[str, str] = {
     # languages
@@ -458,9 +478,17 @@ def compute_norms(records: Iterable[ThreadRecord], min_n: int = MIN_N) -> dict[s
         mode_order = list(order_counts.most_common(1)[0][0]) if order_counts else []
 
         all_bullet_counts: list[int] = []
+        total_bullets_per_resume: list[int] = []
         for rec in group:
-            all_bullet_counts.extend(bullets_per_entry(rec))
-        med_bullets = float(median(all_bullet_counts)) if all_bullet_counts else 0.0
+            per_entry = bullets_per_entry(rec)
+            all_bullet_counts.extend(per_entry)
+            total_bullets_per_resume.append(int(sum(per_entry)))
+        sorted_entry = sorted(float(x) for x in all_bullet_counts)
+        sorted_total = sorted(float(x) for x in total_bullets_per_resume)
+        med_bullets = float(median(sorted_entry)) if sorted_entry else 0.0
+        p75_bullets = _percentile(sorted_entry, 75.0) if sorted_entry else 0.0
+        med_total = float(median(sorted_total)) if sorted_total else 0.0
+        p75_total = _percentile(sorted_total, 75.0) if sorted_total else 0.0
 
         page_counts = Counter(page_convention(rec) for rec in group)
         page_mode = page_counts.most_common(1)[0][0] if page_counts else "one_page"
@@ -471,6 +499,9 @@ def compute_norms(records: Iterable[ThreadRecord], min_n: int = MIN_N) -> dict[s
             "skill_prevalence": skill_prevalence,
             "section_order_modes": mode_order,
             "median_bullets_per_entry": med_bullets,
+            "bullets_per_entry_p75": p75_bullets,
+            "total_bullets_median": med_total,
+            "total_bullets_p75": p75_total,
             "page_convention": page_mode,
         }
         norms["roles"][bucket] = entry
@@ -532,6 +563,9 @@ def write_norms_sqlite(norms: dict[str, Any], path: Path) -> None:
                 n INTEGER NOT NULL,
                 insufficient_data INTEGER NOT NULL,
                 median_bullets_per_entry REAL,
+                bullets_per_entry_p75 REAL,
+                total_bullets_median REAL,
+                total_bullets_p75 REAL,
                 page_convention TEXT,
                 section_order_json TEXT
             )
@@ -549,12 +583,15 @@ def write_norms_sqlite(norms: dict[str, Any], path: Path) -> None:
         )
         for role, entry in norms.get("roles", {}).items():
             cur.execute(
-                "INSERT INTO role_norms VALUES (?, ?, ?, ?, ?, ?)",
+                "INSERT INTO role_norms VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     role,
                     entry["n"],
                     int(entry["insufficient_data"]),
                     entry["median_bullets_per_entry"],
+                    entry.get("bullets_per_entry_p75", 0.0),
+                    entry.get("total_bullets_median", 0.0),
+                    entry.get("total_bullets_p75", 0.0),
                     entry["page_convention"],
                     json.dumps(entry["section_order_modes"]),
                 ),
