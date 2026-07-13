@@ -46,16 +46,24 @@ roastproof/
 │   └── norms/                    # Phase 2 output (norms.db + norms.json)
 ├── logs/llm_calls.jsonl
 ├── notebooks/01_exploration.ipynb
+├── examples/                     # sample intakes + *.qa.yaml elicitation sidecars
+├── out/                          # pipeline run outputs (git-ignored locally)
 ├── src/
 │   ├── llm.py                    # shared client wrapper (G5)
 │   ├── schemas.py                # all Pydantic models
 │   ├── scraper/                  # standalone data-collection utility, not a pipeline phase — see below
 │   ├── ingestion/  (pdf_extract.py, assemble.py, structure.py, filter.py)
-│   ├── knowledge/  (rulebook.py, vectorstore.py, retrieve.py, norms.py)
-│   ├── generation/ (intake.py, generator.py, renderer.py, pagefit.py, critic.py, pipeline.py)
+│   ├── knowledge/  (rulebook.py, vectorstore.py, retrieve.py, norms.py, style_mine.py, rewrite_mine.py)
+│   ├── generation/
+│   │   ├── intake.py, generator.py, renderer.py, pagefit.py, pipeline.py
+│   │   ├── prompts.py            # hiring-reviewer prompt library (Phase 4.6)
+│   │   ├── elicit.py, qa_store.py, intake_coverage.py  # elicitation + sidecar (4.7+)
+│   │   ├── project_eval.py, fluff.py
+│   │   └── critic.py             # Phase 5 (not started)
 │   ├── eval/       (harness.py, judge.py, ablations.py, report.py)
 │   └── app/        (streamlit_app.py)
 ├── templates/jakes_resume.tex.j2
+├── CHANGELOG.md                  # session log for commits (newest first)
 └── tests/
 ```
 
@@ -81,12 +89,15 @@ Two representations of the same data exist after `python -m bot.main export`:
 As of this writing the export contains 20 threads (early scraping run), well short of the ~1,000-thread target — and all 20 are currently missing their resume PDF locally, due to a since-fixed bug in `export.py` that destroyed already-exported attachment files on a second `export` run. `bot/main.py` now has a `repair` subcommand that re-fetches the original Discord messages and re-downloads their attachments; run `repair` then `export` (needs a live Discord token) to recover them, then re-run the sync script.
 
 ## Core Data Schemas
-Single source of truth: `src/schemas.py` (Pydantic), created in Phase 1. Key models:
+Single source of truth: `src/schemas.py` (Pydantic). Key models:
 - **ThreadRecord** — one per Discord thread: role, applicant profile, resume text/sections, context message, list of critiques, quality flags.
 - **Rule** (rulebook entry) — category, section, applies_to (roles/profiles), statement, frequency, evidence examples.
-- **ResumeContent** (generator output) — contact, education, experience, projects, skills, section_order. Validators: bullets 60–140 chars; ≤4 bullets/experience, ≤3/project; ≤4 projects; total bullet budget ≤22 (one-page heuristic).
+- **Intake** — user-facing YAML input (contact, education, experience, projects, skills, target_role). Experience/projects may include optional `technologies`; free-text `description` is the G1 fact source.
+- **QAStore / QAEntry** — persistent elicitation sidecar next to the intake (`examples/my_intake.yaml` → `examples/my_intake.qa.yaml`); statuses `pending|answered|declined`; `intake_hash` re-opens elicitation when the intake changes.
+- **ResumeContent** (generator output) — contact, education, experience, projects, skills, section_order; experience/project entries carry a dedicated `technologies` line. Validators (see constants in `schemas.py`): bullets ~50–140 chars; ≤5 bullets/experience and /project; total bullet budget ≤28 (one-page heuristic, raised for page-fill).
+- **ProjectEvalResult** — corpus-grounded portfolio verdicts + field gaps (must cite real critique ids when retrieval returns them).
 
-Full field-level JSON shapes live in the PRD; do not restate/duplicate them elsewhere — read `src/schemas.py` once it exists.
+Full field-level shapes: read `src/schemas.py` — do not duplicate elsewhere.
 
 ## Execution Rules
 - Work strictly phase by phase, in order. Open each phase by restating its acceptance criteria; close it by demonstrating each one is met.

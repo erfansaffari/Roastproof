@@ -16,9 +16,9 @@ Quantified evidence that the knowledge base helps. Headline number: critique-cov
    - Judge prompt is variant-blind (never told which system produced the resume).
    - Run judge with temperature 0; each resume judged once (stretch: 3× and average).
 3. **`ablations.py`** — three variants, same intakes, same judge:
-   - (A) bare Sonnet prompt, no knowledge
+   - (A) bare synthesis prompt, no knowledge
    - (B) + rulebook
-   - (C) + rulebook + RAG + norms (full system, no critic loop)
+   - (C) + rulebook + RAG + norms (full Phase 4 writer path, **no critic loop**)
    - optional (D) full system + critic loop
 4. **`report.py` (eval)**
    - Table of coverage/quality per variant with 95% bootstrap CIs; per-category coverage breakdown; 5 qualitative before/after examples.
@@ -26,8 +26,15 @@ Quantified evidence that the knowledge base helps. Headline number: critique-cov
 5. **Human ground truth (Erfan, manual)**
    - Post 3–5 generated resumes to the Discord channel; record real feedback in `eval/HUMAN_FEEDBACK.md`.
 
+### Elicitation in batch eval (Phase 4.7+)
+Interactive Q&A must **not** run inside the harness. For every holdout intake, use one of:
+- `--skip-elicit` (default for ablations), or
+- a **frozen** answered `*.qa.yaml` sidecar checked in with the reconstructed intake (same answers for all variants).
+
+Do not call the elicitation LLM per variant — it would burn cost and make variants non-comparable. Project eval / page-fill may run if they are part of the “full system” definition for (C)/(D); document the choice in `RESULTS.md`.
+
 ## Cost Note
-100 intakes × 4 variants × (generation + judging) ≈ 800–1000 Sonnet calls. Print estimate, require `--yes` gate; support `--subset 20` for cheap iteration.
+100 intakes × 4 variants × (generation + judging) ≈ 800–1000 synthesis-model calls. Print estimate, require `--yes` gate; support `--subset 20` for cheap iteration.
 
 ## Acceptance Criteria
 - [ ] All variants evaluated on the same 100 intakes; results reproducible from one command.

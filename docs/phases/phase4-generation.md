@@ -23,12 +23,13 @@ End-to-end: user info → `ResumeContent` JSON → LaTeX → compiled one-page P
    - `templates/jakes_resume.tex.j2` faithful to the Jake's Resume layout.
    - `latex_escape()` handling `% & # _ $ { } ~ ^ \` (unit-tested exhaustively).
    - Compile via Tectonic subprocess; capture stderr; on failure, save the `.tex` for debugging and raise a clear error. Renderer contains **no LLM calls**.
-4. **`pagefit.py`**
-   - Compile → count pages (PyMuPDF). If >1 page: call generator with a trim instruction ("cut lowest-value bullets, target N fewer lines") and re-render.
+4. **`pagefit.py`** (original: trim-only)
+   - Compile → count pages (PyMuPDF). If >1 page: call generator with a trim instruction and re-render.
    - Max 3 attempts, then hard-trim deterministically (drop last project bullets) and warn.
+   - **Extended in 4.8:** bidirectional — also expand under-filled one-pagers using unused intake/QA facts + `--fill-target`.
 5. **`pipeline.py`**
    - CLI: `python -m src.generation.pipeline --intake examples/intake_example.yaml --out out/`.
-   - Produces `resume.pdf`, `resume.tex`, `content.json`, `suggestions.json`.
+   - Produces `resume.pdf`, `resume.tex`, `content.json`, `suggestions.json`, plus (post-4.7) `questions.json`, `status.json`, `project_eval.json`, and a `*.qa.yaml` sidecar next to the intake.
 
 ## Acceptance Criteria
 - [x] Example intake compiles to a clean one-page PDF that visually matches the template.
@@ -36,9 +37,11 @@ End-to-end: user info → `ResumeContent` JSON → LaTeX → compiled one-page P
 - [x] `latex_escape` unit tests pass including adversarial strings (`"C# & F_measure 100%"`).
 - [x] Page-fit loop demonstrated on a deliberately overstuffed intake (live pipeline + hard-trim unit test).
 
-## Follow-on
-- Writer-quality: [phase4.5-writer-quality.md](phase4.5-writer-quality.md)
-- Corpus-derived knowledge + prompt library: [phase4.6-corpus-writer.md](phase4.6-corpus-writer.md)
+## Follow-on (all landed — see linked docs)
+- **4.5 Writer quality:** [phase4.5-writer-quality.md](phase4.5-writer-quality.md) — rewrite mandate, fluff lint, pre-gen elicitation.
+- **4.6 Corpus-derived knowledge:** [phase4.6-corpus-writer.md](phase4.6-corpus-writer.md) — prompt library, style/rewrite mining, project eval, skill-gap tiers.
+- **4.7 Elicitation memory:** QA sidecar (`*.qa.yaml`), semantic dedup, stopping rule, `intake_hash` re-open, corpus-grounded questions, dimension-precise intake coverage (documented under phase4.6).
+- **4.8 Page-fill:** `measure_page_fill`, expand loop, `expand_content` elicit, tech lines on experience + projects (documented under phase4.6).
 
 ## Human Sign-Off Gate
 None formally required; but the fabrication test result should be shared with Erfan since G1 is a hard guardrail.

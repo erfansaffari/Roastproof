@@ -5,6 +5,21 @@ Newest entries at the top. Suggested commit messages included per entry.
 
 ---
 
+## 2026-07-13 — Docs sync after Phase 4.5–4.8
+
+Aligned working docs with landed generation work (no code changes):
+
+- `CLAUDE.md` — generation module tree + schemas (`Intake`, `QAStore`, tech lines, bullet caps).
+- `docs/phases/phase4-generation.md` — bidirectional page-fit note; follow-ons 4.5–4.8.
+- `docs/phases/phase5-critic-loop.md` — “already in Phase 4” table; report merges existing suggestions.
+- `docs/phases/phase6-evaluation.md` — batch eval must `--skip-elicit` or use frozen sidecars.
+- `docs/phases/phase7-interface-ship.md` — Streamlit should expose QA sidecar answers.
+- `README.md` — phase status table synced; points to `CLAUDE.md` as SoT.
+
+Suggested commit: `docs: sync CLAUDE and phase docs after Phase 4.5–4.8`
+
+---
+
 ## 2026-07-12 (d) — Restore elicitation curiosity + grounded project eval
 
 `erfan2` converged with `questions: []` and only skill-prevalence suggestions because
