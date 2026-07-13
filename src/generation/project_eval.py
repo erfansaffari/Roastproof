@@ -21,6 +21,7 @@ from src.schemas import (
     Intake,
     ProjectEvalResult,
     ProjectVerdict,
+    ResumeContent,
     Suggestion,
 )
 
@@ -41,14 +42,35 @@ def _project_rules_block(intake: Intake, rulebook_path: Path = DEFAULT_RULEBOOK)
     return format_rules_block(project_rules)
 
 
-def _project_critiques_block(intake: Intake, k: int = 8) -> tuple[str, set[str]]:
+def _generated_projects_json(resume: ResumeContent) -> str:
+    """Project shape fed to the evaluator: name, tech, and generated bullets."""
+    projects = []
+    for p in resume.projects:
+        projects.append(
+            {
+                "name": p.get("name", ""),
+                "technologies": p.get("technologies", ""),
+                "bullets": list(p.get("bullets", []) or []),
+            }
+        )
+    return json.dumps(projects, indent=2)
+
+
+def _project_critiques_block(
+    intake: Intake,
+    resume: ResumeContent,
+    k: int = 8,
+) -> tuple[str, set[str]]:
     profile = intake.to_applicant_profile()
     query_parts = [
         intake.target_role,
         intake.profile_summary,
     ]
-    for p in intake.projects:
-        query_parts.append(f"{p.name} {p.technologies} {p.description[:200]}")
+    for p in resume.projects:
+        bullets = " ".join(p.get("bullets", []) or [])
+        query_parts.append(
+            f"{p.get('name','')} {p.get('technologies','')} {bullets[:300]}"
+        )
     query = " ".join(query_parts)
     points = retrieve(profile, "projects", query, k=k)
     ids = {p.id for p in points if p.id}
@@ -208,13 +230,14 @@ def eval_changed(prev: ProjectEvalResult | None, curr: ProjectEvalResult) -> boo
 
 def evaluate_projects(
     intake: Intake,
+    resume: ResumeContent,
     *,
     rulebook_path: Path = DEFAULT_RULEBOOK,
-    phase: str = "phase4.7-project-eval",
+    phase: str = "phase5-project-eval",
     prior_eval: ProjectEvalResult | None = None,
     prior_eval_path: Path | None = None,
 ) -> ProjectEvalResult:
-    if not intake.projects:
+    if not resume.projects:
         return ProjectEvalResult()
 
     if prior_eval is None and prior_eval_path and Path(prior_eval_path).exists():
@@ -226,12 +249,9 @@ def evaluate_projects(
             prior_eval = None
 
     role = resolve_role_profile(intake.target_role)
-    critiques_block, allowed_ids = _project_critiques_block(intake)
+    critiques_block, allowed_ids = _project_critiques_block(intake, resume)
     rules_block = _project_rules_block(intake, rulebook_path)
-    projects_json = json.dumps(
-        [p.model_dump() for p in intake.projects],
-        indent=2,
-    )
+    projects_json = _generated_projects_json(resume)
     prior_json = prior_eval.model_dump_json(indent=2) if prior_eval else None
 
     def _call(prompt: str) -> ProjectEvalResult:
@@ -246,7 +266,7 @@ def evaluate_projects(
         )
 
     base_prompt = project_eval_user(
-        intake_projects_json=projects_json,
+        projects_json=projects_json,
         critiques_block=critiques_block,
         rules_block=rules_block,
         role=role,
