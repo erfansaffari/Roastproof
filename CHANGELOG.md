@@ -5,6 +5,107 @@ Newest entries at the top. Suggested commit messages included per entry.
 
 ---
 
+## 2026-07-13 (c) — Refactor: two-stage pipeline (input review vs output review)
+
+Reorganized Phase 4/5 around a single boundary — *does the generated resume
+exist yet?* — to remove incoherent timing and overlapping feedback systems.
+
+### Principle
+- **Stage A — Input review (pre-generation):** elicitation questions only.
+- **Stage B — Output review (post-generation):** everything that judges the
+  finished resume — critic bullet quality, project portfolio, skill gaps — runs
+  on the generated resume and lands in one `report.md`.
+
+### Changes
+- **Project-eval now runs on the GENERATED resume, after page-fit + critic**
+  (was: on raw `intake.projects`, before page-fit). `evaluate_projects(intake,
+  resume, …)`; retrieval query + evaluated JSON built from generated project
+  bullets. Prompt wording + stability note updated (`project_eval_user` param
+  `projects_json`; system prompt references resume, not intake).
+- **Bullet metric/scope weaknesses moved out of Phase 4 suggestions into the
+  critic.** `enforce_g1` no longer emits `missing_metric`/`content_gap`; these
+  were duplicated by the critic. New deterministic `critic.bullet_gap_hints(resume)`
+  (no-number + vague-language detector) feeds `run_critic(..., gap_hints=…)` so
+  each weak bullet is reported once, grounded.
+- **`suggestions.json` now carries only `missing_skill` + `project_evaluation`.**
+- **`report.md` restructured** into `Stage A — Input review` (elicitation) and
+  `Stage B — Output review` (critic → portfolio → skill gaps). Dropped the
+  standalone metric/content_gap buckets.
+- **Pipeline reorder**: generate → page-fit (+expansion elicit) → critic loop →
+  project-eval on final resume → suggestions merge → report. Stage labels in
+  console output.
+
+### Tests / live
+- Updated `test_generation.py` (assert enforce_g1 emits no metric/scope; new
+  `bullet_gap_hints` test) and `test_phase5_critic.py` (two-stage report shape).
+  Full suite: **101 passed**.
+- Live `out/critic_demo` (`--skip-elicit`): correct order (Stage A → gen →
+  page-fit → Stage B critic → project-eval on generated resume); `suggestions.json`
+  has no metric/content_gap; project-eval evidence grounded to generated bullets;
+  report reads as two clean stages; no fabricated numbers.
+
+Note: because project-eval now reads the generated resume, verdicts shift once
+on the first post-refactor run (expected).
+
+Suggested commits:
+- `refactor(pipeline): split into pre-gen input review and post-gen output review`
+- `refactor(phase5): move project-eval onto the generated resume`
+- `refactor(phase5): fold bullet metric/scope gaps into the grounded critic`
+
+---
+
+## 2026-07-13 (b) — Phase 5: critic loop + suggestions report
+
+Generate → critique → revise loop plus a user-facing Markdown report. Polishes
+Phase 4 output; does not replace elicitation, project-eval, page-fit, or the
+existing suggestion pipeline.
+
+### New
+- `src/schemas.py`: `CriticIssue`, `CriticResult`, `RevisedBullet`,
+  `RevisionItem`, `RevisionResult`.
+- `src/generation/prompts.py`: `critic_system` / `critic_user` (review-community
+  persona, grounding contract), `revise_system` + `critic_revise_instruction`
+  (targeted rewrite). All pass `assert_prompt_invariants`.
+- `src/generation/critic.py`: per-bullet retrieval block, `run_critic` (one
+  synthesis call + one grounding-failure retry), `drop_ungrounded_issues`
+  (keep only issues citing a real `critique_id` or `rule_id` — same discipline
+  as project-eval), and `revise_bullets` (targeted per-bullet rewrite spliced in
+  place; unaffected bullets stay byte-identical).
+- `src/generation/report.py`: `build_report` → `out/report.md`, merging critic
+  diffs + remaining issues, all Phase 4 suggestion types (skill prevalence traced
+  to `norms.json`), elicitation status, and honest G1 limitations. Pure function
+  over on-disk artifacts, no LLM.
+
+### Pipeline
+- Critic → revise loop after page-fit: revise while high+medium issues remain,
+  cap 2 rounds, stop early when no diffs. Writes `revision_log.json` (per-round
+  bullet diffs) + `critic.json`; re-merges Phase 4 suggestions after any mutation;
+  new `status.json` critic fields; `report.md` always written.
+- CLI: `--skip-critic`, `--max-critic-rounds` (default 2).
+
+### Guardrails / fixes
+- G1: revise prompt forbids embedding reviewer fixes into bullets; deterministic
+  `_has_instruction_leak` guard rejects leakage ("specify…", "quantify…", etc.).
+  Fixed a live bug where round-2 rewrites appended "; specify scale" onto bullets.
+- Report skill-prevalence match is word-boundary (short skills like `C`/`Go`
+  no longer match inside words).
+- No holdout access (G4) and no raw OpenAI usage (G5) in new modules.
+
+### Tests / live
+- `tests/test_phase5_critic.py` (7 tests, LLM mocked): prompt invariants,
+  grounding filter, in-place splice, fluff + instruction-leak rejection, seeded-
+  weakness loop, report rendering. Full suite: **100 passed**.
+- Live demo `out/critic_demo` on `examples/seeded_weak_intake.yaml` (`--skip-elicit`):
+  critic found 6, applied 9 rewrites over 2 rounds, 1 page, fill 90%; all 6
+  remaining issues grounded; no fabricated numbers; seeded weak bullet rewritten.
+
+Suggested commits:
+- `feat(phase5): critic → revise loop with grounded issues`
+- `feat(phase5): user-facing suggestions report`
+- `fix(phase5): block reviewer-fix leakage into resume bullets`
+
+---
+
 ## 2026-07-13 — Docs sync after Phase 4.5–4.8
 
 Aligned working docs with landed generation work (no code changes):

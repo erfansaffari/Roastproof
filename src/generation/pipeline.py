@@ -51,6 +51,8 @@ def run_pipeline(
     max_elicit_rounds: int = DEFAULT_MAX_ROUNDS,
     prev_eval_path: Path | None = None,
     fill_target: float = DEFAULT_FILL_TARGET,
+    run_critic_pass: bool = True,
+    max_critic_rounds: int = 2,
 ) -> dict:
     out_dir.mkdir(parents=True, exist_ok=True)
     intake_path = Path(intake_path)
@@ -148,36 +150,15 @@ def run_pipeline(
     else:
         save_qa_store(qa_store, qa_path)
 
-    print("Generating resume content (gpt-4o)…")
+    print("Stage A — input review complete. Generating resume content (gpt-4o)…")
     gen_fn = partial(generate_resume, qa_store=qa_store)
     result = gen_fn(intake)
 
+    # Project-eval + critic are Stage B (output review) — they run on the
+    # GENERATED resume, after page-fit. Placeholders set here, filled below.
     eval_changed_flag = False
     peval_path = out_dir / "project_eval.json"
     peval: ProjectEvalResult | None = None
-    if not skip_project_eval and intake.projects:
-        print("Project evaluation (gpt-4o, temp=0)…")
-        prior_path = prev_eval_path or peval_path
-        prior: ProjectEvalResult | None = None
-        if prior_path.exists():
-            try:
-                prior = ProjectEvalResult.model_validate_json(
-                    prior_path.read_text(encoding="utf-8")
-                )
-            except Exception:
-                prior = None
-        peval = evaluate_projects(intake, prior_eval=prior)
-        eval_changed_flag = eval_changed(prior, peval)
-        peval_path.write_text(peval.model_dump_json(indent=2), encoding="utf-8")
-        extra = project_eval_to_suggestions(peval)
-        existing = {(s.type, s.detail) for s in result.suggestions}
-        for s in extra:
-            if (s.type, s.detail) not in existing:
-                result.suggestions.append(s)
-        print(
-            f"  wrote {peval_path} (+{len(extra)} project suggestion(s); "
-            f"changed_since_prev={eval_changed_flag})."
-        )
 
     qa_answers = [
         q.answer
@@ -248,10 +229,110 @@ def run_pipeline(
             else:
                 print("  No new expansion questions (model complete or all dupes).")
 
+    # --- Phase 5: critic → revise loop ------------------------------------
+    critic_meta: dict = {
+        "rounds": 0,
+        "issues_found": 0,
+        "issues_fixed": 0,
+        "issues_remaining": 0,
+    }
+    if run_critic_pass:
+        from src.generation.critic import (
+            high_severity_issues,
+            high_med_issues,
+            run_critic,
+            revise_bullets,
+        )
+        from src.generation.renderer import (
+            count_pdf_pages,
+            measure_page_fill,
+            render_and_compile,
+        )
+        from src.generation.pagefit import hard_trim
+
+        print(
+            f"Stage B — output review. Critic pass "
+            f"(gpt-4o, temp=0, ≤{max_critic_rounds} round(s))…"
+        )
+        from src.generation.critic import bullet_gap_hints
+
+        revision_log: list[dict] = []
+        total_fixed = 0
+        critic_result = run_critic(
+            intake, result.resume, gap_hints=bullet_gap_hints(result.resume)
+        )
+        first_found = len(critic_result.issues)
+        rnd = 0
+        # Revise while high OR medium issues remain (doc: "feed high+medium back");
+        # stopping rule = no high-severity remaining or the round cap. `revise_bullets`
+        # returning no diffs breaks the loop, preventing churn on unimprovable meds.
+        while high_med_issues(critic_result) and rnd < max_critic_rounds:
+            rnd += 1
+            targets = high_med_issues(critic_result)
+            revised_resume, diffs = revise_bullets(intake, result.resume, targets)
+            if not diffs:
+                print(f"  round {rnd}: no revisable bullets — stopping.")
+                break
+            result.resume = revised_resume
+            total_fixed += len(diffs)
+            # Surgical splice keeps structure; only re-check the page count.
+            tex_path, pdf_path = render_and_compile(result.resume, out_dir)
+            pages = count_pdf_pages(pdf_path)
+            if pages != 1:
+                result.resume = hard_trim(result.resume)
+                tex_path, pdf_path = render_and_compile(result.resume, out_dir)
+                pages = count_pdf_pages(pdf_path)
+            if pages == 1:
+                fill_meta["fill_ratio"] = round(measure_page_fill(pdf_path), 4)
+                fill_ratio = fill_meta["fill_ratio"]
+            revision_log.append(
+                {
+                    "round": rnd,
+                    "changed": [d.model_dump() for d in diffs],
+                }
+            )
+            critic_result = run_critic(
+                intake, result.resume, gap_hints=bullet_gap_hints(result.resume)
+            )
+
+        remaining = critic_result.issues
+        critic_meta = {
+            "rounds": rnd,
+            "issues_found": first_found,
+            "issues_fixed": total_fixed,
+            "issues_remaining": len(remaining),
+        }
+        (out_dir / "revision_log.json").write_text(
+            json.dumps(revision_log, indent=2), encoding="utf-8"
+        )
+        (out_dir / "critic.json").write_text(
+            critic_result.model_dump_json(indent=2), encoding="utf-8"
+        )
+        print(
+            f"  critic: found={first_found}, fixed={total_fixed}, "
+            f"remaining={len(remaining)} over {rnd} round(s)."
+        )
+
+    # --- Stage B: project portfolio eval on the FINAL generated resume ------
+    if not skip_project_eval and result.resume.projects:
+        print("Project evaluation on generated resume (gpt-4o, temp=0)…")
+        prior_path = prev_eval_path or peval_path
+        prior: ProjectEvalResult | None = None
+        if prior_path.exists():
+            try:
+                prior = ProjectEvalResult.model_validate_json(
+                    prior_path.read_text(encoding="utf-8")
+                )
+            except Exception:
+                prior = None
+        peval = evaluate_projects(intake, result.resume, prior_eval=prior)
+        eval_changed_flag = eval_changed(prior, peval)
+        peval_path.write_text(peval.model_dump_json(indent=2), encoding="utf-8")
+        print(f"  wrote {peval_path} (changed_since_prev={eval_changed_flag}).")
+
     content_path = out_dir / "content.json"
     suggestions_path = out_dir / "suggestions.json"
-    # Page-fit may regenerate via generate_fn and drop project-eval suggestions —
-    # re-merge them so suggestions.json always includes corpus portfolio feedback.
+    # Attach project-eval verdicts to suggestions.json (Stage B gap surfacing).
     if peval is not None:
         existing = {(s.type, s.detail) for s in result.suggestions}
         for s in project_eval_to_suggestions(peval):
@@ -283,9 +364,45 @@ def run_pipeline(
         "expand_attempts": fill_meta.get("expand_attempts", 0),
         "expansion_questions_added": expansion_questions_added,
         "pages": pages,
+        "critic_rounds": critic_meta["rounds"],
+        "critic_issues_found": critic_meta["issues_found"],
+        "critic_issues_fixed": critic_meta["issues_fixed"],
+        "critic_issues_remaining": critic_meta["issues_remaining"],
     }
     status_path = out_dir / "status.json"
     status_path.write_text(json.dumps(status, indent=2), encoding="utf-8")
+
+    # --- Phase 5: user-facing Markdown report ------------------------------
+    from src.generation.report import build_report
+
+    revision_log_data: list[dict] = []
+    rl_path = out_dir / "revision_log.json"
+    if rl_path.exists():
+        try:
+            revision_log_data = json.loads(rl_path.read_text(encoding="utf-8"))
+        except Exception:
+            revision_log_data = []
+    critic_remaining_data: list[dict] = []
+    cj_path = out_dir / "critic.json"
+    if cj_path.exists():
+        try:
+            critic_remaining_data = (
+                json.loads(cj_path.read_text(encoding="utf-8")).get("issues", [])
+            )
+        except Exception:
+            critic_remaining_data = []
+
+    report_md = build_report(
+        intake,
+        suggestions=[s.model_dump() for s in result.suggestions],
+        revision_log=revision_log_data,
+        critic_remaining=critic_remaining_data,
+        status=status,
+        qa_store=qa_store,
+    )
+    report_path = out_dir / "report.md"
+    report_path.write_text(report_md, encoding="utf-8")
+    print(f"Report: {report_path}")
 
     if fill_ratio is not None:
         if pages != 1:
@@ -325,6 +442,7 @@ def run_pipeline(
         "tex": str(tex_path),
         "content": str(content_path),
         "suggestions": str(suggestions_path),
+        "report": str(report_path),
         "questions": str(questions_path) if questions_path.exists() else None,
         "sidecar": str(qa_path),
         "status": str(status_path),
@@ -332,6 +450,7 @@ def run_pipeline(
         "n_suggestions": len(result.suggestions),
         "converged": qa_store.converged,
         "fill_ratio": fill_ratio,
+        "critic_issues_remaining": critic_meta["issues_remaining"],
     }
     print(
         f"Done: {pdf_path} ({pages} page{'s' if pages != 1 else ''}), "
@@ -372,6 +491,17 @@ def main(argv: list[str] | None = None) -> int:
         default=DEFAULT_FILL_TARGET,
         help="Target page-fill ratio on a one-page PDF (default 0.85)",
     )
+    parser.add_argument(
+        "--skip-critic",
+        action="store_true",
+        help="Skip the Phase 5 critic → revise loop",
+    )
+    parser.add_argument(
+        "--max-critic-rounds",
+        type=int,
+        default=2,
+        help="Stop critic revision after this many rounds (default 2)",
+    )
     args = parser.parse_args(argv)
     try:
         run_pipeline(
@@ -384,6 +514,8 @@ def main(argv: list[str] | None = None) -> int:
             max_elicit_rounds=args.max_elicit_rounds,
             prev_eval_path=args.prev_eval,
             fill_target=args.fill_target,
+            run_critic_pass=not args.skip_critic,
+            max_critic_rounds=args.max_critic_rounds,
         )
     except SystemExit:
         raise

@@ -544,7 +544,7 @@ verdict MUST include ≥1 real critique id when the critiques block lists ids.
 Ungrounded rows are discarded.
 
 If a previous evaluation is provided, keep verdicts and field_gaps STABLE unless
-the intake facts changed — if you change one, state exactly which new fact justified it.
+the resume projects changed — if you change one, state exactly which change justified it.
 
 ## Output JSON contract
 {{
@@ -566,7 +566,7 @@ the intake facts changed — if you change one, state exactly which new fact jus
 
 def project_eval_user(
     *,
-    intake_projects_json: str,
+    projects_json: str,
     critiques_block: str,
     rules_block: str,
     role: RoleProfile,
@@ -576,8 +576,8 @@ def project_eval_user(
         f"## Role: {role.display_name}",
         f"Scan first for projects: {role.scan_first}",
         "",
-        "## Applicant projects (facts only)",
-        intake_projects_json,
+        "## Projects as they appear on the GENERATED resume (name, tech, bullets)",
+        projects_json,
         "",
         "## Community rules for projects (MUST apply)",
         rules_block,
@@ -589,7 +589,7 @@ def project_eval_user(
         parts.extend(
             [
                 "",
-                "## Previous evaluation (keep stable unless intake facts changed)",
+                "## Previous evaluation (keep stable unless the resume projects changed)",
                 prior_eval_json,
             ]
         )
@@ -601,6 +601,145 @@ def project_eval_user(
         ]
     )
     return "\n".join(parts)
+
+
+# ---------------------------------------------------------------------------
+# Critic (Phase 5) — review-community / hiring-screen persona
+# ---------------------------------------------------------------------------
+
+def critic_system(intake: Intake) -> str:
+    role = resolve_role_profile(intake.target_role)
+    return f"""{hiring_persona(role)}
+
+You are now the REVIEW COMMUNITY doing a final critique pass on a resume that has
+ALREADY been generated for a {role.display_name} screen. Your job is to flag
+concrete weaknesses in the bullet WORDING and rule violations — not to rewrite
+the resume yourself.
+
+Use ONLY the retrieved community critiques and rules provided below. Every issue
+you raise MUST cite grounding:
+- critique_id: a real `id=` value copied verbatim from the critiques block, OR
+- rule_id: a real rule id (the `[id]` shown in the rules block).
+Issues with neither a real critique_id nor a real rule_id will be DISCARDED.
+
+For each issue emit:
+- section: experience | projects | skills | general
+- entry: the company or project name the bullet belongs to (copy verbatim)
+- bullet_text: the EXACT offending bullet copied verbatim from the resume JSON
+- issue: what is wrong (vague scope, no metric, fluff verb, buzzword soup, etc.)
+- severity: high | med | low  (high = would hurt the interview decision)
+- suggested_fix: how to strengthen it — WITHOUT inventing facts. If a metric is
+  missing, say "ask the applicant for X"; never invent a number (G1).
+- rule_id and/or critique_id grounding.
+
+Only raise issues you can ground. An empty issues list is a valid, honest answer
+when the resume is already strong.
+
+## Output JSON contract
+{{
+  "issues": [{{
+    "section": str,
+    "entry": str,
+    "bullet_text": str,
+    "issue": str,
+    "severity": "high"|"med"|"low",
+    "suggested_fix": str,
+    "rule_id": str,
+    "critique_id": str
+  }}]
+}}
+
+{G1_CLAUSE}
+{REFUSAL_CLAUSE}
+"""
+
+
+def critic_user(
+    *,
+    resume_json: str,
+    critiques_block: str,
+    rules_block: str,
+    role: RoleProfile,
+    gap_hints_block: str | None = None,
+) -> str:
+    parts = [
+        f"## Role: {role.display_name}",
+        f"Scan first for: {role.scan_first}",
+        "",
+        "## Generated resume (critique these bullets — do not rewrite them here)",
+        resume_json,
+        "",
+        "## Community rules (cite rule ids as rule_id)",
+        rules_block,
+        "",
+        "## Retrieved critiques against these bullets (cite id= as critique_id)",
+        critiques_block,
+    ]
+    if gap_hints_block:
+        parts.extend(
+            [
+                "",
+                "## Bullets the writer already flagged as weak (confirm + ground, "
+                "or drop if actually fine)",
+                gap_hints_block,
+            ]
+        )
+    parts.extend(
+        ["", "Return the JSON issues now. Ungrounded issues will be discarded."]
+    )
+    return "\n".join(parts)
+
+
+def revise_system(intake: Intake) -> str:
+    role = resolve_role_profile(intake.target_role)
+    return f"""{hiring_persona(role)}
+
+You rewrite SPECIFIC resume bullets flagged by a reviewer, for a
+{role.display_name} candidate. Rewrite ONLY the listed bullets.
+
+Rules:
+- Keep every fact identical. Do NOT invent metrics, numbers, tools, scope, or
+  dates the bullet did not already contain (G1). If a metric is missing, tighten
+  the wording and scope instead — never fabricate a number.
+- Verb-first, concrete, no fluff adjectives.
+- The `revised` text is the FINAL resume bullet. NEVER write instructions,
+  meta-commentary, or the reviewer's suggested_fix into it (e.g. do NOT append
+  "specify scale", "add a metric", "clarify impact"). Those are guidance for
+  YOU, not text for the resume. Output only the polished bullet itself.
+- Return one revision per listed bullet, echoing the exact `original` text so it
+  can be matched back.
+
+## Output JSON contract
+{{"revisions": [{{"original": str, "revised": str}}]}}
+
+{G1_CLAUSE}
+{REFUSAL_CLAUSE}
+"""
+
+
+def critic_revise_instruction(issues: list) -> str:
+    """
+    Build a targeted revision instruction from critic issues.
+
+    `issues` is a list of CriticIssue-like objects with .entry, .bullet_text,
+    .issue, .suggested_fix.
+    """
+    lines = [
+        "Rewrite ONLY the bullets listed below to address the reviewer issue. "
+        "Keep every fact identical (G1 — no invented metrics, tools, or scope). "
+        "Return one rewritten bullet per listed item, same order.",
+        "",
+    ]
+    for i, it in enumerate(issues, 1):
+        entry = getattr(it, "entry", "") or ""
+        bullet = getattr(it, "bullet_text", "") or ""
+        issue = getattr(it, "issue", "") or ""
+        fix = getattr(it, "suggested_fix", "") or ""
+        lines.append(f"{i}. [{entry}] bullet: {bullet!r}")
+        lines.append(f"   issue: {issue}")
+        if fix:
+            lines.append(f"   suggested_fix: {fix}")
+    return "\n".join(lines)
 
 
 # ---------------------------------------------------------------------------

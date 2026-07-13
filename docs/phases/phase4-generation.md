@@ -39,7 +39,7 @@ End-to-end: user info → `ResumeContent` JSON → LaTeX → compiled one-page P
 
 ## Follow-on (all landed — see linked docs)
 - **4.5 Writer quality:** [phase4.5-writer-quality.md](phase4.5-writer-quality.md) — rewrite mandate, fluff lint, pre-gen elicitation.
-- **4.6 Corpus-derived knowledge:** [phase4.6-corpus-writer.md](phase4.6-corpus-writer.md) — prompt library, style/rewrite mining, project eval, skill-gap tiers.
+- **4.6 Corpus-derived knowledge:** [phase4.6-corpus-writer.md](phase4.6-corpus-writer.md) — prompt library, style/rewrite mining, project eval, skill-gap tiers. **(Note: the 2026-07-13 refactor moved project-eval to Phase 5 "Stage B", evaluating the *generated* resume rather than raw intake; bullet metric/scope gaps moved from suggestions into the critic. See phase5 doc.)**
 - **4.7 Elicitation memory:** QA sidecar (`*.qa.yaml`), semantic dedup, stopping rule, `intake_hash` re-open, corpus-grounded questions, dimension-precise intake coverage (documented under phase4.6).
 - **4.8 Page-fill:** `measure_page_fill`, expand loop, `expand_content` elicit, tech lines on experience + projects (documented under phase4.6).
 

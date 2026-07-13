@@ -1,0 +1,54 @@
+name: Sam Rivera
+email: sam.rivera@example.com
+phone: 555-020-4096
+linkedin: linkedin.com/in/samrivera
+github: github.com/samrivera
+target_role: Software Engineer
+year: year_3
+has_internships: true
+profile_summary: Third-year CS student seeking SWE internships.
+education:
+  - school: State University
+    degree: B.S. Computer Science
+    dates: Aug. 2022 -- Present
+    location: Seattle, WA
+    details: GPA 3.6/4.0. Coursework - Data Structures, Algorithms, Databases, Operating Systems.
+experience:
+  - company: Northlake Logistics
+    title: Software Engineering Intern
+    dates: Jun. 2024 -- Aug. 2024
+    technologies: Python, PostgreSQL
+    description: >
+      Worked on backend stuff to improve the overall system and make it better.
+      Helped the team with various tasks and fixed some bugs. Did some database work.
+  - company: University Web Team
+    title: Student Developer
+    dates: Sep. 2023 -- May 2024
+    location: Seattle, WA
+    technologies: TypeScript, React
+    description: >
+      Built and shipped a React component library used across three department
+      sites, cutting duplicated markup and standardizing accessibility patterns.
+projects:
+  - name: Trip Splitter
+    technologies: Python, FastAPI, PostgreSQL, Docker
+    dates: Jan. 2024 -- Apr. 2024
+    description: >
+      Web service that splits shared trip expenses among friends, settles balances,
+      and exports CSV summaries. Implemented auth, expense graph, and Dockerized deploy.
+  - name: Log Watcher
+    technologies: Python, FastAPI, Docker
+    dates: Sep. 2023 -- Dec. 2023
+    description: >
+      Service that tails application logs and surfaces error spikes on a dashboard.
+      Added Docker Compose for local runs and basic rate limiting.
+skills:
+  - Python
+  - TypeScript
+  - JavaScript
+  - React
+  - PostgreSQL
+  - FastAPI
+  - Docker
+  - HTML
+  - CSS

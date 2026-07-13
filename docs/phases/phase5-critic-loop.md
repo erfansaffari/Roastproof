@@ -37,10 +37,24 @@ Phase 5 **polishes** generated output. It does **not** replace these systems:
      - honest limitations (G1: gaps are suggestions, never silently invented).
 
 ## Acceptance Criteria
-- [ ] Full loop runs on the example intake; revision demonstrably fixes ≥1 seeded weakness (test with an intake containing a deliberately weak, unquantified bullet).
-- [ ] Every critic issue in output carries a grounding ID.
-- [ ] Report renders clean Markdown; no fabricated numbers (all prevalence figures traced to `norms.json`).
-- [ ] Report includes (does not drop) Phase 4 suggestion types and does not re-ask metrics already answered in the QA sidecar.
+- [x] Full loop runs on the example intake; revision demonstrably fixes ≥1 seeded weakness (`examples/seeded_weak_intake.yaml`; live `out/critic_demo` rewrote the seeded weak bullets over 2 rounds; mocked `test_critic_loop_fixes_seeded_weakness`).
+- [x] Every critic issue in output carries a grounding ID (`drop_ungrounded_issues` keeps only `rule_id`/`critique_id`; verified 0 ungrounded in `out/critic_demo/critic.json`).
+- [x] Report renders clean Markdown; no fabricated numbers (prevalence word-boundary-matched to `norms.json`; verified no hard numbers on demo bullets).
+- [x] Report includes (does not drop) Phase 4 suggestion types and does not re-ask metrics already answered in the QA sidecar (report merges `suggestions.json` + surfaces pending sidecar questions; `test_report_renders_clean_markdown`).
+
+### Implementation notes
+- Revision uses a **targeted per-bullet rewrite** (`revise_bullets`): only flagged bullets are rewritten and spliced in place; all other bullets stay byte-identical, so the one-page layout is preserved (only a page re-check + deterministic hard-trim fallback).
+- Loop entry = high OR medium issues; stop at 2 rounds or when a round produces no revisable diffs. Artifacts: `revision_log.json`, `critic.json`, `report.md`; critic fields added to `status.json`.
+- G1 guard: reviewer `suggested_fix` text is never embedded into a bullet (prompt + deterministic `_has_instruction_leak` reject).
+
+### Two-stage pipeline (2026-07-13 refactor)
+The pipeline is organized around one boundary — *does the generated resume exist yet?*
+- **Stage A — Input review (pre-generation):** elicitation questions only (`elicit.py`, `*.qa.yaml`). Purpose: extract facts from the user.
+- **Stage B — Output review (post-generation):** everything that judges the finished resume runs on the generated `ResumeContent`, in order: critic → revise loop → **project-eval (now on the generated resume, not raw intake)** → skill-gap surfacing. All of it lands in one `report.md` with `## Stage A` / `## Stage B` sections.
+
+Consequences:
+- **Bullet metric/scope weaknesses are the critic's job, not Phase 4 suggestions.** `enforce_g1` no longer emits `missing_metric`/`content_gap`; a deterministic `critic.bullet_gap_hints(resume)` feeds `run_critic(..., gap_hints=…)` so each weak bullet is reported once, grounded. `suggestions.json` carries only `missing_skill` + `project_evaluation`.
+- `evaluate_projects(intake, resume, …)` consumes generated project bullets; retrieval query is built from them. Verdicts shift once on the first post-refactor run (expected).
 
 ## Human Sign-Off Gate
 None formally required for this phase itself, but the seeded-weakness demonstration should be shown to Erfan since it's the clearest proof the critic loop works.

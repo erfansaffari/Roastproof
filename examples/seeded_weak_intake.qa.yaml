@@ -1,0 +1,43 @@
+# Roastproof elicitation Q&A sidecar — edit `answer:` in place.
+# Leave null to skip for now; set to 'skip' to decline (never re-ask).
+# Re-run the pipeline after answering; do not copy ids into intake.yaml.
+round: 2
+converged: false
+intake_hash: 3664e578c6e6690b
+questions:
+- id: can-you-provide-5050e430
+  round: 2
+  topic: expand_content
+  impact: high
+  question: Can you provide more details about the specific improvements you made
+    to the backend system at Northlake Logistics? What was the impact of those changes?
+  relates_to: Northlake Logistics
+  answer: null
+  status: pending
+- id: what-specific-bugs-6374beee
+  round: 2
+  topic: expand_content
+  impact: high
+  question: What specific bugs did you fix at Northlake Logistics, and how did those
+    fixes improve the system's performance or user experience?
+  relates_to: Northlake Logistics
+  answer: null
+  status: pending
+- id: can-you-elaborate-2fe2ecb8
+  round: 2
+  topic: expand_content
+  impact: high
+  question: Can you elaborate on the database work you did at Northlake Logistics?
+    What technologies or techniques did you use, and what was the outcome?
+  relates_to: Northlake Logistics
+  answer: null
+  status: pending
+- id: for-the-trip-ef0a59b6
+  round: 2
+  topic: expand_content
+  impact: high
+  question: For the Trip Splitter project, can you describe the user feedback you
+    received and how it influenced any changes or features you implemented?
+  relates_to: Trip Splitter
+  answer: null
+  status: pending

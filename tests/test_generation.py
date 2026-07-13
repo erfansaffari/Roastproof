@@ -244,7 +244,9 @@ def test_compound_git_skill_not_suggested():
     assert not any("showcase breadth" in s.detail for s in out.suggestions)
 
 
-def test_bullet_gaps_feed_missing_metric():
+def test_enforce_g1_no_longer_emits_metric_scope_suggestions():
+    """Post-refactor: bullet metric/scope weaknesses are the critic's job, not
+    Phase 4 suggestions. enforce_g1 must not emit missing_metric/content_gap."""
     annotated = _annotated(
         experience_bullets=[
             AnnotatedBullet(
@@ -252,13 +254,46 @@ def test_bullet_gaps_feed_missing_metric():
                     "Triaged production pipeline failures and landed fixes for incident reports"
                 ),
                 rewritten_from="Resolved production issues",
-                gaps=["no_metric"],
+                gaps=["no_metric", "vague_scope"],
             )
         ]
     )
     intake = load_intake(Path("examples/intake_example.yaml"))
     out = enforce_g1(annotated, intake, {"Python": 0.86})
-    assert any(s.type == "missing_metric" for s in out.suggestions)
+    assert not any(s.type == "missing_metric" for s in out.suggestions)
+    assert not any(s.type == "content_gap" for s in out.suggestions)
+
+
+def test_bullet_gap_hints_detect_weak_bullets():
+    """The critic's deterministic hint detector flags no-metric/vague bullets."""
+    from src.generation.critic import bullet_gap_hints
+    from src.schemas import ResumeContent
+
+    resume = ResumeContent.model_validate(
+        {
+            "contact": {"name": "T"},
+            "education": [],
+            "experience": [
+                {
+                    "company": "Acme",
+                    "title": "X",
+                    "dates": "2023",
+                    "location": "",
+                    "bullets": [
+                        "Worked on various backend things to help the team and improve stuff.",
+                        "Cut p95 latency from 1.8s to 1.4s on the checkout path for end users.",
+                    ],
+                }
+            ],
+            "projects": [],
+            "skills": {"L": ["Python"]},
+            "section_order": ["experience", "skills"],
+        }
+    )
+    hints = bullet_gap_hints(resume)
+    assert len(hints) == 1
+    assert "no_metric" in hints[0]["gaps"]
+    assert "vague_scope" in hints[0]["gaps"]
 
 
 def test_norms_block_marks_absent_git():

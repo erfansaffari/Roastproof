@@ -891,12 +891,15 @@ def enforce_g1(
 
     owned = owned_skills_from_intake(intake) | owned_skills_from_resume(resume)
 
+    # Bullet-level metric/scope weaknesses are surfaced by the Phase 5 critic
+    # (grounded, and deduped with revision) — not as Phase 4 suggestions. Keep
+    # only non-bullet-gap suggestions the LLM emitted, then add skill gaps.
     kept_suggestions = [
-        s for s in annotated.suggestions if s.type not in {"missing_skill"}
+        s
+        for s in annotated.suggestions
+        if s.type not in {"missing_skill", "missing_metric", "content_gap"}
     ]
-    suggestions = kept_suggestions + suggestions_from_bullet_gaps(
-        annotated.resume, declined_needles=declined_needles
-    )
+    suggestions = list(kept_suggestions)
     suggestions.extend(
         build_missing_skill_suggestions(
             prevalence, owned, bucket=bucket, thin=thin

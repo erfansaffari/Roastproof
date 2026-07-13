@@ -270,6 +270,57 @@ class GenerationResult(BaseModel):
     suggestions: List[Suggestion] = Field(default_factory=list)
 
 
+class CriticIssue(BaseModel):
+    """
+    One issue the critic raises against a generated resume bullet (Phase 5).
+
+    Grounding discipline (same as project eval): an issue is kept only if it
+    cites a real retrieved critique id OR a real rulebook rule id. Issues without
+    grounding are dropped in post-processing.
+    """
+    section: str = Field(..., description="experience | projects | skills | general")
+    entry: str = Field(
+        "",
+        description="Company or project name locating the bullet this issue targets.",
+    )
+    bullet_text: str = Field(
+        "",
+        description="Exact offending bullet text so revision can target it in place.",
+    )
+    issue: str
+    severity: str = Field("med", description="high | med | low")
+    suggested_fix: str = ""
+    rule_id: str = Field("", description="Rulebook rule id motivating this issue.")
+    critique_id: str = Field(
+        "",
+        description="Retrieved critique id motivating this issue.",
+    )
+
+
+class CriticResult(BaseModel):
+    issues: List[CriticIssue] = Field(default_factory=list)
+
+
+class RevisedBullet(BaseModel):
+    """One targeted bullet rewrite produced by the revision pass (Phase 5)."""
+    section: str
+    entry: str = ""
+    original: str
+    revised: str
+    addressed_issue: str = ""
+
+
+class RevisionItem(BaseModel):
+    """LLM-facing single rewritten bullet, matched back by `original`."""
+    original: str
+    revised: str
+
+
+class RevisionResult(BaseModel):
+    """LLM output for the targeted per-bullet revision call."""
+    revisions: List[RevisionItem] = Field(default_factory=list)
+
+
 class ElicitationQuestion(BaseModel):
     id: str = Field(
         "",

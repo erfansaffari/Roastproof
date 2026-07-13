@@ -59,7 +59,8 @@ roastproof/
 │   │   ├── prompts.py            # hiring-reviewer prompt library (Phase 4.6)
 │   │   ├── elicit.py, qa_store.py, intake_coverage.py  # elicitation + sidecar (4.7+)
 │   │   ├── project_eval.py, fluff.py
-│   │   └── critic.py             # Phase 5 (not started)
+│   │   ├── critic.py             # Phase 5 — grounded critic + targeted revise_bullets
+│   │   └── report.py             # Phase 5 — user-facing suggestions report (report.md)
 │   ├── eval/       (harness.py, judge.py, ablations.py, report.py)
 │   └── app/        (streamlit_app.py)
 ├── templates/jakes_resume.tex.j2
@@ -116,6 +117,6 @@ Full field-level shapes: read `src/schemas.py` — do not duplicate elsewhere.
 | 2 — Data Exploration & Norms | [docs/phases/phase2-exploration-norms.md](docs/phases/phase2-exploration-norms.md) | Done — norms + FINDINGS regenerated; pre-Phase-3 gates (bullets, other&lt;15%, survival) met |
 | 3 — Knowledge Base (Rulebook + Vector Store) | [docs/phases/phase3-knowledge-base.md](docs/phases/phase3-knowledge-base.md) | Done — 29 rules + 388-point Chroma store; retrieval QA fixes landed |
 | 4 — Generation Pipeline | [docs/phases/phase4-generation.md](docs/phases/phase4-generation.md) | Done — intake→PDF; G1 fabrication pass; **4.5 writer quality** ([phase4.5](docs/phases/phase4.5-writer-quality.md)); **4.6 corpus-derived knowledge** ([phase4.6](docs/phases/phase4.6-corpus-writer.md)); **4.7 elicitation memory/convergence** (QA sidecar, semantic dedup, stable project eval); **4.8 page-fill expansion** (measure fill, unused-fact expand, expand_content elicit) |
-| 5 — Critic Loop & Suggestions Report | [docs/phases/phase5-critic-loop.md](docs/phases/phase5-critic-loop.md) | Not started |
+| 5 — Critic Loop & Suggestions Report | [docs/phases/phase5-critic-loop.md](docs/phases/phase5-critic-loop.md) | Done — grounded critic→revise loop (`critic.py`), targeted per-bullet rewrite, `report.md`; two-stage pipeline (Stage A input review = elicitation; Stage B output review = critic→project-eval-on-generated-resume→skill gaps); seeded-weakness demo in `out/critic_demo` |
 | 6 — Evaluation | [docs/phases/phase6-evaluation.md](docs/phases/phase6-evaluation.md) | Not started |
 | 7 — Interface & Ship | [docs/phases/phase7-interface-ship.md](docs/phases/phase7-interface-ship.md) | Not started |
