@@ -1,0 +1,52 @@
+---
+description: Roastproof architecture, extensibility, data paths, and docs hygiene
+alwaysApply: true
+---
+
+# Roastproof — Extensible Codebase & Docs
+
+Canonical detail lives in `CLAUDE.md`, `src/schemas.py`, and `docs/phases/`. Read those before inventing structure. This rule is the working contract for every change.
+
+## Extensibility (keep the codebase editable)
+
+- Prefer **small pure functions** + thin `__main__` / CLI wrappers. New features = new functions/modules, not mega-functions.
+- Shared contracts go in `src/schemas.py` (Pydantic). Do not invent parallel dict shapes.
+- All LLM calls go through `src/llm.py` only (G5). Never raw OpenAI clients elsewhere.
+- Prompts live in `src/generation/prompts.py`. Corpus knowledge via `retrieve` / rulebook / norms — do not hardcode review wisdom in scattered strings.
+- Generation Q&A persistence: sidecar `*.qa.yaml` via `qa_store.py`; do not stuff long Q&A history into intake YAML.
+- Elicitation coverage is **dimension-precise** (`intake_coverage.py`). Never “any digit ⇒ covered” or silent round-1 converge with empty questions.
+- Project eval must cite real critique `id=` when retrieval returns ids; `rule:` alone is not enough.
+- Add/adjust **unit tests** for pure logic you touch (`tests/`). Mock LLM calls.
+
+## Data & file map (do not invent paths)
+
+| Path | Role |
+|---|---|
+| `data/raw/` | Frozen scraped snapshot (ingestion input) |
+| `data/holdout/` | Eval-only — **only** `src/eval/` may read (G4) |
+| `data/structured/threads.jsonl` | Phase 1 |
+| `data/norms/` | Phase 2 norms |
+| `data/knowledge/` + `data/chroma/` | Phase 3 rulebook + vectors |
+| `logs/llm_calls.jsonl` | Every LLM call (G5) |
+| `examples/*.yaml` + `*.qa.yaml` | Intake + elicitation sidecar |
+| `out/` | Pipeline runs (PDF, content, suggestions, status) |
+| `templates/jakes_resume.tex.j2` | Sole v1 resume template |
+| `src/scraper/` | Standalone Discord utility — not a pipeline phase |
+
+Pipeline flow: intake → elicit (sidecar) → generate (G1) → project_eval → render/pagefit → `out/`.
+
+Hard guardrails G1–G5 always apply (no fabrication; PII sweep on ingest; cost control; holdout isolation; shared LLM logger).
+
+## Docs hygiene (required)
+
+After **every** working session that changes behavior or APIs:
+
+1. Append a newest-first entry to `CHANGELOG.md` (files, why, results/metrics). Erfan uses it for commits.
+
+After a **major** update (new phase substep, public CLI flags, schema fields users see, pipeline behavior change, or acceptance-criteria shift):
+
+2. Update the matching `docs/phases/phase*.md` (status, acceptance, how-to).
+3. Update `CLAUDE.md` when phase status, structure, schemas, or execution rules change.
+4. Update `README.md` when user-facing setup, commands, or phase table drift from reality.
+
+Do **not** edit user plan files under `.cursor/plans/` unless asked. Prefer editing code + the docs above.
